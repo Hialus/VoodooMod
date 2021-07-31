@@ -71,36 +71,6 @@ public class PoppetItem extends Item {
     }
 
     @Override
-    public ActionResultType useOn(ItemUseContext context) {
-        World world = context.getLevel();
-        BlockPos pos = context.getClickedPos();
-        BlockState state = world.getBlockState(pos);
-        PlayerEntity player = context.getPlayer();
-        if (state.getBlock() instanceof BedBlock) {
-            if (!world.isClientSide && player != null && player.isShiftKeyDown()) {
-                MinecraftServer server = world.getServer();
-                if (server != null) {
-                    if (state.getValue(BedBlock.PART) != BedPart.HEAD) {
-                        pos = pos.relative(state.getValue(BedBlock.FACING));
-                    }
-                    PlayerEntity sleeper = null;
-                    for (ServerPlayerEntity playerEntity : server.getPlayerList().getPlayers()) {
-                        BlockPos bedPos = playerEntity.getRespawnPosition();
-                        if (bedPos != null && bedPos.equals(pos) && (sleeper == null || playerEntity.getSleepTimer() < sleeper.getSleepTimer())) {
-                            sleeper = playerEntity;
-                        }
-                    }
-                    if (sleeper != null) {
-                        bind(context.getItemInHand(), sleeper);
-                    }
-                    return ActionResultType.SUCCESS;
-                }
-            }
-        }
-        return ActionResultType.PASS;
-    }
-
-    @Override
     public void releaseUsing(ItemStack stack, World world, LivingEntity livingEntity, int timeLeft) {
         if (!world.isClientSide &&
                 timeLeft <= 72000 - VoodooConfig.COMMON.voodoo.pullDuration.get() &&
