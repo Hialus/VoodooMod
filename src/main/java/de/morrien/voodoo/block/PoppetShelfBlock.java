@@ -33,27 +33,29 @@ import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.block.AbstractBlock.Properties;
+
 /**
  * Created by Timor Morrien
  */
 public class PoppetShelfBlock extends Block {
-    protected static final VoxelShape voxelShape = Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 12.0D, 16.0D);
+    protected static final VoxelShape voxelShape = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 12.0D, 16.0D);
 
     public PoppetShelfBlock() {
         super(Properties
-                .create(Material.ROCK, MaterialColor.NETHERRACK)
-                .hardnessAndResistance(6, 6)
+                .of(Material.STONE, MaterialColor.NETHER)
+                .strength(6, 6)
                 .harvestTool(ToolType.PICKAXE)
                 .harvestLevel(2)
-                .sound(SoundType.NETHER_BRICK)
-                .notSolid()
+                .sound(SoundType.NETHER_BRICKS)
+                .noOcclusion()
         );
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
-        if (!world.isRemote) {
-            TileEntity tileEntity = world.getTileEntity(pos);
+    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+        if (!world.isClientSide) {
+            TileEntity tileEntity = world.getBlockEntity(pos);
             if (tileEntity instanceof PoppetShelfTileEntity) {
                 INamedContainerProvider containerProvider = new INamedContainerProvider() {
                     @Override
@@ -62,11 +64,11 @@ public class PoppetShelfBlock extends Block {
                     }
 
                     @Override
-                    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-                        return new PoppetShelfContainer(i, world, pos, playerInventory, playerEntity);
+                    public Container createMenu(int i, PlayerInventory playerventory, PlayerEntity playerEntity) {
+                        return new PoppetShelfContainer(i, world, pos, playerventory, playerEntity);
                     }
                 };
-                NetworkHooks.openGui((ServerPlayerEntity) player, containerProvider, tileEntity.getPos());
+                NetworkHooks.openGui((ServerPlayerEntity) player, containerProvider, tileEntity.getBlockPos());
             } else {
                 throw new IllegalStateException("Our named container provider is missing!");
             }
@@ -75,34 +77,34 @@ public class PoppetShelfBlock extends Block {
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState state) {
+    public BlockRenderType getRenderShape(BlockState state) {
         return BlockRenderType.MODEL;
     }
 
     @Override
-    public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!state.matchesBlock(newState.getBlock())) {
-            TileEntity tileentity = world.getTileEntity(pos);
+    public void onRemove(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (!state.is(newState.getBlock())) {
+            TileEntity tileentity = world.getBlockEntity(pos);
             if (tileentity instanceof IInventory) {
-                InventoryHelper.dropInventoryItems(world, pos, (IInventory) tileentity);
-                world.updateComparatorOutputLevel(pos, this);
+                InventoryHelper.dropContents(world, pos, (IInventory) tileentity);
+                world.updateNeighbourForOutputSignal(pos, this);
             }
 
-            super.onReplaced(state, world, pos, newState, isMoving);
+            super.onRemove(state, world, pos, newState, isMoving);
         }
     }
 
     @Override
-    public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
-        final TileEntity tileEntity = worldIn.getTileEntity(pos);
+    public void setPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+        super.setPlacedBy(world, pos, state, placer, stack);
+        final TileEntity tileEntity = world.getBlockEntity(pos);
         if (tileEntity instanceof PoppetShelfTileEntity && placer != null) {
-            ((PoppetShelfTileEntity) tileEntity).owner = placer.getUniqueID();
+            ((PoppetShelfTileEntity) tileEntity).owner = placer.getUUID();
         }
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+    public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
         return voxelShape;
     }
 

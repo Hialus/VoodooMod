@@ -1,6 +1,7 @@
 package de.morrien.voodoo.event;
 
 import de.morrien.voodoo.Voodoo;
+import de.morrien.voodoo.VoodooUtil;
 import de.morrien.voodoo.container.ContainerRegistry;
 import de.morrien.voodoo.container.PoppetShelfScreen;
 import de.morrien.voodoo.item.ItemRegistry;
@@ -18,11 +19,11 @@ public class ClientEvents {
     @SubscribeEvent
     public static void propertyOverrideRegistry(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
-            ScreenManager.registerFactory(ContainerRegistry.poppetShelf.get(), PoppetShelfScreen::new);
-            ItemModelsProperties.registerProperty(
+            ScreenManager.register(ContainerRegistry.poppetShelf.get(), PoppetShelfScreen::new);
+            ItemModelsProperties.register(
                     ItemRegistry.taglockKit.get(),
                     new ResourceLocation(Voodoo.MOD_ID, "filled"),
-                    (itemStack, clientWorld, livingEntity) -> TaglockKitItem.isBound(itemStack) ? 1 : 0
+                    (itemStack, clientWorld, livingEntity) -> VoodooUtil.isBound(itemStack) ? 1 : 0
             );
         });
     }

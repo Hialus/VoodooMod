@@ -37,23 +37,23 @@ public class Poppet {
 
     public static Poppet getPlayerPoppet(PlayerEntity player, PoppetType poppetType) {
         List<ItemStack> playerItems = new ArrayList<>();
-        playerItems.addAll(player.inventory.offHandInventory);
-        playerItems.addAll(player.inventory.mainInventory);
+        playerItems.addAll(player.inventory.offhand);
+        playerItems.addAll(player.inventory.items);
         for (ItemStack itemStack : playerItems) {
             Item item = itemStack.getItem();
-            if (item instanceof PoppetItem && player.equals(PoppetItem.getBoundPlayer(itemStack, player.world))) {
+            if (item instanceof PoppetItem && player.equals(VoodooUtil.getBoundPlayer(itemStack, player.level))) {
                 PoppetItem poppetItem = (PoppetItem) item;
                 if (poppetItem.getPoppetType() == poppetType) {
                     return new Poppet(player, poppetItem, itemStack);
                 }
             }
         }
-        World world = player.world;
-        List<TileEntity> tileEntities = world.loadedTileEntityList;
+        World world = player.level;
+        List<TileEntity> tileEntities = world.blockEntityList;
         for (TileEntity tileEntity : tileEntities) {
             if (tileEntity instanceof PoppetShelfTileEntity) {
                 Poppet poppet = ((PoppetShelfTileEntity) tileEntity).getPoppet(poppetType);
-                if (poppet != null && player.equals(PoppetItem.getBoundPlayer(poppet.stack, player.world))) {
+                if (poppet != null && player.equals(VoodooUtil.getBoundPlayer(poppet.stack, player.level))) {
                     poppet.player = player;
                     return poppet;
                 }
@@ -81,8 +81,8 @@ public class Poppet {
     public void use(int amount) {
         int durability = item.getPoppetType().getDurability();
         if (durability > 0) {
-            stack.setDamage(stack.getDamage() + amount);
-            if (stack.getMaxDamage() <= stack.getDamage()) {
+            stack.setDamageValue(stack.getDamageValue() + amount);
+            if (stack.getMaxDamage() <= stack.getDamageValue()) {
                 shrink();
             }
         } else {
@@ -97,8 +97,8 @@ public class Poppet {
         } else {
             stack.shrink(1);
         }
-        final TranslationTextComponent text = new TranslationTextComponent("text.voodoo.poppet.used_up", new TranslationTextComponent(item.getTranslationKey()));
-        player.sendStatusMessage(text, false);
+        final TranslationTextComponent text = new TranslationTextComponent("text.voodoo.poppet.used_up", new TranslationTextComponent(item.getDescriptionId()));
+        player.displayClientMessage(text, false);
     }
 
     public enum PoppetType {

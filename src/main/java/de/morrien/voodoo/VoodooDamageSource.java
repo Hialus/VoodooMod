@@ -19,37 +19,37 @@ public class VoodooDamageSource extends DamageSource {
     }
 
     @Override
-    public ITextComponent getDeathMessage(LivingEntity livingEntity) {
-        return new StringTextComponent(livingEntity.getName().getUnformattedComponentText() + " was killed by voodoo-magic."); // TODO: Translation
+    public ITextComponent getLocalizedDeathMessage(LivingEntity livingEntity) {
+        return new StringTextComponent(livingEntity.getName().getContents() + " was killed by voodoo-magic."); // TODO: Translation
     }
 
     @Override
-    public boolean isFireDamage() {
+    public boolean isFire() {
         return damageType == FIRE;
     }
 
     @Override
-    public boolean isUnblockable() {
+    public boolean isBypassArmor() {
         return true;
     }
 
     @Override
-    public boolean isDamageAbsolute() {
+    public boolean isBypassMagic() {
         return true;
     }
 
     @Override
-    public boolean isMagicDamage() {
+    public boolean isMagic() {
         return true;
     }
 
     @Override
-    public boolean isDifficultyScaled() {
+    public boolean scalesWithDifficulty() {
         return false;
     }
 
     @Override
-    public boolean canHarmInCreative() {
+    public boolean isBypassInvul() {
         return false;
     }
 

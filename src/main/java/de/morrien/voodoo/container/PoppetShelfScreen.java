@@ -22,21 +22,21 @@ public class PoppetShelfScreen extends ContainerScreen<PoppetShelfContainer> {
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(matrixStack);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
-        this.renderHoveredTooltip(matrixStack, mouseX, mouseY);
+        this.renderTooltip(matrixStack, mouseX, mouseY);
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int mouseX, int mouseY) {
-        drawString(matrixStack, Minecraft.getInstance().fontRenderer, I18n.format(BlockRegistry.poppetShelf.get().getTranslationKey()), 8, 6, 0xffffff);
-        drawString(matrixStack, Minecraft.getInstance().fontRenderer, playerInventory.getDisplayName(), 8, ySize - 94, 0xffffff);
+    protected void renderLabels(MatrixStack matrixStack, int mouseX, int mouseY) {
+        drawString(matrixStack, Minecraft.getInstance().font, I18n.get(BlockRegistry.poppetShelf.get().getDescriptionId()), 8, 6, 0xffffff);
+        drawString(matrixStack, Minecraft.getInstance().font, inventory.getDisplayName(), 8, imageHeight - 94, 0xffffff);
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+    protected void renderBg(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.minecraft.getTextureManager().bindTexture(GUI);
-        int relX = (this.width - this.xSize) / 2;
-        int relY = (this.height - this.ySize) / 2;
-        this.blit(matrixStack, relX, relY, 0, 0, this.xSize, this.ySize);
+        this.minecraft.getTextureManager().bind(GUI);
+        int relX = (this.width - this.imageWidth) / 2;
+        int relY = (this.height - this.imageHeight) / 2;
+        this.blit(matrixStack, relX, relY, 0, 0, this.imageWidth, this.imageHeight);
     }
 }

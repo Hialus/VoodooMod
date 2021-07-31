@@ -20,12 +20,12 @@ public class ListShelvesCommand {
     public static ArgumentBuilder<CommandSource, ?> register(CommandDispatcher<CommandSource> dispatcher) {
         return Commands
                 .literal("shelves")
-                .then(Commands.argument("player", EntityArgument.players()).requires(cs -> cs.hasPermissionLevel(3)).executes(context -> {
+                .then(Commands.argument("player", EntityArgument.players()).requires(cs -> cs.hasPermission(3)).executes(context -> {
                     final ServerPlayerEntity player = EntityArgument.getPlayer(context, "player");
                     return list(context, player);
                 }))
                 .executes(context -> {
-                    final ServerPlayerEntity player = context.getSource().asPlayer();
+                    final ServerPlayerEntity player = context.getSource().getPlayerOrException();
                     return list(context, player);
                 });
     }
@@ -34,17 +34,17 @@ public class ListShelvesCommand {
         StringTextComponent message = new StringTextComponent("Shelves of " + player.getDisplayName().getString() + ":");
         CommandSource source = context.getSource();
         int counter = 1;
-        for (ServerWorld world : player.server.getWorlds()) {
-            for (TileEntity tileEntity : world.loadedTileEntityList) {
+        for (ServerWorld world : player.server.getAllLevels()) {
+            for (TileEntity tileEntity : world.blockEntityList) {
                 if (tileEntity instanceof PoppetShelfTileEntity) {
-                    if (player.getUniqueID().equals(((PoppetShelfTileEntity) tileEntity).owner)) {
-                        message.appendString("\n");
-                        final StringTextComponent text = new StringTextComponent(counter + ". " + tileEntity.getPos().getX() + ", " + tileEntity.getPos().getY() + ", " + tileEntity.getPos().getZ() + " (DIM" + world.getDimensionKey().getLocation().getPath() + ")");
+                    if (player.getUUID().equals(((PoppetShelfTileEntity) tileEntity).owner)) {
+                        message.append("\n");
+                        final StringTextComponent text = new StringTextComponent(counter + ". " + tileEntity.getBlockPos().getX() + ", " + tileEntity.getBlockPos().getY() + ", " + tileEntity.getBlockPos().getZ() + " (" + world.dimension().location().getPath() + ")");
                         Style style = Style.EMPTY
-                                .setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp " + player.getName().getString() + " " + tileEntity.getPos().getX() + " " + tileEntity.getPos().getY() + " " + tileEntity.getPos().getZ()))
-                                .setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new StringTextComponent("Teleport to shelf")));
+                                .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/execute in " + world.dimension().location().toString() + " run tp " + player.getName().getString() + " " + tileEntity.getBlockPos().getX() + " " + tileEntity.getBlockPos().getY() + " " + tileEntity.getBlockPos().getZ()))
+                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new StringTextComponent("Teleport to shelf")));
                         text.setStyle(style);
-                        message.appendSibling(text);
+                        message.append(text);
                         counter++;
                     }
                 }
@@ -52,9 +52,9 @@ public class ListShelvesCommand {
         }
         if (counter == 1) {
             message = new StringTextComponent("No shelves found");
-            message.setStyle(Style.EMPTY.setColor(Color.fromHex("#ff0000")));
+            message.setStyle(Style.EMPTY.withColor(Color.parseColor("#ff0000")));
         }
-        source.sendFeedback(message, false);
+        source.sendSuccess(message, false);
         return 0;
     }
 }

@@ -13,7 +13,7 @@ public class ContainerRegistry {
     public static final DeferredRegister<ContainerType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, Voodoo.MOD_ID);
     public static final RegistryObject<ContainerType<PoppetShelfContainer>> poppetShelf = CONTAINERS.register("poppet_shelf", () -> IForgeContainerType.create((windowId, inv, data) -> {
         BlockPos pos = data.readBlockPos();
-        World world = inv.player.getEntityWorld();
+        World world = inv.player.getCommandSenderWorld();
         return new PoppetShelfContainer(windowId, world, pos, inv, inv.player);
     }));
 }

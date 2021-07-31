@@ -46,18 +46,18 @@ public class PoppetShelfTileEntity extends TileEntity implements IInventory, ITi
 
     @Override
     public void tick() {
-        if (!this.world.isRemote && this.inventoryTouched) {
+        if (!this.level.isClientSide && this.inventoryTouched) {
             this.inventoryTouched = false;
 
-            if (this.world instanceof ServerWorld) {
-                VoodooNetwork.getInstance().sendToClientsAround(new PoppetShelfSyncUpdate(inventory, this.pos), (ServerWorld) this.world, this.pos);
+            if (this.level instanceof ServerWorld) {
+                VoodooNetwork.getInstance().sendToClientsAround(new PoppetShelfSyncUpdate(inventory, this.worldPosition), (ServerWorld) this.level, this.worldPosition);
             }
         }
     }
 
     public Poppet getPoppet(Poppet.PoppetType type) {
         for (int i = 0; i < 9; i++) {
-            ItemStack itemStack = getStackInSlot(i);
+            ItemStack itemStack = getItem(i);
             if (itemStack.isEmpty()) continue;
             Item item = itemStack.getItem();
             if (item instanceof PoppetItem) {
@@ -81,7 +81,7 @@ public class PoppetShelfTileEntity extends TileEntity implements IInventory, ITi
     }
 
     public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(net.minecraftforge.common.capabilities.Capability<T> cap, @javax.annotation.Nullable net.minecraft.util.Direction side) {
-        if (!this.removed && cap == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+        if (!this.remove && cap == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
             return itemHandler.cast();
         return super.getCapability(cap, side);
     }
@@ -95,12 +95,12 @@ public class PoppetShelfTileEntity extends TileEntity implements IInventory, ITi
     @Nullable
     @Override
     public SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(pos, 1, getUpdateTag());
+        return new SUpdateTileEntityPacket(worldPosition, 1, getUpdateTag());
     }
 
     @Override
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-        handleUpdateTag(world.getBlockState(pkt.getPos()), pkt.getNbtCompound());
+        handleUpdateTag(level.getBlockState(pkt.getPos()), pkt.getTag());
     }
 
     @Override
@@ -108,21 +108,21 @@ public class PoppetShelfTileEntity extends TileEntity implements IInventory, ITi
         final CompoundNBT compound = super.getUpdateTag();
         compound.put("inv", ItemStackHelper.saveAllItems(new CompoundNBT(), this.inventory));
         if (owner != null)
-            compound.putUniqueId("owner", owner);
+            compound.putUUID("owner", owner);
         return compound;
     }
 
     @Override
     public void handleUpdateTag(BlockState state, CompoundNBT compound) {
         super.handleUpdateTag(state, compound);
-        this.inventory = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
+        this.inventory = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
         ItemStackHelper.loadAllItems(compound.getCompound("inv"), this.inventory);
-        if (compound.hasUniqueId("owner"))
-            this.owner = compound.getUniqueId("owner");
+        if (compound.hasUUID("owner"))
+            this.owner = compound.getUUID("owner");
     }
 
     @Override
-    public int getSizeInventory() {
+    public int getContainerSize() {
         return 9;
     }
 
@@ -132,16 +132,16 @@ public class PoppetShelfTileEntity extends TileEntity implements IInventory, ITi
     }
 
     @Override
-    public ItemStack getStackInSlot(int index) {
+    public ItemStack getItem(int index) {
         this.inventoryTouched = true;
         return inventory.get(index);
     }
 
     @Override
-    public ItemStack decrStackSize(int index, int count) {
-        ItemStack itemstack = ItemStackHelper.getAndSplit(inventory, index, count);
+    public ItemStack removeItem(int index, int count) {
+        ItemStack itemstack = ItemStackHelper.removeItem(inventory, index, count);
         if (!itemstack.isEmpty()) {
-            this.markDirty();
+            this.setChanged();
         }
         this.inventoryTouched = true;
 
@@ -149,50 +149,50 @@ public class PoppetShelfTileEntity extends TileEntity implements IInventory, ITi
     }
 
     @Override
-    public ItemStack removeStackFromSlot(int index) {
+    public ItemStack removeItemNoUpdate(int index) {
         this.inventoryTouched = true;
-        return ItemStackHelper.getAndRemove(inventory, index);
+        return ItemStackHelper.takeItem(inventory, index);
     }
 
     @Override
-    public boolean isItemValidForSlot(int index, ItemStack stack) {
+    public boolean canPlaceItem(int index, ItemStack stack) {
         return stack.getItem() instanceof PoppetItem;
     }
 
     @Override
-    public void setInventorySlotContents(int index, ItemStack stack) {
+    public void setItem(int index, ItemStack stack) {
         inventory.set(index, stack);
         this.inventoryTouched = true;
-        this.markDirty();
+        this.setChanged();
     }
 
     @Override
-    public boolean isUsableByPlayer(PlayerEntity player) {
-        if (this.world.getTileEntity(this.pos) != this) {
+    public boolean stillValid(PlayerEntity player) {
+        if (this.level.getBlockEntity(this.worldPosition) != this) {
             return false;
         } else {
-            return !(player.getDistanceSq((double) this.pos.getX() + 0.5D, (double) this.pos.getY() + 0.5D, (double) this.pos.getZ() + 0.5D) > 64.0D);
+            return !(player.distanceToSqr((double) this.worldPosition.getX() + 0.5D, (double) this.worldPosition.getY() + 0.5D, (double) this.worldPosition.getZ() + 0.5D) > 64.0D);
         }
     }
 
     @Override
-    public void clear() {
+    public void clearContent() {
         inventory.clear();
     }
 
-    public void read(BlockState state, CompoundNBT compound) {
-        super.read(state, compound);
-        this.inventory = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
+    public void load(BlockState state, CompoundNBT compound) {
+        super.load(state, compound);
+        this.inventory = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
         ItemStackHelper.loadAllItems(compound.getCompound("inv"), this.inventory);
-        if (compound.hasUniqueId("owner"))
-            this.owner = compound.getUniqueId("owner");
+        if (compound.hasUUID("owner"))
+            this.owner = compound.getUUID("owner");
     }
 
-    public CompoundNBT write(CompoundNBT compound) {
-        super.write(compound);
+    public CompoundNBT save(CompoundNBT compound) {
+        super.save(compound);
         compound.put("inv", ItemStackHelper.saveAllItems(new CompoundNBT(), this.inventory));
         if (owner != null)
-            compound.putUniqueId("owner", owner);
+            compound.putUUID("owner", owner);
         return compound;
     }
 
@@ -202,35 +202,35 @@ public class PoppetShelfTileEntity extends TileEntity implements IInventory, ITi
 
     @OnlyIn(Dist.CLIENT)
     public static class PoppetShelfRenderer extends TileEntityRenderer<PoppetShelfTileEntity> {
-        public PoppetShelfRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
-            super(rendererDispatcherIn);
+        public PoppetShelfRenderer(TileEntityRendererDispatcher rendererDispatcher) {
+            super(rendererDispatcher);
         }
 
         @Override
         public void render(PoppetShelfTileEntity tileEntity, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay) {
             for (int i = 0; i < 9; i++) {
-                ItemStack stack = tileEntity.getStackInSlot(i);
+                ItemStack stack = tileEntity.getItem(i);
                 if (!stack.isEmpty()) {
-                    matrixStack.push();
+                    matrixStack.pushPose();
                     //RenderSystem.enableRescaleNormal();
                     //RenderSystem.alphaFunc(GL11.GL_GREATER, 0.1f);
                     //RenderSystem.enableBlend();
                     //RenderHelper.enableStandardItemLighting();
                     //RenderSystem.blendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
 
-                    double offset = Math.sin((tileEntity.getWorld().getGameTime() + partialTicks) / 8) / 32;
+                    double offset = Math.sin((tileEntity.getLevel().getGameTime() + partialTicks) / 8) / 32;
                     //noinspection IntegerDivisionInFloatingPointContext
                     matrixStack.translate((i % 3) / 5D + 0.3, 0.9 + offset, (i / 3) / 5D + 0.3);
-                    matrixStack.rotate(Vector3f.YP.rotationDegrees(tileEntity.getWorld().getGameTime() + partialTicks * 2));
+                    matrixStack.mulPose(Vector3f.YP.rotationDegrees(tileEntity.getLevel().getGameTime() + partialTicks * 2));
                     //matrixStack.rotate(new Quaternion(tileEntity.getWorld().getGameTime() + partialTicks * 2, 0, 1, 0));
 
                     matrixStack.scale(0.4f, 0.4f, 0.4f);
                     //Minecraft.getInstance().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-                    Minecraft.getInstance().getItemRenderer().renderItem(stack, ItemCameraTransforms.TransformType.GROUND, combinedLight, combinedOverlay, matrixStack, buffer);
+                    Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemCameraTransforms.TransformType.GROUND, combinedLight, combinedOverlay, matrixStack, buffer);
 
                     //RenderSystem.disableRescaleNormal();
                     //RenderSystem.disableBlend();
-                    matrixStack.pop();
+                    matrixStack.popPose();
                 }
             }
         }

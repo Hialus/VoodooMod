@@ -5,6 +5,10 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import static net.minecraftforge.common.ForgeConfigSpec.*;
 
+import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
+import net.minecraftforge.common.ForgeConfigSpec.Builder;
+import net.minecraftforge.common.ForgeConfigSpec.IntValue;
+
 public class VoodooConfig {
     public static final Client CLIENT;
     public static final Common COMMON;

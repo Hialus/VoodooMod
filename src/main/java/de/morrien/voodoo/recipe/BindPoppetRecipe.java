@@ -1,5 +1,6 @@
 package de.morrien.voodoo.recipe;
 
+import de.morrien.voodoo.VoodooUtil;
 import de.morrien.voodoo.item.ItemRegistry;
 import de.morrien.voodoo.item.PoppetItem;
 import de.morrien.voodoo.item.TaglockKitItem;
@@ -15,14 +16,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BindPoppetRecipe extends SpecialRecipe {
-    public BindPoppetRecipe(ResourceLocation idIn) {
-        super(idIn);
+    public BindPoppetRecipe(ResourceLocation resourceLocation) {
+        super(resourceLocation);
     }
 
     private List<ItemStack> getItems(CraftingInventory inv) {
         List<ItemStack> itemStacks = new ArrayList<>();
-        for (int i = 0; i < inv.getSizeInventory(); ++i) {
-            ItemStack itemStack = inv.getStackInSlot(i);
+        for (int i = 0; i < inv.getContainerSize(); ++i) {
+            ItemStack itemStack = inv.getItem(i);
             if (!itemStack.isEmpty()) {
                 itemStacks.add(itemStack);
             }
@@ -31,7 +32,7 @@ public class BindPoppetRecipe extends SpecialRecipe {
     }
 
     @Override
-    public boolean matches(CraftingInventory inv, World worldIn) {
+    public boolean matches(CraftingInventory inv, World world) {
         List<ItemStack> itemStacks = getItems(inv);
         if (itemStacks.size() != 2) return false;
         ItemStack itemStack1 = itemStacks.get(0);
@@ -42,13 +43,13 @@ public class BindPoppetRecipe extends SpecialRecipe {
             itemStack2 = tmp;
         }
         return itemStack1.getItem() == ItemRegistry.taglockKit.get() &&
-                TaglockKitItem.isBound(itemStack1) &&
+                VoodooUtil.isBound(itemStack1) &&
                 itemStack2.getItem() instanceof PoppetItem &&
-                !PoppetItem.isBound(itemStack2);
+                !VoodooUtil.isBound(itemStack2);
     }
 
     @Override
-    public ItemStack getCraftingResult(CraftingInventory inv) {
+    public ItemStack assemble(CraftingInventory inv) {
         List<ItemStack> itemStacks = getItems(inv);
         ItemStack itemStack1 = itemStacks.get(0);
         ItemStack itemStack2 = itemStacks.get(1);
@@ -57,16 +58,13 @@ public class BindPoppetRecipe extends SpecialRecipe {
             itemStack1 = itemStack2;
             itemStack2 = tmp;
         }
-        CompoundNBT compound = new CompoundNBT();
-        compound.putUniqueId(PoppetItem.BOUND_UUID, TaglockKitItem.getBoundUUID(itemStack1));
-        compound.putString(PoppetItem.BOUND_NAME, TaglockKitItem.getBoundName(itemStack1));
         ItemStack boundPoppet = new ItemStack(itemStack2.getItem());
-        boundPoppet.setTag(compound);
+        VoodooUtil.transfer(itemStack1, boundPoppet);
         return boundPoppet;
     }
 
     @Override
-    public boolean canFit(int width, int height) {
+    public boolean canCraftInDimensions(int width, int height) {
         return width * height > 2;
     }
 

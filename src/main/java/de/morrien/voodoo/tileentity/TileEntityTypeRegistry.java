@@ -9,5 +9,5 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 public class TileEntityTypeRegistry {
     public static final DeferredRegister<TileEntityType<?>> TILE_ENTITIES = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, Voodoo.MOD_ID);
-    public static final RegistryObject<TileEntityType<PoppetShelfTileEntity>> poppetShelfTileEntity = TILE_ENTITIES.register("poppet_shelf_tile_entity", () -> TileEntityType.Builder.create(PoppetShelfTileEntity::new, BlockRegistry.poppetShelf.get()).build(null));
+    public static final RegistryObject<TileEntityType<PoppetShelfTileEntity>> poppetShelfTileEntity = TILE_ENTITIES.register("poppet_shelf_tile_entity", () -> TileEntityType.Builder.of(PoppetShelfTileEntity::new, BlockRegistry.poppetShelf.get()).build(null));
 }

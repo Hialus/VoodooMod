@@ -25,7 +25,7 @@ public class PoppetShelfSyncUpdate implements IThreadsafePacket {
         NonNullList<ItemStack> topStacks = NonNullList.withSize(size, ItemStack.EMPTY);
 
         for (int item = 0; item < size; item++) {
-            ItemStack itemStack = buffer.readItemStack();
+            ItemStack itemStack = buffer.readItem();
 
             topStacks.set(item, itemStack);
         }
@@ -40,7 +40,7 @@ public class PoppetShelfSyncUpdate implements IThreadsafePacket {
         packetBuffer.writeInt(this.itemStacks.size());
 
         for (ItemStack stack : this.itemStacks) {
-            packetBuffer.writeItemStack(stack);
+            packetBuffer.writeItem(stack);
         }
 
         packetBuffer.writeBlockPos(this.pos);
@@ -57,15 +57,15 @@ public class PoppetShelfSyncUpdate implements IThreadsafePacket {
     private static class HandleClient {
 
         private static void handle(PoppetShelfSyncUpdate packet) {
-            World world = Minecraft.getInstance().world;
+            World world = Minecraft.getInstance().level;
 
             if (world != null) {
-                TileEntity te = world.getTileEntity(packet.pos);
+                TileEntity te = world.getBlockEntity(packet.pos);
 
                 if (te != null) {
                     if (te instanceof PoppetShelfTileEntity) {
                         ((PoppetShelfTileEntity) te).updateInventory(packet.itemStacks);
-                        Minecraft.getInstance().worldRenderer.notifyBlockUpdate(world, packet.pos, null, null, 0);
+                        Minecraft.getInstance().levelRenderer.blockChanged(world, packet.pos, null, null, 0);
                     }
                 }
             }

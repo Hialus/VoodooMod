@@ -19,21 +19,21 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 public class PoppetShelfContainer extends Container {
     private PoppetShelfTileEntity poppetShelf;
     private PlayerEntity playerEntity;
-    private IItemHandler playerInventory;
+    private IItemHandler playerventory;
 
-    public PoppetShelfContainer(int windowId, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity player) {
+    public PoppetShelfContainer(int windowId, World world, BlockPos pos, PlayerInventory playerventory, PlayerEntity player) {
         super(ContainerRegistry.poppetShelf.get(), windowId);
-        poppetShelf = (PoppetShelfTileEntity) world.getTileEntity(pos);
+        poppetShelf = (PoppetShelfTileEntity) world.getBlockEntity(pos);
         this.playerEntity = player;
-        this.playerInventory = new InvWrapper(playerInventory);
+        this.playerventory = new InvWrapper(playerventory);
 
         if (poppetShelf != null) {
             poppetShelf.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(itemHandler -> {
                 for (int i = 0; i < 9; i++) {
                     addSlot(new SlotItemHandler(itemHandler, i, 62 + (i % 3) * 18, 17 + (i / 3) * 18) {
                         @Override
-                        public void onSlotChanged() {
-                            poppetShelf.markDirty();
+                        public void setChanged() {
+                            poppetShelf.setChanged();
                         }
                     });
                 }
@@ -61,41 +61,41 @@ public class PoppetShelfContainer extends Container {
 
     private void layoutPlayerInventorySlots(int leftCol, int topRow) {
         // Player inventory
-        addSlotBox(playerInventory, 9, leftCol, topRow, 9, 18, 3, 18);
+        addSlotBox(playerventory, 9, leftCol, topRow, 9, 18, 3, 18);
 
         // Hotbar
         topRow += 58;
-        addSlotRange(playerInventory, 0, leftCol, topRow, 9, 18);
+        addSlotRange(playerventory, 0, leftCol, topRow, 9, 18);
     }
 
     @Override
-    public boolean canInteractWith(PlayerEntity player) {
+    public boolean stillValid(PlayerEntity player) {
         return true;
     }
 
     @Override
-    public ItemStack transferStackInSlot(PlayerEntity player, int index) {
+    public ItemStack quickMoveStack(PlayerEntity player, int index) {
         ItemStack itemstack = ItemStack.EMPTY;
-        Slot slot = inventorySlots.get(index);
+        Slot slot = slots.get(index);
 
-        if (slot != null && slot.getHasStack()) {
-            ItemStack itemstack1 = slot.getStack();
+        if (slot != null && slot.hasItem()) {
+            ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
 
-            int containerSlots = inventorySlots.size() - player.inventory.mainInventory.size();
+            int containerSlots = slots.size() - player.inventory.items.size();
 
             if (index < containerSlots) {
-                if (!this.mergeItemStack(itemstack1, containerSlots, inventorySlots.size(), true)) {
+                if (!this.moveItemStackTo(itemstack1, containerSlots, slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.mergeItemStack(itemstack1, 0, containerSlots, false)) {
+            } else if (!this.moveItemStackTo(itemstack1, 0, containerSlots, false)) {
                 return ItemStack.EMPTY;
             }
 
             if (itemstack1.getCount() == 0) {
-                slot.putStack(ItemStack.EMPTY);
+                slot.set(ItemStack.EMPTY);
             } else {
-                slot.onSlotChanged();
+                slot.setChanged();
             }
 
             if (itemstack1.getCount() == itemstack.getCount()) {

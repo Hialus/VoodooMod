@@ -3,6 +3,7 @@ package de.morrien.voodoo.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import de.morrien.voodoo.VoodooUtil;
 import de.morrien.voodoo.item.PoppetItem;
 import de.morrien.voodoo.tileentity.PoppetShelfTileEntity;
 import net.minecraft.command.CommandSource;
@@ -25,12 +26,12 @@ public class ListPoppetsCommand {
     public static ArgumentBuilder<CommandSource, ?> register(CommandDispatcher<CommandSource> dispatcher) {
         return Commands
                 .literal("poppets")
-                .then(Commands.argument("player", EntityArgument.players()).requires(cs -> cs.hasPermissionLevel(3)).executes(context -> {
+                .then(Commands.argument("player", EntityArgument.players()).requires(cs -> cs.hasPermission(3)).executes(context -> {
                     final ServerPlayerEntity player = EntityArgument.getPlayer(context, "player");
                     return list(context, player);
                 }))
                 .executes(context -> {
-                    final ServerPlayerEntity player = context.getSource().asPlayer();
+                    final ServerPlayerEntity player = context.getSource().getPlayerOrException();
                     return list(context, player);
                 });
     }
@@ -39,32 +40,32 @@ public class ListPoppetsCommand {
         StringTextComponent message = new StringTextComponent("Poppets of " + player.getDisplayName().getString() + ":");
         CommandSource source = context.getSource();
         int counter = 1;
-        List<ItemStack> playerInventory = new ArrayList<>(player.inventory.mainInventory);
-        playerInventory.addAll(player.inventory.offHandInventory);
-        for (ItemStack stack : playerInventory) {
-            if (!stack.isEmpty() && stack.getItem() instanceof PoppetItem && player.getUniqueID().equals(PoppetItem.getBoundUUID(stack))) {
-                message.appendString("\n");
-                message.appendSibling(new StringTextComponent(
+        List<ItemStack> playerventory = new ArrayList<>(player.inventory.items);
+        playerventory.addAll(player.inventory.offhand);
+        for (ItemStack stack : playerventory) {
+            if (!stack.isEmpty() && stack.getItem() instanceof PoppetItem && player.getUUID().equals(VoodooUtil.getBoundUUID(stack))) {
+                message.append("\n");
+                message.append(new StringTextComponent(
                         counter + ". " + ((PoppetItem) stack.getItem()).getPoppetType().toString() + " (Inventory)")
                 );
                 counter++;
             }
         }
-        for (ServerWorld world : player.server.getWorlds()) {
-            for (TileEntity tileEntity : world.loadedTileEntityList) {
+        for (ServerWorld world : player.server.getAllLevels()) {
+            for (TileEntity tileEntity : world.blockEntityList) {
                 if (tileEntity instanceof PoppetShelfTileEntity) {
                     List<ItemStack> inventory = ((PoppetShelfTileEntity) tileEntity).getInventory();
                     for (ItemStack stack : inventory) {
-                        if (!stack.isEmpty() && player.getUniqueID().equals(PoppetItem.getBoundUUID(stack))) {
-                            message.appendString("\n");
+                        if (!stack.isEmpty() && player.getUUID().equals(VoodooUtil.getBoundUUID(stack))) {
+                            message.append("\n");
                             StringTextComponent text = new StringTextComponent(counter + ". " + ((PoppetItem) stack.getItem()).getPoppetType().toString() + " ");
-                            StringTextComponent coords = new StringTextComponent("(DIM" + world.getDimensionKey().getLocation().getPath() + ": " + tileEntity.getPos().getX() + ", " + tileEntity.getPos().getY() + ", " + tileEntity.getPos().getZ() + ")");
+                            StringTextComponent coords = new StringTextComponent("(" + world.dimension().location().getPath() + ": " + tileEntity.getBlockPos().getX() + ", " + tileEntity.getBlockPos().getY() + ", " + tileEntity.getBlockPos().getZ() + ")");
                             Style style = Style.EMPTY
-                                    .setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp " + player.getName().getString() + " " + tileEntity.getPos().getX() + " " + tileEntity.getPos().getY() + " " + tileEntity.getPos().getZ()))
-                                    .setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new StringTextComponent("Teleport to shelf")));
+                                    .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/execute in " + world.dimension().location().toString() + " run tp " + player.getName().getString() + " " + tileEntity.getBlockPos().getX() + " " + tileEntity.getBlockPos().getY() + " " + tileEntity.getBlockPos().getZ()))
+                                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new StringTextComponent("Teleport to shelf")));
                             coords.setStyle(style);
-                            text.appendSibling(coords);
-                            message.appendSibling(text);
+                            text.append(coords);
+                            message.append(text);
                             counter++;
                         }
                     }
@@ -73,9 +74,9 @@ public class ListPoppetsCommand {
         }
         if (counter == 1) {
             message = new StringTextComponent("No poppets found");
-            message.setStyle(Style.EMPTY.setColor(Color.fromHex("#ff0000")));
+            message.setStyle(Style.EMPTY.withColor(Color.parseColor("#ff0000")));
         }
-        source.sendFeedback(message, false);
+        source.sendSuccess(message, false);
         return 0;
     }
 }
