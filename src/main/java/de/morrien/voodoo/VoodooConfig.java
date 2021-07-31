@@ -66,8 +66,13 @@ public class VoodooConfig {
             public IntValue durability;
             public IntValue pullDuration;
             public BooleanValue enableFire;
+            public IntValue fireDurabilityCost;
+            public BooleanValue enableDrowning;
+            public IntValue drownDurabilityCost;
             public BooleanValue enableNeedle;
+            public IntValue needleDurabilityCost;
             public BooleanValue enablePush;
+            public IntValue pushDurabilityCost;
 
             public VoodooPoppet(Builder builder) {
                 builder.comment("Voodoo Protection Poppet").push("voodoo_protection_poppet");
@@ -79,13 +84,28 @@ public class VoodooConfig {
                         .defineInRange("pull_duration", 20, 0, 200);
                 this.enableFire = builder
                         .comment("Allow damaging bound player by throwing poppet into fire")
-                        .define("enableFire", true);
+                        .define("enable_fire", true);
+                this.fireDurabilityCost = builder
+                        .comment("The durability that should be removed each time the poppet does damage by fire")
+                        .defineInRange("fire_durability_cost", 2, 0, Integer.MAX_VALUE);
+                this.enableDrowning = builder
+                        .comment("Allow drowning bound player by throwing poppet into water")
+                        .define("enable_drowning", true);
+                this.drownDurabilityCost = builder
+                        .comment("The durability that should be removed each time the poppet does damage by drowning")
+                        .defineInRange("drown_durability_cost", 2, 0, Integer.MAX_VALUE);
                 this.enableNeedle = builder
                         .comment("Allow damaging bound player with needles")
-                        .define("enableFire", true);
+                        .define("enable_needle", true);
+                this.needleDurabilityCost = builder
+                        .comment("The durability that should be removed each time the poppet does damage with a needle")
+                        .defineInRange("needle_durability_cost", 1, 0, Integer.MAX_VALUE);
                 this.enablePush = builder
                         .comment("Allow pushing bound player around")
-                        .define("enableFire", true);
+                        .define("enable_push", true);
+                this.pushDurabilityCost = builder
+                        .comment("The durability that should be removed each time the poppet pushes the bound player around")
+                        .defineInRange("push_durability_cost", 2, 0, Integer.MAX_VALUE);
                 builder.pop();
             }
         }

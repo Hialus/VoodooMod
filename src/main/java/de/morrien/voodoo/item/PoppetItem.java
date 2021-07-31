@@ -1,26 +1,22 @@
 package de.morrien.voodoo.item;
 
-import de.morrien.voodoo.*;
+import de.morrien.voodoo.Poppet;
+import de.morrien.voodoo.VoodooConfig;
+import de.morrien.voodoo.VoodooDamageSource;
+import de.morrien.voodoo.VoodooGroup;
 import de.morrien.voodoo.entity.EntityPoppetItem;
-import net.minecraft.block.BedBlock;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
 import net.minecraft.item.UseAction;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.state.properties.BedPart;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -30,8 +26,6 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
-
-import net.minecraft.item.Item.Properties;
 
 import static de.morrien.voodoo.VoodooUtil.*;
 
@@ -71,6 +65,14 @@ public class PoppetItem extends Item {
     }
 
     @Override
+    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+        if (!VoodooConfig.COMMON.voodoo.enableNeedle.get() && ! VoodooConfig.COMMON.voodoo.enablePush.get())
+            return ActionResult.pass(player.getItemInHand(hand));
+        player.startUsingItem(hand);
+        return ActionResult.success(player.getItemInHand(hand));
+    }
+
+        @Override
     public void releaseUsing(ItemStack stack, World world, LivingEntity livingEntity, int timeLeft) {
         if (!world.isClientSide &&
                 timeLeft <= 72000 - VoodooConfig.COMMON.voodoo.pullDuration.get() &&
@@ -82,12 +84,12 @@ public class PoppetItem extends Item {
                 if (VoodooConfig.COMMON.voodoo.enableNeedle.get() && !offhand.isEmpty() && offhand.getItem() == ItemRegistry.needle.get()) {
                     boundPlayer.hurt(new VoodooDamageSource(VoodooDamageSource.VoodooDamageType.NEEDLE), 1f);
                     offhand.shrink(1);
-                    stack.hurtAndBreak(1, livingEntity, (e) -> {
+                    stack.hurtAndBreak(VoodooConfig.COMMON.voodoo.needleDurabilityCost.get(), livingEntity, (e) -> {
                         player.broadcastBreakEvent(player.getUsedItemHand());
                     });
                 } else if (VoodooConfig.COMMON.voodoo.enablePush.get()) {
                     Poppet voodooProtectionPoppet = Poppet.getPlayerPoppet(boundPlayer, Poppet.PoppetType.VOODOO_PROTECTION);
-                    stack.hurtAndBreak(1, livingEntity, (e) -> {
+                    stack.hurtAndBreak(VoodooConfig.COMMON.voodoo.pushDurabilityCost.get(), livingEntity, (e) -> {
                         player.broadcastBreakEvent(player.getUsedItemHand());
                     });
                     if (voodooProtectionPoppet != null) {
