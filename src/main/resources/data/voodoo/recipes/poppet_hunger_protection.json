@@ -1,0 +1,28 @@
+{
+  "result": {
+    "item": "voodoo:poppet_hunger_protection"
+  },
+  "pattern": [
+    "CKC",
+    "CPC",
+    "RNR"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "P": {
+      "item": "voodoo:blank_poppet"
+    },
+    "N": {
+      "item": "voodoo:needle"
+    },
+    "C": {
+      "item": "minecraft:cookie"
+    },
+    "K": {
+      "item": "minecraft:cake"
+    },
+    "R": {
+      "item": "minecraft:reeds"
+    }
+  }
+}

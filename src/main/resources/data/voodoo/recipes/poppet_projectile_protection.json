@@ -1,0 +1,31 @@
+{
+  "result": {
+    "item": "voodoo:poppet_projectile_protection"
+  },
+  "pattern": [
+    "ASA",
+    "RPR",
+    "BNB"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "P": {
+      "item": "voodoo:blank_poppet"
+    },
+    "N": {
+      "item": "voodoo:needle"
+    },
+    "S": {
+      "item": "minecraft:shield"
+    },
+    "A": {
+      "item": "minecraft:arrow"
+    },
+    "R": {
+      "item": "minecraft:rabbit_hide"
+    },
+    "B": {
+      "item": "minecraft:bone"
+    }
+  }
+}

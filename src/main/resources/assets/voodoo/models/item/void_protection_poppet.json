@@ -1,0 +1,121 @@
+{
+	"__comment": "Designed by Hialus with Cubik Studio - https://cubik.studio",
+	"textures": {
+		"texture": "voodoo:item/poppet_void_protection"
+	},
+	"elements": [ 	 
+		{
+			"__comment": "Box1",
+			"from": [ 6.4, 0, 7 ],
+			"to": [ 7.9, 4, 9 ],
+			"faces": {
+				"down": { "uv": [ 13, 15, 14, 16 ], "texture": "#texture" },
+				"up": { "uv": [ 13, 12, 14, 13 ], "texture": "#texture" },
+				"north": { "uv": [ 13, 13, 14, 15 ], "texture": "#texture" },
+				"south": { "uv": [ 15, 13, 16, 15 ], "texture": "#texture" },
+				"west": { "uv": [ 14, 13, 15, 15 ], "texture": "#texture" },
+				"east": { "uv": [ 12, 13, 13, 15 ], "texture": "#texture" }
+			}
+		},
+		{
+			"__comment": "Box3",
+			"from": [ 8.099999, 0, 7 ],
+			"to": [ 9.599999, 4, 9 ],
+			"faces": {
+				"down": { "uv": [ 9, 15, 10, 16 ], "texture": "#texture" },
+				"up": { "uv": [ 9, 12, 10, 13 ], "texture": "#texture" },
+				"north": { "uv": [ 9, 13, 10, 15 ], "texture": "#texture" },
+				"south": { "uv": [ 11, 13, 12, 15 ], "texture": "#texture" },
+				"west": { "uv": [ 10, 13, 11, 15 ], "texture": "#texture" },
+				"east": { "uv": [ 8, 13, 9, 15 ], "texture": "#texture" }
+			}
+		},
+		{
+			"__comment": "Box5",
+			"from": [ 10, 6, 7.2 ],
+			"to": [ 11.5, 10, 8.7 ],
+			"faces": {
+				"down": { "uv": [ 0, 14, 0.5, 14.5 ], "texture": "#texture", "rotation": 90 },
+				"up": { "uv": [ 2.5, 14.5, 2, 14 ], "texture": "#texture", "rotation": 270 },
+				"north": { "uv": [ 2, 14.5, 0.5, 14 ], "texture": "#texture", "rotation": 90 },
+				"south": { "uv": [ 4, 14.5, 2.5, 14 ], "texture": "#texture", "rotation": 270 },
+				"west": { "uv": [ 2, 15, 0.5, 14.5 ], "texture": "#texture", "rotation": 270 },
+				"east": { "uv": [ 0.5, 13.5, 2, 14 ], "texture": "#texture", "rotation": 90 }
+			}
+		},
+		{
+			"__comment": "Box5",
+			"from": [ 4.5, 6, 7.2 ],
+			"to": [ 6, 10, 8.7 ],
+			"faces": {
+				"down": { "uv": [ 0, 14, 0.5, 14.5 ], "texture": "#texture", "rotation": 90 },
+				"up": { "uv": [ 2.5, 14.5, 2, 14 ], "texture": "#texture", "rotation": 270 },
+				"north": { "uv": [ 2, 14.5, 0.5, 14 ], "texture": "#texture", "rotation": 90 },
+				"south": { "uv": [ 4, 14.5, 2.5, 14 ], "texture": "#texture", "rotation": 270 },
+				"west": { "uv": [ 2, 15, 0.5, 14.5 ], "texture": "#texture", "rotation": 270 },
+				"east": { "uv": [ 0.5, 13.5, 2, 14 ], "texture": "#texture", "rotation": 90 }
+			}
+		},
+		{
+			"__comment": "Box2",
+			"from": [ 6, 4, 6.5 ],
+			"to": [ 10, 10, 9.5 ],
+			"faces": {
+				"down": { "uv": [ 1.5, 12, 5.5, 13.5 ], "texture": "#texture" },
+				"up": { "uv": [ 1.5, 6, 5.5, 7.5 ], "texture": "#texture" },
+				"north": { "uv": [ 1.5, 7.5, 5.5, 12 ], "texture": "#texture" },
+				"south": { "uv": [ 7, 7.5, 11, 12 ], "texture": "#texture" },
+				"west": { "uv": [ 5.5, 7.5, 7, 12 ], "texture": "#texture" },
+				"east": { "uv": [ 0, 7.5, 1.5, 12 ], "texture": "#texture" }
+			}
+		},
+		{
+			"__comment": "Box4",
+			"from": [ 6, 10, 6 ],
+			"to": [ 10, 14, 10 ],
+			"faces": {
+				"down": { "uv": [ 2, 4, 4, 6 ], "texture": "#texture" },
+				"up": { "uv": [ 2, 0, 4, 2 ], "texture": "#texture" },
+				"north": { "uv": [ 2, 2, 4, 4 ], "texture": "#texture" },
+				"south": { "uv": [ 6, 2, 8, 4 ], "texture": "#texture" },
+				"west": { "uv": [ 4, 2, 6, 4 ], "texture": "#texture" },
+				"east": { "uv": [ 0, 2, 2, 4 ], "texture": "#texture" }
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"translation":  [ 0, -1, 0 ],
+			"scale":  [ 0.5, 0.5, 0.5 ]
+		},
+		"thirdperson_lefthand": {
+			"translation":  [ 0, -1, 0 ],
+			"scale":  [ 0.5, 0.5, 0.5 ]
+		},
+		"firstperson_righthand": {
+			"rotation":  [ 0, 90, -25 ],
+			"translation":  [ 1.13, 3.2, 1.13 ],
+			"scale":  [ 0.68, 0.68, 0.68 ]
+		},
+		"firstperson_lefthand": {
+			"rotation":  [ 0, 90, -25 ],
+			"translation":  [ 1.13, 3.2, 1.13 ],
+			"scale":  [ 0.68, 0.68, 0.68 ]
+		},
+		"gui": {
+			"rotation":  [ 10, 160, 0 ],
+			"scale":  [ 0.8, 0.8, 0.8 ]
+		},
+		"ground": {
+			"rotation":  [ 90, 0, 0 ],
+			"scale": [
+				0.5,
+				0.5,
+				0.5
+			]
+		},
+		"fixed": {
+			"translation":  [ 0, 1, 0 ]
+		}
+	}
+}

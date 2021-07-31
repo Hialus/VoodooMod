@@ -1,0 +1,31 @@
+{
+  "result": {
+    "item": "voodoo:poppet_voodoo"
+  },
+  "pattern": [
+    "SES",
+    "RPR",
+    "LNL"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "P": {
+      "item": "voodoo:blank_poppet"
+    },
+    "N": {
+      "item": "voodoo:needle"
+    },
+    "L": {
+      "item": "minecraft:lead"
+    },
+    "E": {
+      "item": "minecraft:ender_eye"
+    },
+    "R": {
+      "item": "minecraft:rabbit_hide"
+    },
+    "S": {
+      "item": "minecraft:spider_eye"
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "result": {
+    "item": "voodoo:poppet_voodoo_protection"
+  },
+  "pattern": [
+    "BKB",
+    "RPV",
+    "QNQ"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "P": {
+      "item": "voodoo:blank_poppet"
+    },
+    "N": {
+      "item": "voodoo:needle"
+    },
+    "Q": {
+      "item": "minecraft:quartz"
+    },
+    "B": {
+      "item": "minecraft:slime_ball"
+    },
+    "R": {
+      "item": "minecraft:rabbit_hide"
+    },
+    "V": {
+      "item": "minecraft:vine"
+    },
+    "K": {
+      "item": "minecraft:pumpkin"
+    }
+  }
+}

@@ -1,0 +1,172 @@
+{
+	"__comment": "Designed by Hialus with Cubik Studio - https://cubik.studio",
+	"textures": {
+		"texture": "voodoo:item/poppet_blank",
+		"cake_top": "block/cake_top",
+		"cake_bottom": "block/cake_bottom",
+		"cake_side": "block/cake_side",
+		"cookie": "item/cookie"
+	},
+	"elements": [ 	 
+		{
+			"__comment": "Element",
+			"from": [ 6.400343, 0.000870933, 7.000399 ],
+			"to": [ 7.900343, 4.000871, 9.000399 ],
+			"faces": {
+				"down": { "uv": [ 13, 15, 14, 16 ], "texture": "#texture" },
+				"up": { "uv": [ 13, 12, 14, 13 ], "texture": "#texture" },
+				"north": { "uv": [ 13, 13, 14, 15 ], "texture": "#texture" },
+				"south": { "uv": [ 15, 13, 16, 15 ], "texture": "#texture" },
+				"west": { "uv": [ 14, 13, 15, 15 ], "texture": "#texture" },
+				"east": { "uv": [ 12, 13, 13, 15 ], "texture": "#texture" }
+			}
+		},
+		{
+			"__comment": "Element",
+			"from": [ 5.999458, 3.999501, 6.500958 ],
+			"to": [ 9.999458, 9.999501, 9.500957 ],
+			"faces": {
+				"down": { "uv": [ 1.5, 12, 5.5, 13.5 ], "texture": "#texture" },
+				"up": { "uv": [ 1.5, 6, 5.5, 7.5 ], "texture": "#texture" },
+				"north": { "uv": [ 1.5, 7.5, 5.5, 12 ], "texture": "#texture" },
+				"south": { "uv": [ 7, 7.5, 11, 12 ], "texture": "#texture" },
+				"west": { "uv": [ 5.5, 7.5, 7, 12 ], "texture": "#texture" },
+				"east": { "uv": [ 0, 7.5, 1.5, 12 ], "texture": "#texture" }
+			}
+		},
+		{
+			"__comment": "Element",
+			"from": [ 8.099046, -0.000115229, 6.99978 ],
+			"to": [ 9.599046, 3.999885, 8.999781 ],
+			"faces": {
+				"down": { "uv": [ 9, 15, 10, 16 ], "texture": "#texture" },
+				"up": { "uv": [ 9, 12, 10, 13 ], "texture": "#texture" },
+				"north": { "uv": [ 9, 13, 10, 15 ], "texture": "#texture" },
+				"south": { "uv": [ 11, 13, 12, 15 ], "texture": "#texture" },
+				"west": { "uv": [ 10, 13, 11, 15 ], "texture": "#texture" },
+				"east": { "uv": [ 8, 13, 9, 15 ], "texture": "#texture" }
+			}
+		},
+		{
+			"__comment": "Element",
+			"from": [ 6.000541, 10.00078, 5.999853 ],
+			"to": [ 10.00054, 14.00078, 9.999853 ],
+			"faces": {
+				"down": { "uv": [ 2, 4, 4, 6 ], "texture": "#texture" },
+				"up": { "uv": [ 2, 0, 4, 2 ], "texture": "#texture" },
+				"north": { "uv": [ 2, 2, 4, 4 ], "texture": "#texture" },
+				"south": { "uv": [ 6, 2, 8, 4 ], "texture": "#texture" },
+				"west": { "uv": [ 4, 2, 6, 4 ], "texture": "#texture" },
+				"east": { "uv": [ 0, 2, 2, 4 ], "texture": "#texture" }
+			}
+		},
+		{
+			"__comment": "Element",
+			"from": [ 9.999001, 5.999573, 7.200812 ],
+			"to": [ 11.499, 9.999573, 8.700812 ],
+			"rotation": { "origin": [ 10, 10, 7.9511 ], "axis": "x", "angle": 22.5 },
+			"faces": {
+				"down": { "uv": [ 0, 14, 0.5, 14.5 ], "texture": "#texture", "rotation": 90 },
+				"up": { "uv": [ 2.5, 14.5, 2, 14 ], "texture": "#texture", "rotation": 270 },
+				"north": { "uv": [ 2, 14.5, 0.5, 14 ], "texture": "#texture", "rotation": 90 },
+				"south": { "uv": [ 4, 14.5, 2.5, 14 ], "texture": "#texture", "rotation": 270 },
+				"west": { "uv": [ 2, 15, 0.5, 14.5 ], "texture": "#texture", "rotation": 270 },
+				"east": { "uv": [ 0.5, 13.5, 2, 14 ], "texture": "#texture", "rotation": 90 }
+			}
+		},
+		{
+			"__comment": "Element",
+			"from": [ 4.500523, 5.999902, 7.199085 ],
+			"to": [ 6.000523, 9.999902, 8.699085 ],
+			"faces": {
+				"down": { "uv": [ 0, 14, 0.5, 14.5 ], "texture": "#texture", "rotation": 90 },
+				"up": { "uv": [ 2.5, 14.5, 2, 14 ], "texture": "#texture", "rotation": 270 },
+				"north": { "uv": [ 2, 14.5, 0.5, 14 ], "texture": "#texture", "rotation": 90 },
+				"south": { "uv": [ 4, 14.5, 2.5, 14 ], "texture": "#texture", "rotation": 270 },
+				"west": { "uv": [ 2, 15, 0.5, 14.5 ], "texture": "#texture", "rotation": 270 },
+				"east": { "uv": [ 0.5, 13.5, 2, 14 ], "texture": "#texture", "rotation": 90 }
+			}
+		},
+		{
+			"__comment": "Cake",
+			"from": [ 9.50062, 5.999516, 4.500495 ],
+			"to": [ 12.00062, 8.499516, 5.500495 ],
+			"rotation": { "origin": [ 9.5, 6, 5.5 ], "axis": "x", "angle": 22.5 },
+			"faces": {
+				"down": { "uv": [ 15, 16, 1, 8 ], "texture": "#cake_side" },
+				"up": { "uv": [ 1, 8, 15, 16 ], "texture": "#cake_side" },
+				"north": { "uv": [ 15, 15, 1, 1 ], "texture": "#cake_top" },
+				"south": { "uv": [ 1, 1, 15, 15 ], "texture": "#cake_bottom" },
+				"west": { "uv": [ 1, 8, 15, 16 ], "texture": "#cake_side", "rotation": 270 },
+				"east": { "uv": [ 1, 8, 15, 16 ], "texture": "#cake_side", "rotation": 90 }
+			}
+		},
+		{
+			"__comment": "Cookie",
+			"from": [ 6.499314, 8.500447, 6.399634 ],
+			"to": [ 7.499314, 9.500447, 6.400634 ],
+			"faces": {
+				"north": { "uv": [ 1, 1, 15, 15 ], "texture": "#cookie" },
+				"south": { "uv": [ 15, 1, 1, 15 ], "texture": "#cookie" }
+			}
+		},
+		{
+			"__comment": "Cookie1",
+			"from": [ 6.500976, 7.50046, 6.400043 ],
+			"to": [ 7.500976, 8.50046, 6.401043 ],
+			"faces": {
+				"north": { "uv": [ 1, 1, 15, 15 ], "texture": "#cookie" },
+				"south": { "uv": [ 15, 1, 1, 15 ], "texture": "#cookie" }
+			}
+		},
+		{
+			"__comment": "Cookie2",
+			"from": [ 6.499642, 6.499795, 6.399819 ],
+			"to": [ 7.499642, 7.499795, 6.400819 ],
+			"faces": {
+				"north": { "uv": [ 1, 1, 15, 15 ], "texture": "#cookie" },
+				"south": { "uv": [ 15, 1, 1, 15 ], "texture": "#cookie" }
+			}
+		},
+		{
+			"__comment": "Cookie3",
+			"from": [ 6.500837, 5.49979, 6.400937 ],
+			"to": [ 7.500837, 6.49979, 6.401937 ],
+			"faces": {
+				"north": { "uv": [ 1, 1, 15, 15 ], "texture": "#cookie" },
+				"south": { "uv": [ 15, 1, 1, 15 ], "texture": "#cookie" }
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"translation":  [ 0, -1, 0 ],
+			"scale":  [ 0.5, 0.5, 0.5 ]
+		},
+		"thirdperson_lefthand": {
+			"translation":  [ 0, -1, 0 ],
+			"scale":  [ 0.5, 0.5, 0.5 ]
+		},
+		"firstperson_righthand": {
+			"rotation":  [ 0, 90, 0 ],
+			"translation":  [ 1.13, 3.2, 1.13 ],
+			"scale":  [ 0.68, 0.68, 0.68 ]
+		},
+		"firstperson_lefthand": {
+			"rotation":  [ 0, 90, 0 ],
+			"translation":  [ 1.13, 3.2, 1.13 ],
+			"scale":  [ 0.68, 0.68, 0.68 ]
+		},
+		"gui": {
+			"rotation":  [ 10, 160, 0 ],
+			"scale":  [ 0.8, 0.8, 0.8 ]
+		},
+		"ground": {
+			"rotation":  [ 90, 0, 0 ],
+			"scale":  [ 0.5, 0.5, 0.5 ]
+		},
+		"fixed": {
+			"translation":  [ 0, 1, 0 ]
+		}
+	}
+}

@@ -1,0 +1,28 @@
+{
+  "block.voodoo.poppet_shelf": "Puppenregal",
+  "item.voodoo.needle": "Nadel",
+  "item.voodoo.taglock_kit": "Taglock Kit",
+  "item.voodoo.blank_poppet": "Puppe",
+  "item.voodoo.voodoo_poppet": "Voodoo Puppe",
+  "item.voodoo.voodoo_protection_poppet": "Voodoo Beschützer-Puppe",
+  "item.voodoo.death_protection_poppet": "Todes Beschützer-Puppe",
+  "item.voodoo.fire_protection_poppet": "Feuer Beschützer-Puppe",
+  "item.voodoo.water_protection_poppet": "Wasser Beschützer-Puppe",
+  "item.voodoo.fall_protection_poppet": "Fallschaden Beschützer-Puppe",
+  "item.voodoo.explosion_protection_poppet": "Explosions Beschützer-Puppe",
+  "item.voodoo.projectile_protection_poppet": "Projektil Beschützer-Puppe",
+  "item.voodoo.wither_protection_poppet": "Wither Beschützer-Puppe",
+  "item.voodoo.hunger_protection_poppet": "Hunger Beschützer-Puppe",
+  "item.voodoo.potion_protection_poppet": "Trank Beschützer-Puppe",
+  "item.voodoo.void_protection_poppet": "Void Beschützer-Puppe",
+  "itemGroup.voodoo_group": "Voodoo",
+
+  "text.voodoo.taglock_kit.bound": "Von: &p",
+  "text.voodoo.poppet.bound": "Gebunden an: &p",
+  "text.voodoo.voodoo_protection.had": "%s hatte eine Voodoo-Beschützer-Puppe",
+  "text.voodoo.poppet.used_up": "Deine %s wurde aufgebraucht",
+
+  "commands.voodoo.player_not_found": "Der Spieler %s wurde nicht gefunden",
+  "commands.voodoo.player_only": "Nicht Spieler müssen den Namen eines Spielers als letztes Argument übergeben",
+  "commands.voodoo.usage": "/voodoo <list> <poppets|shelfs> [player]"
+}

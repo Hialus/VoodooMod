@@ -1,0 +1,28 @@
+{
+  "block.voodoo.poppet_shelf": "Poppet Shelf",
+  "item.voodoo.needle": "Needle",
+  "item.voodoo.taglock_kit": "Taglock Kit",
+  "item.voodoo.blank_poppet": "Poppet",
+  "item.voodoo.voodoo_poppet": "Voodoo Poppet",
+  "item.voodoo.voodoo_protection_poppet": "Voodoo Protection Poppet",
+  "item.voodoo.death_protection_poppet": "Death Protection Poppet",
+  "item.voodoo.fire_protection_poppet": "Fire Protection Poppet",
+  "item.voodoo.water_protection_poppet": "Water Protection Poppet",
+  "item.voodoo.fall_protection_poppet": "Falldamage Protection Poppet",
+  "item.voodoo.explosion_protection_poppet": "Explosion Protection Poppet",
+  "item.voodoo.projectile_protection_poppet": "Projectile Protection Poppet",
+  "item.voodoo.wither_protection_poppet": "Wither Protection Poppet",
+  "item.voodoo.hunger_protection_poppet": "Starve Protection Poppet",
+  "item.voodoo.potion_protection_poppet": "Potion Protection Poppet",
+  "item.voodoo.void_protection_poppet": "Void Protection Poppet",
+  "itemGroup.voodoo_group": "Voodoo",
+
+  "text.voodoo.taglock_kit.bound": "From: &p",
+  "text.voodoo.poppet.bound": "Bound to: &p",
+  "text.voodoo.voodoo_protection.had": "%s had an Voodoo-Protection-Poppet",
+  "text.voodoo.poppet.used_up": "Your %s was used up",
+
+  "commands.voodoo.player_not_found": "The player %s could not be found",
+  "commands.voodoo.player_only": "Non players must specify the name of a player as last argument",
+  "commands.voodoo.usage": "/voodoo <list> <poppets|shelfs> [player]"
+}

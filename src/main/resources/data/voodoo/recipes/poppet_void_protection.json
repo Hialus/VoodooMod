@@ -1,0 +1,32 @@
+{
+  "result": {
+    "item": "voodoo:poppet_void_protection"
+  },
+  "pattern": [
+    "EDE",
+    "OPO",
+    "FNF"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "P": {
+      "item": "voodoo:blank_poppet"
+    },
+    "N": {
+      "item": "voodoo:needle"
+    },
+    "E": {
+      "item": "minecraft:ender_eye"
+    },
+    "D": {
+      "item": "minecraft:dragon_breath"
+    },
+    "O": {
+      "item": "minecraft:obsidian"
+    },
+    "F": {
+      "item": "minecraft:fireworks"
+    }
+    }
+  }
+}
