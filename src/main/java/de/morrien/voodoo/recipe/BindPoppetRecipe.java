@@ -1,5 +1,6 @@
 package de.morrien.voodoo.recipe;
 
+import de.morrien.voodoo.Poppet;
 import de.morrien.voodoo.VoodooUtil;
 import de.morrien.voodoo.item.ItemRegistry;
 import de.morrien.voodoo.item.PoppetItem;
@@ -14,6 +15,8 @@ import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static de.morrien.voodoo.Poppet.PoppetType.BLANK;
 
 public class BindPoppetRecipe extends SpecialRecipe {
     public BindPoppetRecipe(ResourceLocation resourceLocation) {
@@ -45,6 +48,7 @@ public class BindPoppetRecipe extends SpecialRecipe {
         return itemStack1.getItem() == ItemRegistry.taglockKit.get() &&
                 VoodooUtil.isBound(itemStack1) &&
                 itemStack2.getItem() instanceof PoppetItem &&
+                !itemStack2.getItem().equals(ItemRegistry.poppetMap.get(BLANK).get()) &&
                 !VoodooUtil.isBound(itemStack2);
     }
 
