@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "voodoo:needle"
+    },
+    {
+      "tag": "forge:string"
+    },
+    {
+      "item": "minecraft:glass_bottle"
+    }
+  ],
+  "result": {
+    "item": "voodoo:taglock_kit"
+  }
+}

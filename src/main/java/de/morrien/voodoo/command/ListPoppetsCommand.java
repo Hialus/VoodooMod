@@ -17,7 +17,6 @@ import net.minecraft.util.text.Style;
 import net.minecraft.util.text.event.ClickEvent;
 import net.minecraft.util.text.event.HoverEvent;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.BiomeManager;
 
 import java.util.ArrayList;
 import java.util.List;

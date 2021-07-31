@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CCC",
+    "ODO",
+    "NNN"
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:green_carpet"
+    },
+    "O": {
+      "tag": "forge:obsidian"
+    },
+    "D": {
+      "tag": "forge:gems/diamond"
+    },
+    "N": {
+      "item": "minecraft:red_nether_bricks"
+    }
+  },
+  "result": {
+    "item": "voodoo:poppet_shelf"
+  }
+}

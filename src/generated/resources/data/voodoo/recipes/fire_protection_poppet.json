@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "MFM",
+    "BPB",
+    "RNR"
+  ],
+  "key": {
+    "P": {
+      "item": "voodoo:blank_poppet"
+    },
+    "N": {
+      "item": "voodoo:needle"
+    },
+    "R": {
+      "item": "minecraft:rabbit_hide"
+    },
+    "M": {
+      "item": "minecraft:magma_cream"
+    },
+    "F": {
+      "item": "minecraft:fire_charge"
+    },
+    "B": {
+      "item": "minecraft:blaze_rod"
+    }
+  },
+  "result": {
+    "item": "voodoo:fire_protection_poppet"
+  }
+}

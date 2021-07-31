@@ -1,21 +1,21 @@
 package de.morrien.voodoo;
 
 import de.morrien.voodoo.block.BlockRegistry;
-import de.morrien.voodoo.command.VoodooCommand;
 import de.morrien.voodoo.container.ContainerRegistry;
+import de.morrien.voodoo.datagen.RecipeGen;
 import de.morrien.voodoo.item.ItemRegistry;
 import de.morrien.voodoo.network.VoodooNetwork;
 import de.morrien.voodoo.recipe.RecipeRegistry;
 import de.morrien.voodoo.tileentity.PoppetShelfTileEntity;
 import de.morrien.voodoo.tileentity.TileEntityTypeRegistry;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraft.data.DataGenerator;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,8 +28,9 @@ public class Voodoo {
 
     public Voodoo() {
         // Registering event handlers
-        MinecraftForge.EVENT_BUS.register(this);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
+        IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        eventBus.addListener(this::onGatherData);
+        eventBus.addListener(this::clientSetup);
 
         // Setup VoodooNetwork
         VoodooNetwork.setup();
@@ -43,6 +44,11 @@ public class Voodoo {
 
         // Register configs
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, VoodooConfig.commonSpec);
+    }
+
+    private void onGatherData(GatherDataEvent event) {
+        DataGenerator generator = event.getGenerator();
+        generator.addProvider(new RecipeGen(generator));
     }
 
     private void clientSetup(final FMLClientSetupEvent event) {

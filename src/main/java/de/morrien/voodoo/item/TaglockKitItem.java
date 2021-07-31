@@ -3,14 +3,17 @@ package de.morrien.voodoo.item;
 import de.morrien.voodoo.VoodooGroup;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.server.management.PlayerProfileCache;
+import net.minecraft.tileentity.BedTileEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
@@ -71,6 +74,14 @@ public class TaglockKitItem extends Item {
     }
 
     @Override
+    public ActionResultType onItemUse(ItemUseContext context) {
+        final BlockPos pos = context.getPos();
+        for (PlayerProfileCache.ProfileEntry profileEntry : context.getWorld().getServer().getPlayerProfileCache().func_242116_a()) {
+
+        }
+    }
+
+    @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         if (!worldIn.isRemote) {
             ItemStack stack = playerIn.getHeldItem(handIn);
@@ -81,6 +92,7 @@ public class TaglockKitItem extends Item {
                 }
                 if (!stack.getTag().hasUniqueId(BOUND_UUID)) {
                     stack.getTag().putUniqueId(BOUND_UUID, playerIn.getUniqueID());
+                    stack.getTag().putString(BOUND_NAME, playerIn.getName().getString());
                     return new ActionResult<>(ActionResultType.SUCCESS, stack);
                 }
             }

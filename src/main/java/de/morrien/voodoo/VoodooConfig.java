@@ -86,135 +86,129 @@ public class VoodooConfig {
             }
         }
 
-        public static class VoodooProtectionPoppet {
+        public static class PoppetBase {
+            public final BooleanValue enabled;
             public final IntValue durability;
 
+            public PoppetBase(Builder builder, String comment, String path, int defaultDurability) {
+                builder.comment(comment).push(path);
+                this.enabled = builder
+                        .comment("Set to false to disable this poppet")
+                        .define("enabled", true);
+                this.durability = builder
+                        .comment("Durability of the poppet")
+                        .defineInRange("durability", defaultDurability, 0, Integer.MAX_VALUE);
+                builder.pop();
+            }
+        }
+
+        public static class VoodooProtectionPoppet extends PoppetBase {
             public VoodooProtectionPoppet(Builder builder) {
-                builder.comment("Voodoo Protection Poppet").push("voodoo_protection_poppet");
-                this.durability = builder
-                        .comment("Durability of the poppet")
-                        .defineInRange("durability", 20, 0, Integer.MAX_VALUE);
-                builder.pop();
+                super(builder,
+                        "Voodoo Protection Poppet",
+                        "voodoo_protection_poppet",
+                        20
+                );
             }
         }
 
-        public static class DeathProtectionPoppet {
-            public final IntValue durability;
-
+        public static class DeathProtectionPoppet extends PoppetBase {
             public DeathProtectionPoppet(Builder builder) {
-                builder.comment("Death Protection Poppet").push("death_protection_poppet");
-                this.durability = builder
-                        .comment("Durability of the poppet")
-                        .defineInRange("durability", 0, 0, Integer.MAX_VALUE);
-                builder.pop();
+                super(builder,
+                        "Death Protection Poppet",
+                        "death_protection_poppet",
+                        2
+                );
             }
         }
 
-        public static class FireProtectionPoppet {
-            public final IntValue durability;
-
+        public static class FireProtectionPoppet extends PoppetBase {
             public FireProtectionPoppet(Builder builder) {
-                builder.comment("Fire Protection Poppet").push("fire_protection_poppet");
-                this.durability = builder
-                        .comment("Durability of the poppet")
-                        .defineInRange("durability", 40, 0, Integer.MAX_VALUE);
-                builder.pop();
+                super(builder,
+                        "Fire Protection Poppet",
+                        "fire_protection_poppet",
+                        40
+                );
             }
         }
 
-        public static class WaterProtectionPoppet {
-            public final IntValue durability;
-
+        public static class WaterProtectionPoppet extends PoppetBase {
             public WaterProtectionPoppet(Builder builder) {
-                builder.comment("Water Protection Poppet").push("water_protection_poppet");
-                this.durability = builder
-                        .comment("Durability of the poppet")
-                        .defineInRange("durability", 20, 0, Integer.MAX_VALUE);
-                builder.pop();
+                super(builder,
+                        "Water Protection Poppet",
+                        "water_protection_poppet",
+                        20
+                );
             }
         }
 
-        public static class FallProtectionPoppet {
-            public final IntValue durability;
-
+        public static class FallProtectionPoppet extends PoppetBase {
             public FallProtectionPoppet(Builder builder) {
-                builder.comment("Fire Protection Poppet").push("fall_protection_poppet");
-                this.durability = builder
-                        .comment("Durability of the poppet")
-                        .defineInRange("durability", 50, 0, Integer.MAX_VALUE);
-                builder.pop();
+                super(builder,
+                        "Fall Protection Poppet",
+                        "fall_protection_poppet",
+                        50
+                );
             }
         }
 
-        public static class ExplosionProtectionPoppet {
-            public final IntValue durability;
-
+        public static class ExplosionProtectionPoppet extends PoppetBase {
             public ExplosionProtectionPoppet(Builder builder) {
-                builder.comment("Explosion Protection Poppet").push("explosion_protection_poppet");
-                this.durability = builder
-                        .comment("Durability of the poppet")
-                        .defineInRange("durability", 10, 0, Integer.MAX_VALUE);
-                builder.pop();
+                super(builder,
+                        "Explosion Protection Poppet",
+                        "explosion_protection_poppet",
+                        10
+                );
             }
         }
 
-        public static class ProjectileProtectionPoppet {
-            public final IntValue durability;
-
+        public static class ProjectileProtectionPoppet extends PoppetBase {
             public ProjectileProtectionPoppet(Builder builder) {
-                builder.comment("Projectile Protection Poppet").push("projectile_protection_poppet");
-                this.durability = builder
-                        .comment("Durability of the poppet")
-                        .defineInRange("durability", 20, 0, Integer.MAX_VALUE);
-                builder.pop();
+                super(builder,
+                        "Projectile Protection Poppet",
+                        "projectile_protection_poppet",
+                        20
+                );
             }
         }
 
-        public static class WitherProtectionPoppet {
-            public final IntValue durability;
-
+        public static class WitherProtectionPoppet extends PoppetBase {
             public WitherProtectionPoppet(Builder builder) {
-                builder.comment("Wither Protection Poppet").push("wither_protection_poppet");
-                this.durability = builder
-                        .comment("Durability of the poppet")
-                        .defineInRange("durability", 5, 0, Integer.MAX_VALUE);
-                builder.pop();
+                super(builder,
+                        "Wither Protection Poppet",
+                        "wither_protection_poppet",
+                        5
+                );
             }
         }
 
-        public static class HungerProtectionPoppet {
-            public final IntValue durability;
-
+        public static class HungerProtectionPoppet extends PoppetBase {
             public HungerProtectionPoppet(Builder builder) {
-                builder.comment("Hunger Protection Poppet").push("hunger_protection_poppet");
-                this.durability = builder
-                        .comment("Durability of the poppet")
-                        .defineInRange("durability", 5, 0, Integer.MAX_VALUE);
-                builder.pop();
+                super(builder,
+                        "Hunger Protection Poppet",
+                        "hunger_protection_poppet",
+                        5
+                );
             }
         }
 
-        public static class PotionProtectionPoppet {
-            public final IntValue durability;
-
+        public static class PotionProtectionPoppet extends PoppetBase {
             public PotionProtectionPoppet(Builder builder) {
-                builder.comment("Potion Protection Poppet").push("potion_protection_poppet");
-                this.durability = builder
-                        .comment("Durability of the poppet")
-                        .defineInRange("durability", 3, 0, Integer.MAX_VALUE);
-                builder.pop();
+                super(builder,
+                        "Potion Protection Poppet",
+                        "potion_protection_poppet",
+                        3
+                );
             }
         }
 
-        public static class VoidProtectionPoppet {
-            public final IntValue durability;
-
+        public static class VoidProtectionPoppet extends PoppetBase {
             public VoidProtectionPoppet(Builder builder) {
-                builder.comment("Void Protection Poppet").push("void_protection_poppet");
-                this.durability = builder
-                        .comment("Durability of the poppet")
-                        .defineInRange("durability", 0, 0, Integer.MAX_VALUE);
-                builder.pop();
+                super(builder,
+                        "Void Protection Poppet",
+                        "void_protection_poppet",
+                        0
+                );
             }
         }
     }
