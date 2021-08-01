@@ -26,10 +26,20 @@ jobs:
         
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
+    - name: Cache Gradle packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.gradle/caches
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+        restore-keys: ${{ runner.os }}-gradle
     - name: Build with Gradle
       run: ./gradlew build
-      
-    - uses: "marvinpinto/action-automatic-releases@latest"
+
+    - uses: actions/upload-artifact@v2
+      with:
+        path: build/libs/*.jar
+    
+    - uses: marvinpinto/action-automatic-releases@latest
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
         automatic_release_tag: "1.16.4-${{ env.mod_version }}"
