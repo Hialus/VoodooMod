@@ -26,7 +26,7 @@ jobs:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
         automatic_release_tag: "latest-1.16.4"
         prerelease: false
-        title: "Voodoo mod for 1.16.4"
+        title: "VoodooMod 1.16.4"
         files: |
           LICENSE.txt
           build/libs/*.jar
