@@ -39,8 +39,8 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
-        restore-keys: ${{ runner.os }}-gradle
+        key: ${{ runner.os }}-gradle-${{ matrix.version }}-${{ hashFiles('**/*.gradle') }}
+        restore-keys: ${{ runner.os }}-gradle-${{ matrix.version }}
     
     - name: Run datagen
       run: ./gradlew runData
