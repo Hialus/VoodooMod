@@ -11,10 +11,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v2
     
     - name: Extract version
       run: sed -n '/^mod_version=/p' gradle.properties >> $GITHUB_ENV
+      
     - name: Print version
       run: echo "Mod Version=${{ env.mod_version }}"
       
@@ -26,20 +28,31 @@ jobs:
         
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
+      
     - name: Cache Gradle packages
       uses: actions/cache@v2
       with:
         path: ~/.gradle/caches
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
         restore-keys: ${{ runner.os }}-gradle
+    
+    - name: Run datagen
+      run: ./gradlew runData
+      continue-on-error: true
+      
+    - name: Remove .cache folder
+      run: rm -rf src/generated/resources/.cache
+    
     - name: Build with Gradle
       run: ./gradlew build
 
-    - uses: actions/upload-artifact@v2
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
       with:
         path: build/libs/*.jar
     
-    - uses: marvinpinto/action-automatic-releases@latest
+    - name: Create GitHub release
+      uses: marvinpinto/action-automatic-releases@latest
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
         automatic_release_tag: "1.16.4-${{ env.mod_version }}"
