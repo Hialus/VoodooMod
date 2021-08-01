@@ -91,9 +91,7 @@ processResources {
 
 // Example for how to get properties into the manifest for reading by the runtime..
 jar {
-    from('/') {
-        include 'LICENSE'
-    }
+    from('LICENSE')
 
     manifest {
         attributes([
