@@ -13,6 +13,6 @@ public class VoodooGroup extends ItemGroup {
 
     @Override
     public ItemStack makeIcon() {
-        return new ItemStack(ItemRegistry.needle.get());
+        return new ItemStack(ItemRegistry.poppetMap.get(Poppet.PoppetType.BLANK).get());
     }
 }

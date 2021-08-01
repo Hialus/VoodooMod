@@ -79,7 +79,7 @@ public class VoodooEvents {
             for (Poppet.PoppetType poppetType : protectionPoppetTypes) {
                 Poppet poppet = Poppet.getPlayerPoppet(player, poppetType);
                 if (poppet != null && event.getAmount() > 0) {
-                    if (damageSource == IN_FIRE || damageSource == LAVA || (damageSource instanceof VoodooDamageSource && damageSource.isFire())) {
+                    if (damageSource.isFire()) {
                         if (player.tickCount % 20 == 0)
                             poppet.use();
                         if (damageSource instanceof VoodooDamageSource)
