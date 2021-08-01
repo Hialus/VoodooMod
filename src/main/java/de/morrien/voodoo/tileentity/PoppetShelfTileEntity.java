@@ -35,8 +35,8 @@ import java.util.UUID;
  * Created by Timor Morrien
  */
 public class PoppetShelfTileEntity extends TileEntity implements IInventory, ITickableTileEntity {
-    public UUID ownerUuid;
-    public String ownerName;
+    private UUID ownerUuid;
+    private String ownerName;
     private boolean inventoryTouched;
     private NonNullList<ItemStack> inventory = NonNullList.withSize(9, ItemStack.EMPTY);
     private net.minecraftforge.common.util.LazyOptional<?> itemHandler = net.minecraftforge.common.util.LazyOptional.of(() -> createUnSidedHandler());
@@ -208,6 +208,24 @@ public class PoppetShelfTileEntity extends TileEntity implements IInventory, ITi
 
     public void updateInventory(NonNullList<ItemStack> itemStacks) {
         this.inventory = itemStacks;
+    }
+
+    public UUID getOwnerUuid() {
+        return ownerUuid;
+    }
+
+    public void setOwnerUuid(UUID ownerUuid) {
+        this.ownerUuid = ownerUuid;
+        this.setChanged();
+    }
+
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
+        this.setChanged();
     }
 
     @OnlyIn(Dist.CLIENT)

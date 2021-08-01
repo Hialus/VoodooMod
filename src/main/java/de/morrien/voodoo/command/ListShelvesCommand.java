@@ -37,7 +37,7 @@ public class ListShelvesCommand {
         for (ServerWorld world : player.server.getAllLevels()) {
             for (TileEntity tileEntity : world.blockEntityList) {
                 if (tileEntity instanceof PoppetShelfTileEntity) {
-                    if (player.getUUID().equals(((PoppetShelfTileEntity) tileEntity).ownerUuid)) {
+                    if (player.getUUID().equals(((PoppetShelfTileEntity) tileEntity).getOwnerUuid())) {
                         message.append("\n");
                         final StringTextComponent text = new StringTextComponent(counter + ". " + tileEntity.getBlockPos().getX() + ", " + tileEntity.getBlockPos().getY() + ", " + tileEntity.getBlockPos().getZ() + " (" + world.dimension().location().getPath() + ")");
                         Style style = Style.EMPTY

@@ -61,12 +61,16 @@ public class PoppetShelfBlock extends Block {
                 INamedContainerProvider containerProvider = new INamedContainerProvider() {
                     @Override
                     public ITextComponent getDisplayName() {
-                        final String ownerName = ((PoppetShelfTileEntity) tileEntity).ownerName;
+                        final PoppetShelfTileEntity poppetShelf = (PoppetShelfTileEntity) tileEntity;
                         ITextComponent component;
-                        if (ownerName == null)
+                        if (poppetShelf.getOwnerName() == null) {
                             component = new TranslationTextComponent("text.voodoo.poppet.not_bound");
-                        else
-                            component = new StringTextComponent(ownerName);
+                        } else {
+                            final PlayerEntity player = world.getPlayerByUUID(poppetShelf.getOwnerUuid());
+                            if (player != null && !poppetShelf.getOwnerName().equals(player.getName().getString()))
+                                poppetShelf.setOwnerName(player.getName().getString());
+                            component = new StringTextComponent(poppetShelf.getOwnerName());
+                        }
                         return new TranslationTextComponent("screen.voodoo.poppet_shelf", component);
                     }
 
@@ -106,8 +110,8 @@ public class PoppetShelfBlock extends Block {
         super.setPlacedBy(world, pos, state, placer, stack);
         final TileEntity tileEntity = world.getBlockEntity(pos);
         if (tileEntity instanceof PoppetShelfTileEntity && placer != null) {
-            ((PoppetShelfTileEntity) tileEntity).ownerUuid = placer.getUUID();
-            ((PoppetShelfTileEntity) tileEntity).ownerName = placer.getName().getString();
+            ((PoppetShelfTileEntity) tileEntity).setOwnerUuid(placer.getUUID());
+            ((PoppetShelfTileEntity) tileEntity).setOwnerName(placer.getName().getString());
         }
     }
 
