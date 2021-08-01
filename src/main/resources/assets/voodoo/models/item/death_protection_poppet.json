@@ -2,7 +2,7 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [64, 64],
 	"textures": {
-		"1": "voodoo:item/poppet_death_protection"
+		"1": "voodoo:item/death_protection_poppet"
 	},
 	"elements": [
 		{
@@ -170,13 +170,13 @@
 			"scale": [0.25, 0.25, 0.25]
 		},
 		"firstperson_righthand": {
-			"rotation": [0, 115, 0],
-			"translation": [4, 0, 0],
+			"rotation": [0, 115, -5],
+			"translation": [3, 0, 0],
 			"scale": [0.25, 0.25, 0.25]
 		},
 		"firstperson_lefthand": {
-			"rotation": [0, 115, 0],
-			"translation": [4, 0, 0],
+			"rotation": [0, 115, -5],
+			"translation": [3, 0, 0],
 			"scale": [0.25, 0.25, 0.25]
 		},
 		"ground": {
