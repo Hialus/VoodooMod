@@ -17,7 +17,7 @@ archivesBaseName = "Voodoo"
 java.toolchain.languageVersion = JavaLanguageVersion.of(8) // Mojang ships Java 8 to end users, so your mod should target Java 8.
 
 minecraft {
-    mappings channel: 'official', version: "${minecraft_version}"
+    mappings channel: 'official', version: minecraft_version
     //makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 
     //accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
@@ -72,6 +72,21 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     // minecraft 'net.minecraftforge:forge:1.16.5-36.2.2'
+}
+
+task replaceResources(type: Copy) {
+    outputs.upToDateWhen { false }
+    from(sourceSets.main.resources) {
+        include "META-INF/mods.toml"
+        expand "version": mod_version, "mc_version": minecraft_version, "loader_version": loader_version
+    }
+    into "$buildDir/resources/main/"
+}
+
+processResources {
+    //Exclude the mods.toml file as we manually handle that and don't want it to invalidate our cache
+    exclude 'META-INF/mods.toml'
+    finalizedBy replaceResources
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
