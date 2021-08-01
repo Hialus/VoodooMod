@@ -38,6 +38,7 @@ jobs:
     
     - name: Run datagen
       run: ./gradlew runData
+      continue-on-error: true
       
     - name: Remove .cache folder
       run: rm -rf src/generated/resources/.cache
