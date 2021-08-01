@@ -17,12 +17,14 @@
   "item.voodoo.void_protection_poppet": "Void Protection Poppet",
   "itemGroup.voodoo_group": "Voodoo",
 
-  "text.voodoo.taglock_kit.bound": "From: &p",
-  "text.voodoo.poppet.bound": "Bound to: &p",
-  "text.voodoo.voodoo_protection.had": "%s had an Voodoo-Protection-Poppet",
-  "text.voodoo.poppet.used_up": "Your %s was used up",
+  "text.voodoo.taglock_kit.bound": "From: %1$s",
+  "text.voodoo.taglock_kit.not_bound": "Empty",
+  "text.voodoo.poppet.bound": "Bound to: %1$s",
+  "text.voodoo.poppet.not_bound": "Not bound",
+  "text.voodoo.voodoo_protection.had": "%1$s had a Voodoo-Protection-Poppet",
+  "text.voodoo.poppet.used_up": "Your %1$s was used up",
 
-  "commands.voodoo.player_not_found": "The player %s could not be found",
+  "commands.voodoo.player_not_found": "The player %1$s could not be found",
   "commands.voodoo.player_only": "Non players must specify the name of a player as last argument",
-  "commands.voodoo.usage": "/voodoo <list> <poppets|shelfs> [player]"
+  "commands.voodoo.usage": "/voodoo <list> <poppets|shelves> [player]"
 }

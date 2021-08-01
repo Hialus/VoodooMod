@@ -26,6 +26,18 @@ public class VoodooUtil {
         bind(to, from.getTag().getUUID(BOUND_UUID), from.getTag().getString(BOUND_NAME));
     }
 
+    public static void checkForNameUpdate(ItemStack stack, World world) {
+        if (world != null && isBound(stack)) {
+            PlayerEntity player = world.getPlayerByUUID(getBoundUUID(stack));
+            if (player != null) {
+                final String playerName = player.getName().getString();
+                if (!playerName.equals(getBoundName(stack))) {
+                    stack.getTag().putString(BOUND_NAME, playerName);
+                }
+            }
+        }
+    }
+
     public static PlayerEntity getBoundPlayer(ItemStack stack, World world) {
         if (isBound(stack)) {
             return world.getPlayerByUUID(getBoundUUID(stack));

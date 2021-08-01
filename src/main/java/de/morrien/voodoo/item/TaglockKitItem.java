@@ -20,6 +20,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -42,21 +43,11 @@ public class TaglockKitItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
         super.appendHoverText(stack, world, tooltip, flag);
-        UUID uuid = getBoundUUID(stack);
-        if (uuid == null) return;
-        if (world != null) {
-            PlayerEntity player = world.getPlayerByUUID(uuid);
-            if (player != null) {
-                final String playerName = player.getName().getString();
-                if (!playerName.equals(getBoundName(stack))) {
-                    stack.getTag().putString(BOUND_NAME, playerName);
-                }
-                tooltip.add(new StringTextComponent(I18n.get("text.voodoo.taglock_kit.bound").replace("&p", playerName)));
-                return;
-            }
-        }
         if (isBound(stack)) {
-            tooltip.add(new StringTextComponent(I18n.get("text.voodoo.taglock_kit.bound").replace("&p", getBoundName(stack))));
+            checkForNameUpdate(stack, world);
+            tooltip.add(new TranslationTextComponent("text.voodoo.taglock_kit.bound", getBoundName(stack)));
+        } else {
+            tooltip.add(new TranslationTextComponent("text.voodoo.taglock_kit.not_bound"));
         }
     }
 
