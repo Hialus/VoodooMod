@@ -25,11 +25,17 @@ public class PoppetShelfScreen extends ContainerScreen<PoppetShelfContainer> {
         this.renderTooltip(matrixStack, mouseX, mouseY);
     }
 
-    @Override
-    protected void renderLabels(MatrixStack matrixStack, int mouseX, int mouseY) {
-        drawString(matrixStack, Minecraft.getInstance().font, I18n.get(BlockRegistry.poppetShelf.get().getDescriptionId()), 8, 6, 0xffffff);
-        drawString(matrixStack, Minecraft.getInstance().font, inventory.getDisplayName(), 8, imageHeight - 94, 0xffffff);
-    }
+    //@Override
+    //protected void renderLabels(MatrixStack matrixStack, int mouseX, int mouseY) {
+    //    String title;
+    //    if (menu.poppetShelf.ownerName != null) {
+    //        title = "";
+    //    } else {
+    //        title = I18n.get(BlockRegistry.poppetShelf.get().getDescriptionId());
+    //    }
+    //    drawString(matrixStack, Minecraft.getInstance().font, title, 8, 6, 0xffffff);
+    //    drawString(matrixStack, Minecraft.getInstance().font, inventory.getDisplayName(), 8, imageHeight - 94, 0xffffff);
+    //}
 
     @Override
     protected void renderBg(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {

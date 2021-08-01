@@ -25,6 +25,7 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
@@ -60,7 +61,13 @@ public class PoppetShelfBlock extends Block {
                 INamedContainerProvider containerProvider = new INamedContainerProvider() {
                     @Override
                     public ITextComponent getDisplayName() {
-                        return new TranslationTextComponent("screen.mytutorial.firstblock");
+                        final String ownerName = ((PoppetShelfTileEntity) tileEntity).ownerName;
+                        ITextComponent component;
+                        if (ownerName == null)
+                            component = new TranslationTextComponent("text.voodoo.poppet.not_bound");
+                        else
+                            component = new StringTextComponent(ownerName);
+                        return new TranslationTextComponent("screen.voodoo.poppet_shelf", component);
                     }
 
                     @Override
@@ -99,7 +106,8 @@ public class PoppetShelfBlock extends Block {
         super.setPlacedBy(world, pos, state, placer, stack);
         final TileEntity tileEntity = world.getBlockEntity(pos);
         if (tileEntity instanceof PoppetShelfTileEntity && placer != null) {
-            ((PoppetShelfTileEntity) tileEntity).owner = placer.getUUID();
+            ((PoppetShelfTileEntity) tileEntity).ownerUuid = placer.getUUID();
+            ((PoppetShelfTileEntity) tileEntity).ownerName = placer.getName().getString();
         }
     }
 

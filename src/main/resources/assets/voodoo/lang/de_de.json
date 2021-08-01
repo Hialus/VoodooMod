@@ -23,6 +23,7 @@
   "text.voodoo.poppet.not_bound": "Nicht gebunden",
   "text.voodoo.voodoo_protection.had": "%1$s hatte eine Voodoo-Beschützer-Puppe",
   "text.voodoo.poppet.used_up": "Deine %1$s wurde aufgebraucht",
+  "screen.voodoo.poppet_shelf": "Puppenregal (%1$s)",
 
   "commands.voodoo.player_not_found": "Der Spieler %1$s wurde nicht gefunden",
   "commands.voodoo.player_only": "Nicht Spieler müssen den Namen eines Spielers als letztes Argument übergeben",

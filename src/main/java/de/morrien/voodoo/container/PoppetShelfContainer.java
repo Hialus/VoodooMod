@@ -17,9 +17,9 @@ import net.minecraftforge.items.wrapper.InvWrapper;
  * Created by Timor Morrien
  */
 public class PoppetShelfContainer extends Container {
-    private PoppetShelfTileEntity poppetShelf;
-    private PlayerEntity playerEntity;
-    private IItemHandler playerventory;
+    protected PoppetShelfTileEntity poppetShelf;
+    protected PlayerEntity playerEntity;
+    protected IItemHandler playerventory;
 
     public PoppetShelfContainer(int windowId, World world, BlockPos pos, PlayerInventory playerventory, PlayerEntity player) {
         super(ContainerRegistry.poppetShelf.get(), windowId);

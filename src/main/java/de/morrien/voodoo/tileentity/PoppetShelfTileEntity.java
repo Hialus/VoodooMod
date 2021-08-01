@@ -35,7 +35,8 @@ import java.util.UUID;
  * Created by Timor Morrien
  */
 public class PoppetShelfTileEntity extends TileEntity implements IInventory, ITickableTileEntity {
-    public UUID owner;
+    public UUID ownerUuid;
+    public String ownerName;
     private boolean inventoryTouched;
     private NonNullList<ItemStack> inventory = NonNullList.withSize(9, ItemStack.EMPTY);
     private net.minecraftforge.common.util.LazyOptional<?> itemHandler = net.minecraftforge.common.util.LazyOptional.of(() -> createUnSidedHandler());
@@ -106,19 +107,44 @@ public class PoppetShelfTileEntity extends TileEntity implements IInventory, ITi
     @Override
     public CompoundNBT getUpdateTag() {
         final CompoundNBT compound = super.getUpdateTag();
-        compound.put("inv", ItemStackHelper.saveAllItems(new CompoundNBT(), this.inventory));
-        if (owner != null)
-            compound.putUUID("owner", owner);
+        this.saveToTag(compound);
         return compound;
     }
 
     @Override
     public void handleUpdateTag(BlockState state, CompoundNBT compound) {
         super.handleUpdateTag(state, compound);
+        this.readFromTag(compound);
+    }
+
+    @Override
+    public CompoundNBT save(CompoundNBT compound) {
+        super.save(compound);
+        this.saveToTag(compound);
+        return compound;
+    }
+
+    @Override
+    public void load(BlockState state, CompoundNBT compound) {
+        super.load(state, compound);
+        this.readFromTag(compound);
+    }
+
+    private void saveToTag(CompoundNBT compound) {
+        compound.put("inv", ItemStackHelper.saveAllItems(new CompoundNBT(), this.inventory));
+        if (ownerUuid != null)
+            compound.putUUID("owner_uuid", ownerUuid);
+        if (ownerName != null)
+            compound.putString("owner_name", ownerName);
+    }
+
+    private void readFromTag(CompoundNBT compound) {
         this.inventory = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
         ItemStackHelper.loadAllItems(compound.getCompound("inv"), this.inventory);
-        if (compound.hasUUID("owner"))
-            this.owner = compound.getUUID("owner");
+        if (compound.hasUUID("owner_uuid"))
+            this.ownerUuid = compound.getUUID("owner_uuid");
+        if (compound.contains("owner_name"))
+            this.ownerName = compound.getString("owner_name");
     }
 
     @Override
@@ -178,22 +204,6 @@ public class PoppetShelfTileEntity extends TileEntity implements IInventory, ITi
     @Override
     public void clearContent() {
         inventory.clear();
-    }
-
-    public void load(BlockState state, CompoundNBT compound) {
-        super.load(state, compound);
-        this.inventory = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
-        ItemStackHelper.loadAllItems(compound.getCompound("inv"), this.inventory);
-        if (compound.hasUUID("owner"))
-            this.owner = compound.getUUID("owner");
-    }
-
-    public CompoundNBT save(CompoundNBT compound) {
-        super.save(compound);
-        compound.put("inv", ItemStackHelper.saveAllItems(new CompoundNBT(), this.inventory));
-        if (owner != null)
-            compound.putUUID("owner", owner);
-        return compound;
     }
 
     public void updateInventory(NonNullList<ItemStack> itemStacks) {
