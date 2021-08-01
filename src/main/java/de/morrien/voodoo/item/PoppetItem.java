@@ -30,7 +30,7 @@ import static de.morrien.voodoo.VoodooUtil.*;
  * Created by Timor Morrien
  */
 public class PoppetItem extends Item {
-    private Poppet.PoppetType poppetType;
+    private final Poppet.PoppetType poppetType;
 
     public PoppetItem(Poppet.PoppetType poppetType) {
         super(new Properties()
@@ -41,13 +41,13 @@ public class PoppetItem extends Item {
         this.poppetType = poppetType;
     }
 
+    public Poppet.PoppetType getPoppetType() {
+        return poppetType;
+    }
+
     @Override
     public int getMaxDamage(ItemStack stack) {
         return poppetType.getDurability();
-    }
-
-    public Poppet.PoppetType getPoppetType() {
-        return poppetType;
     }
 
     @Override

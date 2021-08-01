@@ -35,7 +35,6 @@ import static de.morrien.voodoo.VoodooUtil.*;
  */
 @SuppressWarnings({"ConstantConditions", "NullableProblems"})
 public class TaglockKitItem extends Item {
-
     public TaglockKitItem() {
         super(new Properties().tab(VoodooGroup.INSTANCE).stacksTo(8));
     }

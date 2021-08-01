@@ -91,12 +91,7 @@ public class Poppet {
     }
 
     private void shrink() {
-        if (poppetShelf != null) {
-            stack.shrink(1);
-            //poppetShelf.shrink(stack);
-        } else {
-            stack.shrink(1);
-        }
+        stack.shrink(1);
         final TranslationTextComponent text = new TranslationTextComponent("text.voodoo.poppet.used_up", new TranslationTextComponent(item.getDescriptionId()));
         player.displayClientMessage(text, false);
     }

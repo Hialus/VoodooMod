@@ -32,6 +32,14 @@ public class EntityPoppetItem extends ItemEntity {
         this.yRot = base.yRot;
     }
 
+    /**
+     * Detects fire damage to the poppet.
+     * If the poppet is bound to a player the bound player will be set on fire.
+     *
+     * @param source The source of the damage
+     * @param amount THe amount of damage that should be inflicted
+     * @return If the damage to this entity should be canceled
+     */
     @Override
     public boolean hurt(DamageSource source, float amount) {
         if (source.isFire()) {
@@ -39,11 +47,10 @@ public class EntityPoppetItem extends ItemEntity {
                 PlayerEntity boundPlayer = VoodooUtil.getBoundPlayer(getItem(), level);
                 if (boundPlayer != null) {
                     boundPlayer.setSecondsOnFire(1);
-                    if (boundPlayer.hurt(new VoodooDamageSource(VoodooDamageSource.VoodooDamageType.FIRE), amount)) {
-                        this.getItem().hurtAndBreak(VoodooConfig.COMMON.voodoo.fireDurabilityCost.get(), boundPlayer, (e) -> {
-                            boundPlayer.broadcastBreakEvent(boundPlayer.getUsedItemHand());
-                        });
-                    }
+                    boundPlayer.hurt(new VoodooDamageSource(VoodooDamageSource.VoodooDamageType.FIRE), amount);
+                    this.getItem().hurtAndBreak(VoodooConfig.COMMON.voodoo.fireDurabilityCost.get(), boundPlayer, (e) -> {
+                        this.remove();
+                    });
                 }
             }
             return false;
@@ -51,6 +58,10 @@ public class EntityPoppetItem extends ItemEntity {
         return super.hurt(source, amount);
     }
 
+    /**
+     * This method is used to detect if the poppet is in water.
+     * If the poppet is in water and is bound the bound player will start to drown, as if they were in water themselves.
+     */
     @Override
     public void tick() {
         super.tick();
@@ -69,6 +80,11 @@ public class EntityPoppetItem extends ItemEntity {
         this.getItem().hurtAndBreak(VoodooConfig.COMMON.voodoo.drownDurabilityCost.get(), boundPlayer, (e) -> boundPlayer.broadcastBreakEvent(boundPlayer.getUsedItemHand()));
     }
 
+    /**
+     * Private helper method to decrease the air supply of a player.
+     *
+     * @param playerEntity The player
+     */
     private void decreaseAirSupply(PlayerEntity playerEntity) {
         final int airSupply = playerEntity.getAirSupply();
         int respiration = EnchantmentHelper.getRespiration(playerEntity);
