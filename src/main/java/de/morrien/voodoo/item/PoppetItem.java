@@ -25,6 +25,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import static de.morrien.voodoo.Poppet.PoppetType.BLANK;
+import static de.morrien.voodoo.Poppet.PoppetType.VOODOO;
 import static de.morrien.voodoo.util.BindingUtil.*;
 
 /**
@@ -53,7 +54,7 @@ public class PoppetItem extends Item {
 
     @Override
     public boolean hasCustomEntity(ItemStack stack) {
-        return stack.getItem() == ItemRegistry.poppetMap.get(Poppet.PoppetType.VOODOO).get();
+        return stack.getItem() == ItemRegistry.poppetMap.get(VOODOO).get();
     }
 
     @Nullable
@@ -64,6 +65,7 @@ public class PoppetItem extends Item {
 
     @Override
     public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+        if (poppetType != VOODOO) return ActionResult.pass(player.getItemInHand(hand));
         if (!VoodooConfig.COMMON.voodoo.enableNeedle.get() && !VoodooConfig.COMMON.voodoo.enablePush.get())
             return ActionResult.pass(player.getItemInHand(hand));
         player.startUsingItem(hand);
@@ -107,7 +109,7 @@ public class PoppetItem extends Item {
 
     @Override
     public UseAction getUseAnimation(ItemStack stack) {
-        return UseAction.BOW;
+        return poppetType == VOODOO ? UseAction.BOW : UseAction.NONE;
     }
 
     @Override
@@ -123,7 +125,7 @@ public class PoppetItem extends Item {
 
     @Override
     public int getUseDuration(ItemStack stack) {
-        return (poppetType == Poppet.PoppetType.VOODOO) ? 72000 : 0;
+        return poppetType == VOODOO ? 72000 : 0;
     }
 
     @Override

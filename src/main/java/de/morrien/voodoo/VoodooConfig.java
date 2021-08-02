@@ -78,7 +78,7 @@ public class VoodooConfig {
                         .defineInRange("durability", 20, 0, Integer.MAX_VALUE);
                 this.pullDuration = builder
                         .comment("How many ticks the poppet has to be pulled before an action can be executed")
-                        .defineInRange("pull_duration", 20, 0, 200);
+                        .defineInRange("pull_duration", 20, 0, 32);
                 this.enableFire = builder
                         .comment("Allow damaging bound player by throwing poppet into fire")
                         .define("enable_fire", true);
