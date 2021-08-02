@@ -1,10 +1,10 @@
 package de.morrien.voodoo.event;
 
 import de.morrien.voodoo.Voodoo;
-import de.morrien.voodoo.util.BindingUtil;
 import de.morrien.voodoo.container.ContainerRegistry;
 import de.morrien.voodoo.container.PoppetShelfScreen;
 import de.morrien.voodoo.item.ItemRegistry;
+import de.morrien.voodoo.util.BindingUtil;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.util.ResourceLocation;

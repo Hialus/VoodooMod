@@ -1,8 +1,8 @@
 package de.morrien.voodoo.recipe;
 
-import de.morrien.voodoo.util.BindingUtil;
 import de.morrien.voodoo.item.ItemRegistry;
 import de.morrien.voodoo.item.PoppetItem;
+import de.morrien.voodoo.util.BindingUtil;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
