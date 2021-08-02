@@ -7,6 +7,7 @@ import de.morrien.voodoo.command.VoodooCommand;
 import de.morrien.voodoo.item.ItemRegistry;
 import de.morrien.voodoo.util.BindingUtil;
 import de.morrien.voodoo.util.PoppetUtil;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.PotionEntity;
@@ -15,6 +16,8 @@ import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.EffectType;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
@@ -94,7 +97,8 @@ public class VoodooEvents {
                     durabilityCost = usePoppet(poppet, durabilityCost);
                 }
             }
-            if (player.getHealth() - event.getAmount() <= 0 && COMMON.deathProtection.enabled.get()) {
+            float percentage = ((float) durabilityCost) / ((float) originalDurabilityCost);
+            if (player.getHealth() - event.getAmount() * percentage <= 0 && COMMON.deathProtection.enabled.get()) {
                 Poppet poppet = Poppet.getPlayerPoppet(player, DEATH_PROTECTION);
                 if (poppet != null) {
                     poppet.use();
@@ -111,7 +115,6 @@ public class VoodooEvents {
                 doSpecialActions(event);
                 event.setCanceled(true);
                 if (durabilityCost > 0) {
-                    float percentage = ((float) durabilityCost) / ((float) originalDurabilityCost);
                     player.hurt(damageSource, event.getAmount() * percentage);
                 }
             }
@@ -120,7 +123,7 @@ public class VoodooEvents {
 
     private static int usePoppet(Poppet poppet, int durabilityCost) {
         final int currentDamage = poppet.getStack().getDamageValue();
-        final int maxDamage = poppet.getStack().getMaxDamage();
+        final int maxDamage = Math.max(1, poppet.getStack().getMaxDamage());
         final int remaining = maxDamage - currentDamage;
         if (remaining < durabilityCost) {
             poppet.use(remaining);
@@ -138,7 +141,7 @@ public class VoodooEvents {
         if (damageSource.getDirectEntity() instanceof PotionEntity && COMMON.potionProtection.enabled.get())
             return (int) Math.ceil(event.getAmount() / 3);
         if (damageSource == FALL && COMMON.fallProtection.enabled.get())
-            return (int) Math.min(event.getAmount(), Math.ceil(Math.log(event.getAmount()) * 3));
+            return (int) Math.min(event.getAmount(), Math.ceil(Math.log(event.getAmount())*3));
         if (damageSource.isProjectile() && COMMON.projectileProtection.enabled.get())
             return 1;
         if (damageSource.isFire() && COMMON.fireProtection.enabled.get())

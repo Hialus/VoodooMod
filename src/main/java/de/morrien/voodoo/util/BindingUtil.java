@@ -40,7 +40,7 @@ public class BindingUtil {
      * This is used for the binding crafting recipe.
      *
      * @param from The source (Taglock Kit)
-     * @param to   The target (Poppet)
+     * @param to The target (Poppet)
      */
     public static void transfer(ItemStack from, ItemStack to) {
         if (!isBound(from)) return;
