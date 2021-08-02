@@ -18,6 +18,7 @@ import net.minecraft.potion.EffectType;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
@@ -205,18 +206,26 @@ public class VoodooEvents {
 
         if (damageSource == OUT_OF_WORLD && player.getY() < 0 && COMMON.voidProtection.enabled.get()) {
             player.fallDistance = 0;
-            BlockPos spawnPos = ((ServerPlayerEntity) player).getRespawnPosition();
+            final ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
+            BlockPos spawnPos = serverPlayer.getRespawnPosition();
+            ServerWorld serverWorld = serverPlayer.server.getLevel(serverPlayer.getRespawnDimension());
+            if (serverWorld == null)
+                serverWorld = serverPlayer.server.overworld();
             if (spawnPos == null) {
                 spawnPos = new BlockPos(
-                        player.level.getLevelData().getXSpawn(),
-                        player.level.getLevelData().getYSpawn(),
-                        player.level.getLevelData().getZSpawn()
+                        serverWorld.getLevelData().getXSpawn(),
+                        serverWorld.getLevelData().getYSpawn(),
+                        serverWorld.getLevelData().getZSpawn()
                 );
             }
-            player.teleportTo(
+            serverPlayer.teleportTo(
+                    serverWorld,
                     spawnPos.getX(),
                     spawnPos.getY() + 1,
-                    spawnPos.getZ());
+                    spawnPos.getZ(),
+                    serverPlayer.xRot,
+                    serverPlayer.yRot
+            );
         }
     }
 
@@ -244,74 +253,4 @@ public class VoodooEvents {
             suitablePoppets.add(VOID_PROTECTION);
         return suitablePoppets;
     }
-
-    //@SubscribeEvent(priority = EventPriority.HIGH)
-    //public static void onLivingAttack(LivingAttackEvent event) {
-    //    if (event.isCanceled() || event.getEntity().level.isClientSide) return;
-    //    DamageSource damageSource = event.getSource();
-    //    if (event.getEntity() instanceof PlayerEntity && !((PlayerEntity) event.getEntity()).isCreative()) {
-    //        PlayerEntity player = (PlayerEntity) event.getEntity();
-//
-    //        List<Poppet.PoppetType> protectionPoppetTypes = getProtectionPoppets(damageSource);
-//
-    //        for (Poppet.PoppetType poppetType : protectionPoppetTypes) {
-    //            Poppet poppet = Poppet.getPlayerPoppet(player, poppetType);
-    //            if (poppet != null && event.getAmount() > 0) {
-    //                if (damageSource.isFire()) {
-    //                    if (player.tickCount % 20 == 0)
-    //                        poppet.use();
-    //                    if (damageSource instanceof VoodooDamageSource)
-    //                        player.clearFire();
-    //                } else if (damageSource == FALL) {
-    //                    float amount = event.getAmount();
-    //                    poppet.use((int) amount / 2);
-    //                } else if (damageSource.getDirectEntity() instanceof PotionEntity) {
-    //                    poppet.use((int) Math.ceil(event.getAmount() / 3));
-    //                } else if (damageSource == DROWN) {
-    //                    player.setAirSupply(150);
-    //                    poppet.use();
-    //                } else if (damageSource == STARVE) {
-    //                    player.getFoodData().setFoodLevel(20);
-    //                    poppet.use();
-    //                } else if (poppetType == VOID_PROTECTION) {
-    //                    if (player.getY() < 0) {
-    //                        player.fallDistance = 0;
-    //                        BlockPos spawnPos = ((ServerPlayerEntity) player).getRespawnPosition();
-    //                        if (spawnPos == null) {
-    //                            spawnPos = new BlockPos(
-    //                                    player.level.getLevelData().getXSpawn(),
-    //                                    player.level.getLevelData().getYSpawn(),
-    //                                    player.level.getLevelData().getZSpawn()
-    //                            );
-    //                        }
-    //                        player.teleportTo(
-    //                                spawnPos.getX(),
-    //                                spawnPos.getY() + 1,
-    //                                spawnPos.getZ());
-    //                    }
-    //                    poppet.use();
-    //                } else {
-    //                    poppet.use();
-    //                }
-    //                event.setCanceled(true);
-    //                return;
-    //            }
-    //        }
-    //        if (player.getHealth() - event.getAmount() <= 0 && COMMON.deathProtection.enabled.get()) {
-    //            Poppet poppet = Poppet.getPlayerPoppet(player, DEATH_PROTECTION);
-    //            if (poppet != null) {
-    //                poppet.use();
-    //                event.setCanceled(true);
-    //                event.getEntity().hurt(new DamageSource("death_protection_info"), 0.0001f);
-//
-    //                player.setHealth(player.getMaxHealth() / 2);
-    //                player.removeAllEffects();
-    //                player.addEffect(new EffectInstance(Effects.REGENERATION, 900, 1));
-    //                player.addEffect(new EffectInstance(Effects.ABSORPTION, 100, 1));
-    //                player.addEffect(new EffectInstance(Effects.FIRE_RESISTANCE, 800, 0));
-    //                player.level.broadcastEntityEvent(player, (byte) 35);
-    //            }
-    //        }
-    //    }
-    //}
 }
