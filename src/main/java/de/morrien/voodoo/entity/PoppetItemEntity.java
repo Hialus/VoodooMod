@@ -15,16 +15,16 @@ import net.minecraft.world.World;
 /**
  * Created by Timor Morrien
  */
-public class EntityPoppetItem extends ItemEntity {
-    public EntityPoppetItem(World world) {
+public class PoppetItemEntity extends ItemEntity {
+    public PoppetItemEntity(World world) {
         this(EntityType.ITEM, world);
     }
 
-    public EntityPoppetItem(EntityType<? extends ItemEntity> entityType, World world) {
+    public PoppetItemEntity(EntityType<? extends ItemEntity> entityType, World world) {
         super(entityType, world);
     }
 
-    public EntityPoppetItem(World world, ItemEntity base, ItemStack stack) {
+    public PoppetItemEntity(World world, ItemEntity base, ItemStack stack) {
         super(world, base.getX(), base.getY(), base.getZ(), stack);
         this.setPickUpDelay(40);
         this.setThrower(base.getThrower());

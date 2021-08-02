@@ -128,7 +128,7 @@ public class VoodooConfig {
                 super(builder,
                         "Voodoo Protection Poppet",
                         "voodoo_protection_poppet",
-                        20
+                        1
                 );
             }
         }

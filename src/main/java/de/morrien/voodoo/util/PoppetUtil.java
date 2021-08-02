@@ -38,8 +38,8 @@ public class PoppetUtil {
                 playerEntity.level.playSound(null, playerEntity, SoundEvents.TOTEM_USE, SoundCategory.PLAYERS, 1, 1);
             });
         } else {
-            voodooPoppet.shrink(1);
             source.level.playSound(null, source, SoundEvents.TOTEM_USE, SoundCategory.PLAYERS, 1, 1);
+            voodooPoppet.shrink(1);
         }
     }
 

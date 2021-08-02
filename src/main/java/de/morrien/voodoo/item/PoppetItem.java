@@ -4,7 +4,7 @@ import de.morrien.voodoo.Poppet;
 import de.morrien.voodoo.VoodooConfig;
 import de.morrien.voodoo.VoodooDamageSource;
 import de.morrien.voodoo.VoodooGroup;
-import de.morrien.voodoo.entity.EntityPoppetItem;
+import de.morrien.voodoo.entity.PoppetItemEntity;
 import de.morrien.voodoo.util.PoppetUtil;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -59,7 +59,7 @@ public class PoppetItem extends Item {
     @Nullable
     @Override
     public Entity createEntity(World world, Entity itemEntity, ItemStack itemstack) {
-        return new EntityPoppetItem(world, (ItemEntity) itemEntity, itemstack);
+        return new PoppetItemEntity(world, (ItemEntity) itemEntity, itemstack);
     }
 
     @Override
