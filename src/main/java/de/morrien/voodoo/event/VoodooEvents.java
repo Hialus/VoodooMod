@@ -184,7 +184,7 @@ public class VoodooEvents {
         if (damageSource == STARVE && COMMON.hungerProtection.enabled.get())
             player.getFoodData().setFoodLevel(20);
         if (damageSource.isProjectile() && damageSource.getDirectEntity() instanceof AbstractArrowEntity && COMMON.projectileProtection.enabled.get())
-            event.getEntity().remove();
+            damageSource.getDirectEntity().remove();
 
         if (damageSource instanceof VoodooDamageSource && COMMON.voodooProtection.enabled.get()) {
             final VoodooDamageSource voodooDamageSource = (VoodooDamageSource) damageSource;
