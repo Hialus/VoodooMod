@@ -94,13 +94,13 @@ public class RecipeGen extends RecipeProvider {
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(ItemRegistry.poppetMap.get(FIRE_PROTECTION).get())
-                .pattern("MFM")
+                .pattern("GFG")
                 .pattern("BPB")
                 .pattern("RNR")
                 .define('P', ItemRegistry.poppetMap.get(BLANK).get())
                 .define('N', ItemRegistry.needle.get())
                 .define('R', RABBIT_HIDE)
-                .define('M', MAGMA_CREAM)
+                .define('G', Tags.Items.INGOTS_GOLD)
                 .define('F', FIRE_CHARGE)
                 .define('B', BLAZE_ROD)
                 .unlockedBy("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
@@ -122,14 +122,14 @@ public class RecipeGen extends RecipeProvider {
 
         ShapedRecipeBuilder.shaped(ItemRegistry.poppetMap.get(WATER_PROTECTION).get())
                 .pattern("SFS")
-                .pattern("GPG")
+                .pattern("KPK")
                 .pattern("RNR")
                 .define('P', ItemRegistry.poppetMap.get(BLANK).get())
                 .define('N', ItemRegistry.needle.get())
                 .define('R', RABBIT_HIDE)
                 .define('F', Ingredient.of(SALMON_BUCKET, COD_BUCKET, PUFFERFISH_BUCKET, TROPICAL_FISH_BUCKET))
                 .define('S', SEA_PICKLE)
-                .define('G', SEAGRASS)
+                .define('K', KELP)
                 .unlockedBy("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
                 .unlockedBy("entered_water", insideOf(Blocks.WATER))
                 .save(consumer);
@@ -144,7 +144,7 @@ public class RecipeGen extends RecipeProvider {
                 .define('M', MILK_BUCKET)
                 .define('C', Ingredient.of(COAL, CHARCOAL))
                 .define('B', BONE_BLOCK)
-                .define('H', Ingredient.of(PotionUtils.setPotion(new ItemStack(POTION), Potions.HEALING)))
+                .define('H', GOLDEN_APPLE)
                 .unlockedBy("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
                 .unlockedBy("entered_nether", ChangeDimensionTrigger.Instance.changedDimensionTo(World.NETHER))
                 .save(consumer);
@@ -159,7 +159,7 @@ public class RecipeGen extends RecipeProvider {
                 .define('M', MILK_BUCKET)
                 .define('G', GLISTERING_MELON_SLICE)
                 .define('C', GOLDEN_CARROT)
-                .define('H', Ingredient.of(PotionUtils.setPotion(new ItemStack(POTION), Potions.HEALING)))
+                .define('H', GOLDEN_APPLE)
                 .unlockedBy("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
                 .unlockedBy("brewed_potion", BrewedPotionTrigger.Instance.brewedPotion())
                 .save(consumer);

@@ -1,7 +1,7 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "MFM",
+    "GFG",
     "BPB",
     "RNR"
   ],
@@ -15,8 +15,8 @@
     "R": {
       "item": "minecraft:rabbit_hide"
     },
-    "M": {
-      "item": "minecraft:magma_cream"
+    "G": {
+      "tag": "forge:ingots/gold"
     },
     "F": {
       "item": "minecraft:fire_charge"

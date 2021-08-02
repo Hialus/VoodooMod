@@ -2,7 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "SFS",
-    "GPG",
+    "KPK",
     "RNR"
   ],
   "key": {
@@ -32,8 +32,8 @@
     "S": {
       "item": "minecraft:sea_pickle"
     },
-    "G": {
-      "item": "minecraft:seagrass"
+    "K": {
+      "item": "minecraft:kelp"
     }
   },
   "result": {
