@@ -148,7 +148,7 @@ public class VoodooConfig {
                 super(builder,
                         "Fire Protection Poppet",
                         "fire_protection_poppet",
-                        40
+                        10
                 );
             }
         }

@@ -44,40 +44,60 @@ public class VoodooEvents {
 
     @SubscribeEvent
     public static void onTickPlayerTick(TickEvent.PlayerTickEvent event) {
-        PlayerEntity player = event.player;
+        checkPotionEffects(event.player);
+        checkFoodStatus(event.player);
+    }
+
+    private static void checkPotionEffects(PlayerEntity player) {
         for (Iterator<EffectInstance> iterator = player.getActiveEffects().iterator(); iterator.hasNext(); ) {
             EffectInstance potionEffect = iterator.next();
             if (potionEffect.getEffect().getCategory() == EffectType.HARMFUL) {
                 if (potionEffect.getEffect() == Effects.WITHER) {
-                    if (!COMMON.witherProtection.enabled.get()) continue;
-                    Poppet witherPoppet = Poppet.getPlayerPoppet(player, WITHER_PROTECTION);
-                    if (witherPoppet != null) {
-                        player.removeEffect(potionEffect.getEffect());
-                        witherPoppet.use();
-                    }
+                    removeWitherEffect(player, potionEffect);
                 } else {
-                    if (!COMMON.potionProtection.enabled.get()) continue;
-                    int durabilityCost = potionEffect.getAmplifier() + 1;
-                    while (durabilityCost > 0) {
-                        Poppet poppet = Poppet.getPlayerPoppet(player, POTION_PROTECTION);
-                        if (poppet == null) break;
-                        durabilityCost = usePoppet(poppet, durabilityCost);
-                    }
-                    player.removeEffect(potionEffect.getEffect());
-                    if (durabilityCost > 0) {
-                        final EffectInstance effectInstance = new EffectInstance(
-                                potionEffect.getEffect(),
-                                potionEffect.getDuration(),
-                                durabilityCost - 1,
-                                potionEffect.isAmbient(),
-                                potionEffect.isVisible(),
-                                potionEffect.showIcon()
-                        );
-                        player.addEffect(effectInstance);
-                    }
+                    removePotionEffect(player, potionEffect);
                 }
             }
         }
+    }
+
+    private static void removeWitherEffect(PlayerEntity player, EffectInstance potionEffect) {
+        if (!COMMON.witherProtection.enabled.get()) return;
+        Poppet witherPoppet = Poppet.getPlayerPoppet(player, WITHER_PROTECTION);
+        if (witherPoppet != null) {
+            player.removeEffect(potionEffect.getEffect());
+            witherPoppet.use();
+        }
+    }
+
+    private static void removePotionEffect(PlayerEntity player, EffectInstance potionEffect) {
+        if (!COMMON.potionProtection.enabled.get()) return;
+        int durabilityCost = potionEffect.getAmplifier() + 1;
+        while (durabilityCost > 0) {
+            Poppet poppet = Poppet.getPlayerPoppet(player, POTION_PROTECTION);
+            if (poppet == null) break;
+            durabilityCost = usePoppet(poppet, durabilityCost);
+        }
+        player.removeEffect(potionEffect.getEffect());
+        if (durabilityCost > 0) {
+            final EffectInstance effectInstance = new EffectInstance(
+                    potionEffect.getEffect(),
+                    potionEffect.getDuration(),
+                    durabilityCost - 1,
+                    potionEffect.isAmbient(),
+                    potionEffect.isVisible(),
+                    potionEffect.showIcon()
+            );
+            player.addEffect(effectInstance);
+        }
+    }
+
+    private static void checkFoodStatus(PlayerEntity player) {
+        if (player.getFoodData().getFoodLevel() > 10) return;
+        final Poppet hungerPoppet = Poppet.getPlayerPoppet(player, HUNGER_PROTECTION);
+        if (hungerPoppet == null) return;
+        player.addEffect(new EffectInstance(Effects.SATURATION, 60, 1));
+        usePoppet(hungerPoppet, 1);
     }
 
     @SubscribeEvent
@@ -179,8 +199,6 @@ public class VoodooEvents {
             return 1;
         if (damageSource == DROWN && COMMON.waterProtection.enabled.get())
             return 1;
-        if (damageSource == STARVE && COMMON.hungerProtection.enabled.get())
-            return 1;
         if (damageSource == OUT_OF_WORLD && COMMON.voidProtection.enabled.get())
             return 1;
         return 0;
@@ -190,14 +208,19 @@ public class VoodooEvents {
         final DamageSource damageSource = event.getSource();
         final PlayerEntity player = (PlayerEntity) event.getEntity();
 
-        if (damageSource.isFire())
+        if (damageSource.isFire()) {
             event.getEntity().clearFire();
-        if (damageSource == DROWN && COMMON.waterProtection.enabled.get())
-            player.setAirSupply(150);
-        if (damageSource == STARVE && COMMON.hungerProtection.enabled.get())
-            player.getFoodData().setFoodLevel(20);
-        if (damageSource.isProjectile() && damageSource.getDirectEntity() instanceof AbstractArrowEntity && COMMON.projectileProtection.enabled.get())
+            ((PlayerEntity) event.getEntity()).addEffect(new EffectInstance(Effects.FIRE_RESISTANCE, 10, 0));
+        }
+
+        if (damageSource == DROWN && COMMON.waterProtection.enabled.get()) {
+            player.setAirSupply(300);
+            ((PlayerEntity) event.getEntity()).addEffect(new EffectInstance(Effects.WATER_BREATHING, 20, 0));
+        }
+
+        if (damageSource.isProjectile() && damageSource.getDirectEntity() instanceof AbstractArrowEntity && COMMON.projectileProtection.enabled.get()) {
             damageSource.getDirectEntity().remove();
+        }
 
         if (damageSource instanceof VoodooDamageSource && COMMON.voodooProtection.enabled.get()) {
             final VoodooDamageSource voodooDamageSource = (VoodooDamageSource) damageSource;
