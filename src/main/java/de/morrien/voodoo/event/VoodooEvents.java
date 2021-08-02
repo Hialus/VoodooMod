@@ -96,7 +96,7 @@ public class VoodooEvents {
         if (player.getFoodData().getFoodLevel() > 10) return;
         final Poppet hungerPoppet = Poppet.getPlayerPoppet(player, HUNGER_PROTECTION);
         if (hungerPoppet == null) return;
-        player.addEffect(new EffectInstance(Effects.SATURATION, 60, 1));
+        player.addEffect(new EffectInstance(Effects.SATURATION, 60 * 20, 1));
         usePoppet(hungerPoppet, 1);
     }
 
@@ -155,9 +155,9 @@ public class VoodooEvents {
                 durabilityCost = 0;
                 player.setHealth(player.getMaxHealth() / 2);
                 player.removeAllEffects();
-                player.addEffect(new EffectInstance(Effects.REGENERATION, 900, 1));
-                player.addEffect(new EffectInstance(Effects.ABSORPTION, 100, 1));
-                player.addEffect(new EffectInstance(Effects.FIRE_RESISTANCE, 800, 0));
+                player.addEffect(new EffectInstance(Effects.REGENERATION, 45 * 20, 1));
+                player.addEffect(new EffectInstance(Effects.ABSORPTION, 5 * 20, 1));
+                player.addEffect(new EffectInstance(Effects.FIRE_RESISTANCE, 40 * 20, 0));
                 player.level.broadcastEntityEvent(player, (byte) 35);
             }
         }
@@ -210,12 +210,12 @@ public class VoodooEvents {
 
         if (damageSource.isFire()) {
             event.getEntity().clearFire();
-            ((PlayerEntity) event.getEntity()).addEffect(new EffectInstance(Effects.FIRE_RESISTANCE, 10, 0));
+            ((PlayerEntity) event.getEntity()).addEffect(new EffectInstance(Effects.FIRE_RESISTANCE, 10 * 20, 0));
         }
 
         if (damageSource == DROWN && COMMON.waterProtection.enabled.get()) {
             player.setAirSupply(300);
-            ((PlayerEntity) event.getEntity()).addEffect(new EffectInstance(Effects.WATER_BREATHING, 20, 0));
+            ((PlayerEntity) event.getEntity()).addEffect(new EffectInstance(Effects.WATER_BREATHING, 20 * 20, 0));
         }
 
         if (damageSource.isProjectile() && damageSource.getDirectEntity() instanceof AbstractArrowEntity && COMMON.projectileProtection.enabled.get()) {
