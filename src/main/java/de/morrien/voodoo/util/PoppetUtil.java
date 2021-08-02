@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 public class PoppetUtil {
     private static final Cache<UUID, List<WeakReference<PoppetShelfTileEntity>>> poppetShelvesCache;
-    private static final WeakHashMap<PoppetShelfTileEntity, Set<Poppet>> poppetCache;
+    private static final WeakHashMap<PoppetShelfTileEntity, List<Poppet>> poppetCache;
 
     static {
         poppetShelvesCache = CacheBuilder.newBuilder()
@@ -49,15 +49,15 @@ public class PoppetUtil {
      * @param player The player
      * @return The found poppets
      */
-    public static Set<Poppet> getPoppetsInInventory(PlayerEntity player) {
-        Set<ItemStack> playerItems = new HashSet<>();
+    public static List<Poppet> getPoppetsInInventory(PlayerEntity player) {
+        List<ItemStack> playerItems = new ArrayList<>();
         playerItems.addAll(player.inventory.offhand);
         playerItems.addAll(player.inventory.items);
         return playerItems.stream()
                 .filter(stack -> stack.getItem() instanceof PoppetItem)
                 .filter(stack -> player.getUUID().equals(BindingUtil.getBoundUUID(stack)))
                 .map(stack -> new Poppet(player, (PoppetItem) stack.getItem(), stack))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
     /**
@@ -67,7 +67,7 @@ public class PoppetUtil {
      * @param player The player
      * @return The found poppets
      */
-    public static Set<Poppet> getPoppetsInShelves(PlayerEntity player) {
+    public static List<Poppet> getPoppetsInShelves(PlayerEntity player) {
         List<WeakReference<PoppetShelfTileEntity>> cachedShelves = poppetShelvesCache.getIfPresent(player.getUUID());
         if (cachedShelves == null) {
             final World world = player.level;
@@ -77,7 +77,7 @@ public class PoppetUtil {
                     .collect(Collectors.toList());
             poppetShelvesCache.put(player.getUUID(), cachedShelves);
         }
-        final Set<Poppet> poppets = new HashSet<>();
+        final List<Poppet> poppets = new ArrayList<>();
         for (Iterator<WeakReference<PoppetShelfTileEntity>> iterator = cachedShelves.iterator(); iterator.hasNext(); ) {
             WeakReference<PoppetShelfTileEntity> cachedShelf = iterator.next();
             final PoppetShelfTileEntity poppetShelf = cachedShelf.get();
@@ -85,17 +85,17 @@ public class PoppetUtil {
                 iterator.remove();
                 continue;
             }
-            Set<Poppet> poppetSet = poppetCache.get(poppetShelf);
-            if (poppetSet == null) {
-                poppetSet = poppetShelf
+            List<Poppet> poppetList = poppetCache.get(poppetShelf);
+            if (poppetList == null) {
+                poppetList = poppetShelf
                         .getInventory()
                         .stream()
                         .filter(stack -> player.getUUID().equals(BindingUtil.getBoundUUID(stack)))
                         .map(stack -> new Poppet(player, (PoppetItem) stack.getItem(), stack))
-                        .collect(Collectors.toSet());
-                poppetCache.put(poppetShelf, poppetSet);
+                        .collect(Collectors.toList());
+                poppetCache.put(poppetShelf, poppetList);
             }
-            poppets.addAll(poppetSet);
+            poppets.addAll(poppetList);
         }
         return poppets;
     }
