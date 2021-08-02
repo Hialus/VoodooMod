@@ -1,10 +1,9 @@
 package de.morrien.voodoo.item;
 
 import de.morrien.voodoo.VoodooGroup;
-import de.morrien.voodoo.VoodooUtil;
+import de.morrien.voodoo.util.BindingUtil;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -19,16 +18,14 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
 
-import static de.morrien.voodoo.VoodooUtil.*;
+import static de.morrien.voodoo.util.BindingUtil.*;
 
 /**
  * Created by Timor Morrien
@@ -85,8 +82,8 @@ public class TaglockKitItem extends Item {
                 if (!stack.hasTag()) {
                     stack.setTag(new CompoundNBT());
                 }
-                if (!VoodooUtil.isBound(stack)) {
-                    VoodooUtil.bind(stack, player);
+                if (!BindingUtil.isBound(stack)) {
+                    BindingUtil.bind(stack, player);
                     return new ActionResult<>(ActionResultType.SUCCESS, stack);
                 }
             }

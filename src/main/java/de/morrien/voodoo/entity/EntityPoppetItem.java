@@ -2,7 +2,7 @@ package de.morrien.voodoo.entity;
 
 import de.morrien.voodoo.VoodooConfig;
 import de.morrien.voodoo.VoodooDamageSource;
-import de.morrien.voodoo.VoodooUtil;
+import de.morrien.voodoo.util.BindingUtil;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.ItemEntity;
@@ -44,10 +44,10 @@ public class EntityPoppetItem extends ItemEntity {
     public boolean hurt(DamageSource source, float amount) {
         if (source.isFire()) {
             if (VoodooConfig.COMMON.voodoo.enableFire.get()) {
-                PlayerEntity boundPlayer = VoodooUtil.getBoundPlayer(getItem(), level);
+                PlayerEntity boundPlayer = BindingUtil.getBoundPlayer(getItem(), level);
                 if (boundPlayer != null) {
                     boundPlayer.setSecondsOnFire(1);
-                    boundPlayer.hurt(new VoodooDamageSource(VoodooDamageSource.VoodooDamageType.FIRE), amount);
+                    boundPlayer.hurt(new VoodooDamageSource(VoodooDamageSource.VoodooDamageType.FIRE, getItem(), this), amount);
                     this.getItem().hurtAndBreak(VoodooConfig.COMMON.voodoo.fireDurabilityCost.get(), boundPlayer, (e) -> {
                         this.remove();
                     });
@@ -68,16 +68,16 @@ public class EntityPoppetItem extends ItemEntity {
         if (this.level.isClientSide) return;
         if (!this.isInWaterOrBubble()) return;
         if (!VoodooConfig.COMMON.voodoo.enableDrowning.get()) return;
-        if (!VoodooUtil.isBound(this.getItem())) return;
-        final PlayerEntity boundPlayer = VoodooUtil.getBoundPlayer(this.getItem(), this.level);
+        if (!BindingUtil.isBound(this.getItem())) return;
+        final PlayerEntity boundPlayer = BindingUtil.getBoundPlayer(this.getItem(), this.level);
         if (boundPlayer == null) return;
         if (boundPlayer.isInvulnerable()) return;
         if (boundPlayer.canBreatheUnderwater() || EffectUtils.hasWaterBreathing(boundPlayer)) return;
         this.decreaseAirSupply(boundPlayer);
         if (boundPlayer.getAirSupply() > -40) return;
         boundPlayer.setAirSupply(0);
-        boundPlayer.hurt(DamageSource.DROWN, 2.0F);
-        this.getItem().hurtAndBreak(VoodooConfig.COMMON.voodoo.drownDurabilityCost.get(), boundPlayer, (e) -> boundPlayer.broadcastBreakEvent(boundPlayer.getUsedItemHand()));
+        if (boundPlayer.hurt(new VoodooDamageSource(VoodooDamageSource.VoodooDamageType.WATER, getItem(), this), 2.0F))
+            this.getItem().hurtAndBreak(VoodooConfig.COMMON.voodoo.drownDurabilityCost.get(), boundPlayer, (e) -> boundPlayer.broadcastBreakEvent(boundPlayer.getUsedItemHand()));
     }
 
     /**

@@ -1,15 +1,12 @@
 package de.morrien.voodoo.recipe;
 
-import de.morrien.voodoo.Poppet;
-import de.morrien.voodoo.VoodooUtil;
 import de.morrien.voodoo.item.ItemRegistry;
 import de.morrien.voodoo.item.PoppetItem;
-import de.morrien.voodoo.item.TaglockKitItem;
+import de.morrien.voodoo.util.BindingUtil;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.SpecialRecipe;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
@@ -46,10 +43,10 @@ public class BindPoppetRecipe extends SpecialRecipe {
             itemStack2 = tmp;
         }
         return itemStack1.getItem() == ItemRegistry.taglockKit.get() &&
-                VoodooUtil.isBound(itemStack1) &&
+                BindingUtil.isBound(itemStack1) &&
                 itemStack2.getItem() instanceof PoppetItem &&
                 !itemStack2.getItem().equals(ItemRegistry.poppetMap.get(BLANK).get()) &&
-                !VoodooUtil.isBound(itemStack2);
+                !BindingUtil.isBound(itemStack2);
     }
 
     @Override
@@ -63,7 +60,7 @@ public class BindPoppetRecipe extends SpecialRecipe {
             itemStack2 = tmp;
         }
         ItemStack boundPoppet = new ItemStack(itemStack2.getItem());
-        VoodooUtil.transfer(itemStack1, boundPoppet);
+        BindingUtil.transfer(itemStack1, boundPoppet);
         return boundPoppet;
     }
 

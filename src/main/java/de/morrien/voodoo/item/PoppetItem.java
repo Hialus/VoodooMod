@@ -5,6 +5,7 @@ import de.morrien.voodoo.VoodooConfig;
 import de.morrien.voodoo.VoodooDamageSource;
 import de.morrien.voodoo.VoodooGroup;
 import de.morrien.voodoo.entity.EntityPoppetItem;
+import de.morrien.voodoo.util.PoppetUtil;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -24,7 +25,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import static de.morrien.voodoo.Poppet.PoppetType.BLANK;
-import static de.morrien.voodoo.VoodooUtil.*;
+import static de.morrien.voodoo.util.BindingUtil.*;
 
 /**
  * Created by Timor Morrien
@@ -79,20 +80,22 @@ public class PoppetItem extends Item {
             if (boundPlayer != null) {
                 ItemStack offhand = livingEntity.getOffhandItem();
                 if (VoodooConfig.COMMON.voodoo.enableNeedle.get() && !offhand.isEmpty() && offhand.getItem() == ItemRegistry.needle.get()) {
-                    boundPlayer.hurt(new VoodooDamageSource(VoodooDamageSource.VoodooDamageType.NEEDLE), 1f);
                     offhand.shrink(1);
-                    stack.hurtAndBreak(VoodooConfig.COMMON.voodoo.needleDurabilityCost.get(), livingEntity, (e) -> {
-                        player.broadcastBreakEvent(player.getUsedItemHand());
-                    });
+                    if (boundPlayer.hurt(new VoodooDamageSource(VoodooDamageSource.VoodooDamageType.NEEDLE, stack, player), 1f)) {
+                        stack.hurtAndBreak(VoodooConfig.COMMON.voodoo.needleDurabilityCost.get(), livingEntity, (e) -> {
+                            player.broadcastBreakEvent(player.getUsedItemHand());
+                        });
+                    }
                 } else if (VoodooConfig.COMMON.voodoo.enablePush.get()) {
                     Poppet voodooProtectionPoppet = Poppet.getPlayerPoppet(boundPlayer, Poppet.PoppetType.VOODOO_PROTECTION);
-                    stack.hurtAndBreak(VoodooConfig.COMMON.voodoo.pushDurabilityCost.get(), livingEntity, (e) -> {
-                        player.broadcastBreakEvent(player.getUsedItemHand());
-                    });
+
                     if (voodooProtectionPoppet != null) {
+                        PoppetUtil.useVoodooProtectionPuppet(stack, livingEntity);
                         voodooProtectionPoppet.use();
-                        player.displayClientMessage(new TranslationTextComponent("text.voodoo.voodoo_protection.had", boundPlayer.getName()), true);
                     } else {
+                        stack.hurtAndBreak(VoodooConfig.COMMON.voodoo.pushDurabilityCost.get(), livingEntity, (e) -> {
+                            player.broadcastBreakEvent(player.getUsedItemHand());
+                        });
                         Vector3d vec = player.getLookAngle();
                         boundPlayer.push(vec.x * 1.5, vec.y * 1.2, vec.z * 1.5);
                         boundPlayer.hurtMarked = true;

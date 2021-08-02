@@ -5,6 +5,7 @@ import de.morrien.voodoo.Poppet;
 import de.morrien.voodoo.item.PoppetItem;
 import de.morrien.voodoo.network.PoppetShelfSyncUpdate;
 import de.morrien.voodoo.network.VoodooNetwork;
+import de.morrien.voodoo.util.PoppetUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -43,6 +44,7 @@ public class PoppetShelfTileEntity extends TileEntity implements IInventory, ITi
 
     public PoppetShelfTileEntity() {
         super(TileEntityTypeRegistry.poppetShelfTileEntity.get());
+        PoppetUtil.invalidateShelvesCache();
     }
 
     @Override
@@ -170,6 +172,7 @@ public class PoppetShelfTileEntity extends TileEntity implements IInventory, ITi
             this.setChanged();
         }
         this.inventoryTouched = true;
+        PoppetUtil.invalidateShelfCache(this);
 
         return itemstack;
     }
@@ -177,6 +180,7 @@ public class PoppetShelfTileEntity extends TileEntity implements IInventory, ITi
     @Override
     public ItemStack removeItemNoUpdate(int index) {
         this.inventoryTouched = true;
+        PoppetUtil.invalidateShelfCache(this);
         return ItemStackHelper.takeItem(inventory, index);
     }
 
@@ -189,6 +193,7 @@ public class PoppetShelfTileEntity extends TileEntity implements IInventory, ITi
     public void setItem(int index, ItemStack stack) {
         inventory.set(index, stack);
         this.inventoryTouched = true;
+        PoppetUtil.invalidateShelfCache(this);
         this.setChanged();
     }
 
@@ -204,10 +209,14 @@ public class PoppetShelfTileEntity extends TileEntity implements IInventory, ITi
     @Override
     public void clearContent() {
         inventory.clear();
+        this.inventoryTouched = true;
+        PoppetUtil.invalidateShelfCache(this);
     }
 
     public void updateInventory(NonNullList<ItemStack> itemStacks) {
         this.inventory = itemStacks;
+        this.inventoryTouched = true;
+        PoppetUtil.invalidateShelfCache(this);
     }
 
     public UUID getOwnerUuid() {

@@ -2,6 +2,7 @@ package de.morrien.voodoo;
 
 import de.morrien.voodoo.item.PoppetItem;
 import de.morrien.voodoo.tileentity.PoppetShelfTileEntity;
+import de.morrien.voodoo.util.BindingUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -41,7 +42,7 @@ public class Poppet {
         playerItems.addAll(player.inventory.items);
         for (ItemStack itemStack : playerItems) {
             Item item = itemStack.getItem();
-            if (item instanceof PoppetItem && player.equals(VoodooUtil.getBoundPlayer(itemStack, player.level))) {
+            if (item instanceof PoppetItem && player.equals(BindingUtil.getBoundPlayer(itemStack, player.level))) {
                 PoppetItem poppetItem = (PoppetItem) item;
                 if (poppetItem.getPoppetType() == poppetType) {
                     return new Poppet(player, poppetItem, itemStack);
@@ -53,7 +54,7 @@ public class Poppet {
         for (TileEntity tileEntity : tileEntities) {
             if (tileEntity instanceof PoppetShelfTileEntity) {
                 Poppet poppet = ((PoppetShelfTileEntity) tileEntity).getPoppet(poppetType);
-                if (poppet != null && player.equals(VoodooUtil.getBoundPlayer(poppet.stack, player.level))) {
+                if (poppet != null && player.equals(BindingUtil.getBoundPlayer(poppet.stack, player.level))) {
                     poppet.player = player;
                     return poppet;
                 }

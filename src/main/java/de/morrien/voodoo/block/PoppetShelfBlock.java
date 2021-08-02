@@ -34,8 +34,6 @@ import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.block.AbstractBlock.Properties;
-
 /**
  * Created by Timor Morrien
  */

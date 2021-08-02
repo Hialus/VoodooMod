@@ -1,6 +1,8 @@
 package de.morrien.voodoo;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -12,10 +14,14 @@ import static de.morrien.voodoo.VoodooDamageSource.VoodooDamageType.FIRE;
  */
 public class VoodooDamageSource extends DamageSource {
     private VoodooDamageType damageType;
+    private ItemStack voodooPoppet;
+    private Entity fromEntity;
 
-    public VoodooDamageSource(VoodooDamageType damageType) {
+    public VoodooDamageSource(VoodooDamageType damageType, ItemStack voodooPoppet, Entity fromEntity) {
         super("voodoo_" + damageType.toString());
         this.damageType = damageType;
+        this.voodooPoppet = voodooPoppet;
+        this.fromEntity = fromEntity;
     }
 
     @Override
@@ -51,6 +57,14 @@ public class VoodooDamageSource extends DamageSource {
     @Override
     public boolean isBypassInvul() {
         return false;
+    }
+
+    public ItemStack getVoodooPoppet() {
+        return voodooPoppet;
+    }
+
+    public Entity getFromEntity() {
+        return fromEntity;
     }
 
     public enum VoodooDamageType {

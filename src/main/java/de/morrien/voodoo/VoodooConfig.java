@@ -1,13 +1,10 @@
 package de.morrien.voodoo;
 
 import net.minecraftforge.common.ForgeConfigSpec;
-import org.apache.commons.lang3.tuple.Pair;
-
-import static net.minecraftforge.common.ForgeConfigSpec.*;
-
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.common.ForgeConfigSpec.Builder;
 import net.minecraftforge.common.ForgeConfigSpec.IntValue;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class VoodooConfig {
     public static final Client CLIENT;

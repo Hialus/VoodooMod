@@ -1,11 +1,10 @@
 package de.morrien.voodoo.event;
 
 import de.morrien.voodoo.Voodoo;
-import de.morrien.voodoo.VoodooUtil;
 import de.morrien.voodoo.container.ContainerRegistry;
 import de.morrien.voodoo.container.PoppetShelfScreen;
 import de.morrien.voodoo.item.ItemRegistry;
-import de.morrien.voodoo.item.TaglockKitItem;
+import de.morrien.voodoo.util.BindingUtil;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.util.ResourceLocation;
@@ -23,7 +22,7 @@ public class ClientEvents {
             ItemModelsProperties.register(
                     ItemRegistry.taglockKit.get(),
                     new ResourceLocation(Voodoo.MOD_ID, "filled"),
-                    (itemStack, clientWorld, livingEntity) -> VoodooUtil.isBound(itemStack) ? 1 : 0
+                    (itemStack, clientWorld, livingEntity) -> BindingUtil.isBound(itemStack) ? 1 : 0
             );
         });
     }

@@ -1,4 +1,4 @@
-package de.morrien.voodoo;
+package de.morrien.voodoo.util;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -7,7 +7,7 @@ import net.minecraft.world.World;
 
 import java.util.UUID;
 
-public class VoodooUtil {
+public class BindingUtil {
     // Constants used for NBT tags
     public static final String BOUND_UUID = "BoundUUID";
     public static final String BOUND_NAME = "BoundName";
@@ -40,7 +40,7 @@ public class VoodooUtil {
      * This is used for the binding crafting recipe.
      *
      * @param from The source (Taglock Kit)
-     * @param to The target (Poppet)
+     * @param to   The target (Poppet)
      */
     public static void transfer(ItemStack from, ItemStack to) {
         if (!isBound(from)) return;

@@ -3,9 +3,9 @@ package de.morrien.voodoo.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import de.morrien.voodoo.VoodooUtil;
 import de.morrien.voodoo.item.PoppetItem;
 import de.morrien.voodoo.tileentity.PoppetShelfTileEntity;
+import de.morrien.voodoo.util.BindingUtil;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.command.arguments.EntityArgument;
@@ -43,7 +43,7 @@ public class ListPoppetsCommand {
         List<ItemStack> playerventory = new ArrayList<>(player.inventory.items);
         playerventory.addAll(player.inventory.offhand);
         for (ItemStack stack : playerventory) {
-            if (!stack.isEmpty() && stack.getItem() instanceof PoppetItem && player.getUUID().equals(VoodooUtil.getBoundUUID(stack))) {
+            if (!stack.isEmpty() && stack.getItem() instanceof PoppetItem && player.getUUID().equals(BindingUtil.getBoundUUID(stack))) {
                 message.append("\n");
                 message.append(new StringTextComponent(
                         counter + ". " + ((PoppetItem) stack.getItem()).getPoppetType().toString() + " (Inventory)")
@@ -56,7 +56,7 @@ public class ListPoppetsCommand {
                 if (tileEntity instanceof PoppetShelfTileEntity) {
                     List<ItemStack> inventory = ((PoppetShelfTileEntity) tileEntity).getInventory();
                     for (ItemStack stack : inventory) {
-                        if (!stack.isEmpty() && player.getUUID().equals(VoodooUtil.getBoundUUID(stack))) {
+                        if (!stack.isEmpty() && player.getUUID().equals(BindingUtil.getBoundUUID(stack))) {
                             message.append("\n");
                             StringTextComponent text = new StringTextComponent(counter + ". " + ((PoppetItem) stack.getItem()).getPoppetType().toString() + " ");
                             StringTextComponent coords = new StringTextComponent("(" + world.dimension().location().getPath() + ": " + tileEntity.getBlockPos().getX() + ", " + tileEntity.getBlockPos().getY() + ", " + tileEntity.getBlockPos().getZ() + ")");
