@@ -61,7 +61,7 @@ public class VoodooEvents {
                     if (!COMMON.potionProtection.enabled.get()) return;
                     Poppet poppet = Poppet.getPlayerPoppet(player, POTION_PROTECTION);
                     if (poppet != null) {
-                        event.setCanceled(true);
+                        player.removeEffect(potionEffect.getEffect());
                         poppet.use(potionEffect.getAmplifier() + 1);
                     }
                 }
@@ -183,7 +183,7 @@ public class VoodooEvents {
             player.setAirSupply(150);
         if (damageSource == STARVE && COMMON.hungerProtection.enabled.get())
             player.getFoodData().setFoodLevel(20);
-        if (damageSource.isProjectile() && event.getEntity() instanceof AbstractArrowEntity && COMMON.projectileProtection.enabled.get())
+        if (damageSource.isProjectile() && damageSource.getDirectEntity() instanceof AbstractArrowEntity && COMMON.projectileProtection.enabled.get())
             event.getEntity().remove();
 
         if (damageSource instanceof VoodooDamageSource && COMMON.voodooProtection.enabled.get()) {
