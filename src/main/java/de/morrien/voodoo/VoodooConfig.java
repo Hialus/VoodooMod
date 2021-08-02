@@ -158,7 +158,7 @@ public class VoodooConfig {
                 super(builder,
                         "Water Protection Poppet",
                         "water_protection_poppet",
-                        20
+                        5
                 );
             }
         }
@@ -168,7 +168,7 @@ public class VoodooConfig {
                 super(builder,
                         "Fall Protection Poppet",
                         "fall_protection_poppet",
-                        50
+                        30
                 );
             }
         }
@@ -178,7 +178,7 @@ public class VoodooConfig {
                 super(builder,
                         "Explosion Protection Poppet",
                         "explosion_protection_poppet",
-                        10
+                        4
                 );
             }
         }
@@ -188,7 +188,7 @@ public class VoodooConfig {
                 super(builder,
                         "Projectile Protection Poppet",
                         "projectile_protection_poppet",
-                        20
+                        10
                 );
             }
         }
@@ -218,7 +218,7 @@ public class VoodooConfig {
                 super(builder,
                         "Potion Protection Poppet",
                         "potion_protection_poppet",
-                        3
+                        6
                 );
             }
         }

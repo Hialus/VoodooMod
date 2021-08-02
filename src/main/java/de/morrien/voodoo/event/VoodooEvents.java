@@ -11,9 +11,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.PotionEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.EffectType;
-import net.minecraft.potion.Effects;
+import net.minecraft.potion.*;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -25,6 +23,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -44,7 +43,8 @@ public class VoodooEvents {
     public static void onTickPlayerTick(TickEvent.PlayerTickEvent event) {
         PlayerEntity player = event.player;
         Poppet poppet = null;
-        for (EffectInstance potionEffect : player.getActiveEffects()) {
+        for (Iterator<EffectInstance> iterator = player.getActiveEffects().iterator(); iterator.hasNext(); ) {
+            EffectInstance potionEffect = iterator.next();
             if (potionEffect.getEffect().getCategory() == EffectType.HARMFUL) {
                 if (potionEffect.getEffect() == Effects.WITHER) {
                     if (!COMMON.witherProtection.enabled.get()) continue;
@@ -70,7 +70,7 @@ public class VoodooEvents {
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onLivingAttack(LivingAttackEvent event) {
-        if (event.isCanceled() || event.getEntity().level.isClientSide) return;
+        if (event.isCanceled() || event.getEntity().level.isClientSide || event.getAmount() == 0) return;
         final DamageSource damageSource = event.getSource();
         if (event.getEntity() instanceof PlayerEntity && !((PlayerEntity) event.getEntity()).isCreative()) {
             final PlayerEntity player = (PlayerEntity) event.getEntity();
@@ -136,7 +136,7 @@ public class VoodooEvents {
         if (damageSource instanceof VoodooDamageSource && COMMON.voodooProtection.enabled.get())
             return 1;
         if (damageSource.getDirectEntity() instanceof PotionEntity && COMMON.potionProtection.enabled.get())
-            return (int) Math.ceil(event.getAmount() / 3);
+            return (int) (Math.log(event.getAmount() / 6) / Math.log(2)) + 1;
         if (damageSource == FALL && COMMON.fallProtection.enabled.get())
             return (int) Math.min(event.getAmount(), Math.ceil(Math.log(event.getAmount()) * 3));
         if (damageSource.isProjectile() && COMMON.projectileProtection.enabled.get())
