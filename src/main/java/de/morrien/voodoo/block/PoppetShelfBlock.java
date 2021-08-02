@@ -78,8 +78,6 @@ public class PoppetShelfBlock extends Block {
                     }
                 };
                 NetworkHooks.openGui((ServerPlayerEntity) player, containerProvider, tileEntity.getBlockPos());
-            } else {
-                throw new IllegalStateException("Our named container provider is missing!");
             }
         }
         return ActionResultType.SUCCESS;

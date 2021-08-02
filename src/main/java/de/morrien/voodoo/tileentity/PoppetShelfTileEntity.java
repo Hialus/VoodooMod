@@ -22,50 +22,62 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 /**
  * Created by Timor Morrien
  */
-public class PoppetShelfTileEntity extends TileEntity implements IInventory, ITickableTileEntity {
+public class PoppetShelfTileEntity extends TileEntity implements ITickableTileEntity {
     private UUID ownerUuid;
     private String ownerName;
     private boolean inventoryTouched;
-    private NonNullList<ItemStack> inventory = NonNullList.withSize(9, ItemStack.EMPTY);
-    private net.minecraftforge.common.util.LazyOptional<?> itemHandler = net.minecraftforge.common.util.LazyOptional.of(() -> createUnSidedHandler());
+    private PoppetShelfItemStackHandler itemHandler;
+    private LazyOptional<IItemHandler> handler;
 
     public PoppetShelfTileEntity() {
         super(TileEntityTypeRegistry.poppetShelfTileEntity.get());
         PoppetUtil.invalidateShelvesCache();
+        this.itemHandler = new PoppetShelfItemStackHandler();
+        this.handler = LazyOptional.of(() -> itemHandler);
     }
 
     @Override
     public void tick() {
         if (!this.level.isClientSide && this.inventoryTouched) {
             this.inventoryTouched = false;
+            this.setChanged();
 
             if (this.level instanceof ServerWorld) {
-                VoodooNetwork.getInstance().sendToClientsAround(new PoppetShelfSyncUpdate(inventory, this.worldPosition), (ServerWorld) this.level, this.worldPosition);
+                VoodooNetwork.getInstance().sendToClientsAround(new PoppetShelfSyncUpdate(itemHandler.serializeNBT(), this.worldPosition), (ServerWorld) this.level, this.worldPosition);
             }
         }
     }
 
     public Poppet getPoppet(Poppet.PoppetType type) {
         for (int i = 0; i < 9; i++) {
-            ItemStack itemStack = getItem(i);
+            ItemStack itemStack = itemHandler.getStackInSlot(i);
             if (itemStack.isEmpty()) continue;
             Item item = itemStack.getItem();
             if (item instanceof PoppetItem) {
                 PoppetItem poppetItem = (PoppetItem) item;
                 if (poppetItem.getPoppetType() == type) {
+                    this.inventoryTouched = true;
                     return new Poppet(this, poppetItem, itemStack);
                 }
             }
@@ -74,25 +86,23 @@ public class PoppetShelfTileEntity extends TileEntity implements IInventory, ITi
     }
 
     public List<ItemStack> getInventory() {
-        final NonNullList<ItemStack> inventory = NonNullList.create();
-        inventory.addAll(this.inventory);
-        return inventory;
+        this.inventoryTouched = true;
+        return itemHandler.getInventory();
     }
 
-    protected net.minecraftforge.items.IItemHandler createUnSidedHandler() {
-        return new net.minecraftforge.items.wrapper.InvWrapper(this);
-    }
-
-    public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(net.minecraftforge.common.capabilities.Capability<T> cap, @javax.annotation.Nullable net.minecraft.util.Direction side) {
-        if (!this.remove && cap == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
-            return itemHandler.cast();
-        return super.getCapability(cap, side);
+    @Nonnull
+    @Override
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+            return handler.cast();
+        else
+            return super.getCapability(cap, side);
     }
 
     @Override
     protected void invalidateCaps() {
         super.invalidateCaps();
-        itemHandler.invalidate();
+        handler.invalidate();
     }
 
     @Nullable
@@ -133,7 +143,7 @@ public class PoppetShelfTileEntity extends TileEntity implements IInventory, ITi
     }
 
     private void saveToTag(CompoundNBT compound) {
-        compound.put("inv", ItemStackHelper.saveAllItems(new CompoundNBT(), this.inventory));
+        compound.put("inv", itemHandler.serializeNBT());
         if (ownerUuid != null)
             compound.putUUID("owner_uuid", ownerUuid);
         if (ownerName != null)
@@ -141,82 +151,11 @@ public class PoppetShelfTileEntity extends TileEntity implements IInventory, ITi
     }
 
     private void readFromTag(CompoundNBT compound) {
-        this.inventory = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
-        ItemStackHelper.loadAllItems(compound.getCompound("inv"), this.inventory);
+        itemHandler.deserializeNBT(compound.getCompound("inv"));
         if (compound.hasUUID("owner_uuid"))
             this.ownerUuid = compound.getUUID("owner_uuid");
         if (compound.contains("owner_name"))
             this.ownerName = compound.getString("owner_name");
-    }
-
-    @Override
-    public int getContainerSize() {
-        return 9;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return inventory.stream().allMatch(ItemStack::isEmpty);
-    }
-
-    @Override
-    public ItemStack getItem(int index) {
-        this.inventoryTouched = true;
-        return inventory.get(index);
-    }
-
-    @Override
-    public ItemStack removeItem(int index, int count) {
-        ItemStack itemstack = ItemStackHelper.removeItem(inventory, index, count);
-        if (!itemstack.isEmpty()) {
-            this.setChanged();
-        }
-        this.inventoryTouched = true;
-        PoppetUtil.invalidateShelfCache(this);
-
-        return itemstack;
-    }
-
-    @Override
-    public ItemStack removeItemNoUpdate(int index) {
-        this.inventoryTouched = true;
-        PoppetUtil.invalidateShelfCache(this);
-        return ItemStackHelper.takeItem(inventory, index);
-    }
-
-    @Override
-    public boolean canPlaceItem(int index, ItemStack stack) {
-        return stack.getItem() instanceof PoppetItem;
-    }
-
-    @Override
-    public void setItem(int index, ItemStack stack) {
-        inventory.set(index, stack);
-        this.inventoryTouched = true;
-        PoppetUtil.invalidateShelfCache(this);
-        this.setChanged();
-    }
-
-    @Override
-    public boolean stillValid(PlayerEntity player) {
-        if (this.level.getBlockEntity(this.worldPosition) != this) {
-            return false;
-        } else {
-            return !(player.distanceToSqr((double) this.worldPosition.getX() + 0.5D, (double) this.worldPosition.getY() + 0.5D, (double) this.worldPosition.getZ() + 0.5D) > 64.0D);
-        }
-    }
-
-    @Override
-    public void clearContent() {
-        inventory.clear();
-        this.inventoryTouched = true;
-        PoppetUtil.invalidateShelfCache(this);
-    }
-
-    public void updateInventory(NonNullList<ItemStack> itemStacks) {
-        this.inventory = itemStacks;
-        this.inventoryTouched = true;
-        PoppetUtil.invalidateShelfCache(this);
     }
 
     public UUID getOwnerUuid() {
@@ -237,6 +176,34 @@ public class PoppetShelfTileEntity extends TileEntity implements IInventory, ITi
         this.setChanged();
     }
 
+    public void updateInventory(CompoundNBT inventoryTag) {
+        itemHandler.deserializeNBT(inventoryTag);
+    }
+
+    public class PoppetShelfItemStackHandler extends ItemStackHandler {
+        public PoppetShelfItemStackHandler() {
+            super(9);
+        }
+
+        @Override
+        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+            return stack.getItem() instanceof PoppetItem;
+        }
+
+        @Override
+        protected void onContentsChanged(int slot) {
+            super.onContentsChanged(slot);
+            PoppetShelfTileEntity.this.inventoryTouched = true;
+            PoppetUtil.invalidateShelfCache(PoppetShelfTileEntity.this);
+        }
+
+        private NonNullList<ItemStack> getInventory() {
+            final NonNullList<ItemStack> inventory = NonNullList.create();
+            inventory.addAll(stacks);
+            return inventory;
+        }
+    }
+
     @OnlyIn(Dist.CLIENT)
     public static class PoppetShelfRenderer extends TileEntityRenderer<PoppetShelfTileEntity> {
         public PoppetShelfRenderer(TileEntityRendererDispatcher rendererDispatcher) {
@@ -246,27 +213,17 @@ public class PoppetShelfTileEntity extends TileEntity implements IInventory, ITi
         @Override
         public void render(PoppetShelfTileEntity tileEntity, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay) {
             for (int i = 0; i < 9; i++) {
-                ItemStack stack = tileEntity.getItem(i);
+                ItemStack stack = tileEntity.itemHandler.getStackInSlot(i);
                 if (!stack.isEmpty()) {
                     matrixStack.pushPose();
-                    //RenderSystem.enableRescaleNormal();
-                    //RenderSystem.alphaFunc(GL11.GL_GREATER, 0.1f);
-                    //RenderSystem.enableBlend();
-                    //RenderHelper.enableStandardItemLighting();
-                    //RenderSystem.blendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
-
                     double offset = Math.sin((tileEntity.getLevel().getGameTime() + partialTicks) / 8) / 32;
                     //noinspection IntegerDivisionInFloatingPointContext
                     matrixStack.translate((i % 3) / 5D + 0.3, 0.9 + offset, (i / 3) / 5D + 0.3);
                     matrixStack.mulPose(Vector3f.YP.rotationDegrees(tileEntity.getLevel().getGameTime() + partialTicks * 2));
-                    //matrixStack.rotate(new Quaternion(tileEntity.getWorld().getGameTime() + partialTicks * 2, 0, 1, 0));
 
                     matrixStack.scale(0.4f, 0.4f, 0.4f);
-                    //Minecraft.getInstance().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
                     Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemCameraTransforms.TransformType.GROUND, combinedLight, combinedOverlay, matrixStack, buffer);
 
-                    //RenderSystem.disableRescaleNormal();
-                    //RenderSystem.disableBlend();
                     matrixStack.popPose();
                 }
             }

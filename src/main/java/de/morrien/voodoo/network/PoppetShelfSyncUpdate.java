@@ -3,6 +3,7 @@ package de.morrien.voodoo.network;
 import de.morrien.voodoo.tileentity.PoppetShelfTileEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.NonNullList;
@@ -13,37 +14,22 @@ import net.minecraftforge.fml.network.NetworkEvent.Context;
 public class PoppetShelfSyncUpdate implements IThreadsafePacket {
 
     private final BlockPos pos;
-    private final NonNullList<ItemStack> itemStacks;
+    private final CompoundNBT inventoryTag;
 
-    public PoppetShelfSyncUpdate(NonNullList<ItemStack> itemStacks, BlockPos pos) {
-        this.itemStacks = itemStacks;
+    public PoppetShelfSyncUpdate(CompoundNBT inventoryTag, BlockPos pos) {
+        this.inventoryTag = inventoryTag;
         this.pos = pos;
     }
 
     public PoppetShelfSyncUpdate(PacketBuffer buffer) {
-        int size = buffer.readInt();
-        NonNullList<ItemStack> topStacks = NonNullList.withSize(size, ItemStack.EMPTY);
-
-        for (int item = 0; item < size; item++) {
-            ItemStack itemStack = buffer.readItem();
-
-            topStacks.set(item, itemStack);
-        }
-
-        this.itemStacks = topStacks;
-
+        this.inventoryTag = buffer.readNbt();
         this.pos = buffer.readBlockPos();
     }
 
     @Override
-    public void encode(PacketBuffer packetBuffer) {
-        packetBuffer.writeInt(this.itemStacks.size());
-
-        for (ItemStack stack : this.itemStacks) {
-            packetBuffer.writeItem(stack);
-        }
-
-        packetBuffer.writeBlockPos(this.pos);
+    public void encode(PacketBuffer buffer) {
+        buffer.writeNbt(this.inventoryTag);
+        buffer.writeBlockPos(this.pos);
     }
 
     @Override
@@ -55,7 +41,6 @@ public class PoppetShelfSyncUpdate implements IThreadsafePacket {
      * Safely runs client side only code in a method only called on client
      */
     private static class HandleClient {
-
         private static void handle(PoppetShelfSyncUpdate packet) {
             World world = Minecraft.getInstance().level;
 
@@ -64,7 +49,7 @@ public class PoppetShelfSyncUpdate implements IThreadsafePacket {
 
                 if (te != null) {
                     if (te instanceof PoppetShelfTileEntity) {
-                        ((PoppetShelfTileEntity) te).updateInventory(packet.itemStacks);
+                        ((PoppetShelfTileEntity) te).updateInventory(packet.inventoryTag);
                         Minecraft.getInstance().levelRenderer.blockChanged(world, packet.pos, null, null, 0);
                     }
                 }
