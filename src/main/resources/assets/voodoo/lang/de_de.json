@@ -25,6 +25,9 @@
   "text.voodoo.poppet.used_up": "Deine %1$s wurde aufgebraucht",
   "screen.voodoo.poppet_shelf": "Puppenregal (%1$s)",
 
+  "sound.poppet.voodoo_protection.used": "Voodoo Beschützer-Puppe wurde aktiviert",
+  "sound.poppet.potion_protection.used": "Trank Beschützer-Puppe wurde aktiviert",
+
   "commands.voodoo.player_not_found": "Der Spieler %1$s wurde nicht gefunden",
   "commands.voodoo.player_only": "Nicht Spieler müssen den Namen eines Spielers als letztes Argument übergeben",
   "commands.voodoo.usage": "/voodoo <list> <poppets|shelves> [player]"

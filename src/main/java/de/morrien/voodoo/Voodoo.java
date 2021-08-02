@@ -6,6 +6,7 @@ import de.morrien.voodoo.datagen.RecipeGen;
 import de.morrien.voodoo.item.ItemRegistry;
 import de.morrien.voodoo.network.VoodooNetwork;
 import de.morrien.voodoo.recipe.RecipeRegistry;
+import de.morrien.voodoo.sound.SoundRegistry;
 import de.morrien.voodoo.tileentity.PoppetShelfTileEntity;
 import de.morrien.voodoo.tileentity.TileEntityTypeRegistry;
 import net.minecraft.data.DataGenerator;
@@ -38,8 +39,9 @@ public class Voodoo {
         ItemRegistry.ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
         BlockRegistry.BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
         RecipeRegistry.RECIPES.register(FMLJavaModLoadingContext.get().getModEventBus());
-        TileEntityTypeRegistry.TILE_ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
+        SoundRegistry.SOUND_EVENTS.register(FMLJavaModLoadingContext.get().getModEventBus());
         ContainerRegistry.CONTAINERS.register(FMLJavaModLoadingContext.get().getModEventBus());
+        TileEntityTypeRegistry.TILE_ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
 
         // Register configs
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, VoodooConfig.commonSpec);

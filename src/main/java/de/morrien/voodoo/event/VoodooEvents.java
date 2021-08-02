@@ -5,6 +5,7 @@ import de.morrien.voodoo.Voodoo;
 import de.morrien.voodoo.VoodooDamageSource;
 import de.morrien.voodoo.command.VoodooCommand;
 import de.morrien.voodoo.item.ItemRegistry;
+import de.morrien.voodoo.sound.SoundRegistry;
 import de.morrien.voodoo.util.BindingUtil;
 import de.morrien.voodoo.util.PoppetUtil;
 import net.minecraft.entity.AreaEffectCloudEntity;
@@ -17,6 +18,7 @@ import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.EffectType;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -25,6 +27,7 @@ import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.ArrayList;
@@ -44,37 +47,38 @@ public class VoodooEvents {
 
     @SubscribeEvent
     public static void onTickPlayerTick(TickEvent.PlayerTickEvent event) {
+        if (event.side == LogicalSide.CLIENT) return;
+        if (event.phase == TickEvent.Phase.START) return;
         checkPotionEffects(event.player);
+        if (event.player.tickCount % 20 != 0) return;
         checkFoodStatus(event.player);
     }
 
     private static void checkPotionEffects(PlayerEntity player) {
         for (Iterator<EffectInstance> iterator = player.getActiveEffects().iterator(); iterator.hasNext(); ) {
             EffectInstance potionEffect = iterator.next();
-            if (potionEffect.getEffect().getCategory() == EffectType.HARMFUL) {
-                if (potionEffect.getEffect() == Effects.WITHER) {
-                    removeWitherEffect(player, potionEffect);
-                } else {
-                    removePotionEffect(player, potionEffect);
-                }
+            if (potionEffect.getEffect().getCategory() != EffectType.HARMFUL) continue;
+            if (potionEffect.getEffect() == Effects.WITHER) {
+                removeWitherEffect(player, potionEffect);
+            } else {
+                removePotionEffect(player, potionEffect);
             }
         }
     }
 
     private static void removeWitherEffect(PlayerEntity player, EffectInstance potionEffect) {
         if (!COMMON.witherProtection.enabled.get()) return;
-        Poppet witherPoppet = Poppet.getPlayerPoppet(player, WITHER_PROTECTION);
-        if (witherPoppet != null) {
-            player.removeEffect(potionEffect.getEffect());
-            witherPoppet.use();
-        }
+        Poppet witherPoppet = PoppetUtil.getPlayerPoppet(player, WITHER_PROTECTION);
+        if (witherPoppet == null) return;
+        player.removeEffect(potionEffect.getEffect());
+        witherPoppet.use();
     }
 
     private static void removePotionEffect(PlayerEntity player, EffectInstance potionEffect) {
         if (!COMMON.potionProtection.enabled.get()) return;
         int durabilityCost = potionEffect.getAmplifier() + 1;
         while (durabilityCost > 0) {
-            Poppet poppet = Poppet.getPlayerPoppet(player, POTION_PROTECTION);
+            Poppet poppet = PoppetUtil.getPlayerPoppet(player, POTION_PROTECTION);
             if (poppet == null) break;
             durabilityCost = usePoppet(poppet, durabilityCost);
         }
@@ -94,7 +98,7 @@ public class VoodooEvents {
 
     private static void checkFoodStatus(PlayerEntity player) {
         if (player.getFoodData().getFoodLevel() > 10) return;
-        final Poppet hungerPoppet = Poppet.getPlayerPoppet(player, HUNGER_PROTECTION);
+        final Poppet hungerPoppet = PoppetUtil.getPlayerPoppet(player, HUNGER_PROTECTION);
         if (hungerPoppet == null) return;
         player.addEffect(new EffectInstance(Effects.SATURATION, 60 * 20, 1));
         usePoppet(hungerPoppet, 1);
@@ -102,15 +106,13 @@ public class VoodooEvents {
 
     @SubscribeEvent
     public static void onPlayerInteract(PlayerInteractEvent.EntityInteract event) {
-        if (!event.getWorld().isClientSide) {
-            if (event.getItemStack().getItem() == ItemRegistry.taglockKit.get()) {
-                if (event.getTarget() instanceof PlayerEntity) {
-                    ItemStack stack = event.getItemStack();
-                    if (BindingUtil.isBound(stack)) return;
-                    PlayerEntity player = (PlayerEntity) event.getTarget();
-                    BindingUtil.bind(stack, player);
-                }
-            }
+        if (event.getWorld().isClientSide) return;
+        if (event.getItemStack().getItem() != ItemRegistry.taglockKit.get()) return;
+        if (event.getTarget() instanceof PlayerEntity) {
+            ItemStack stack = event.getItemStack();
+            if (BindingUtil.isBound(stack)) return;
+            PlayerEntity player = (PlayerEntity) event.getTarget();
+            BindingUtil.bind(stack, player);
         }
     }
 
@@ -149,7 +151,7 @@ public class VoodooEvents {
         }
         float percentage = durabilityCost == originalDurabilityCost ? 1 : ((float) durabilityCost) / ((float) originalDurabilityCost);
         if (player.getHealth() - event.getAmount() * percentage <= 0 && COMMON.deathProtection.enabled.get()) {
-            Poppet poppet = Poppet.getPlayerPoppet(player, DEATH_PROTECTION);
+            Poppet poppet = PoppetUtil.getPlayerPoppet(player, DEATH_PROTECTION);
             if (poppet != null) {
                 poppet.use();
                 durabilityCost = 0;

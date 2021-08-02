@@ -19,13 +19,13 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 public class PoppetShelfContainer extends Container {
     protected PoppetShelfTileEntity poppetShelf;
     protected PlayerEntity playerEntity;
-    protected IItemHandler playerventory;
+    protected IItemHandler playerInventory;
 
-    public PoppetShelfContainer(int windowId, World world, BlockPos pos, PlayerInventory playerventory, PlayerEntity player) {
+    public PoppetShelfContainer(int windowId, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity player) {
         super(ContainerRegistry.poppetShelf.get(), windowId);
         poppetShelf = (PoppetShelfTileEntity) world.getBlockEntity(pos);
         this.playerEntity = player;
-        this.playerventory = new InvWrapper(playerventory);
+        this.playerInventory = new InvWrapper(playerInventory);
 
         if (poppetShelf != null) {
             poppetShelf.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(itemHandler -> {
@@ -61,11 +61,11 @@ public class PoppetShelfContainer extends Container {
 
     private void layoutPlayerInventorySlots(int leftCol, int topRow) {
         // Player inventory
-        addSlotBox(playerventory, 9, leftCol, topRow, 9, 18, 3, 18);
+        addSlotBox(playerInventory, 9, leftCol, topRow, 9, 18, 3, 18);
 
         // Hotbar
         topRow += 58;
-        addSlotRange(playerventory, 0, leftCol, topRow, 9, 18);
+        addSlotRange(playerInventory, 0, leftCol, topRow, 9, 18);
     }
 
     @Override

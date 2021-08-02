@@ -89,7 +89,7 @@ public class PoppetItem extends Item {
                         });
                     }
                 } else if (VoodooConfig.COMMON.voodoo.enablePush.get()) {
-                    Poppet voodooProtectionPoppet = Poppet.getPlayerPoppet(boundPlayer, Poppet.PoppetType.VOODOO_PROTECTION);
+                    Poppet voodooProtectionPoppet = PoppetUtil.getPlayerPoppet(boundPlayer, Poppet.PoppetType.VOODOO_PROTECTION);
 
                     if (voodooProtectionPoppet != null) {
                         PoppetUtil.useVoodooProtectionPuppet(stack, livingEntity);

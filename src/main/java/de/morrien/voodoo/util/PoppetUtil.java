@@ -4,9 +4,11 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import de.morrien.voodoo.Poppet;
 import de.morrien.voodoo.item.PoppetItem;
+import de.morrien.voodoo.sound.SoundRegistry;
 import de.morrien.voodoo.tileentity.PoppetShelfTileEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
@@ -38,7 +40,7 @@ public class PoppetUtil {
                 playerEntity.level.playSound(null, playerEntity, SoundEvents.TOTEM_USE, SoundCategory.PLAYERS, 1, 1);
             });
         } else {
-            source.level.playSound(null, source, SoundEvents.TOTEM_USE, SoundCategory.PLAYERS, 1, 1);
+            source.level.playSound(null, source, SoundRegistry.voodooProtectionPoppetUsed.get(), SoundCategory.PLAYERS, 1, 1);
             voodooPoppet.shrink(1);
         }
     }
@@ -73,6 +75,7 @@ public class PoppetUtil {
             final World world = player.level;
             cachedShelves = world.blockEntityList.stream()
                     .filter(tileEntity -> tileEntity instanceof PoppetShelfTileEntity)
+                    .filter(poppetShelf -> player.getUUID().equals(((PoppetShelfTileEntity) poppetShelf).getOwnerUuid()))
                     .map(tileEntity -> new WeakReference<>((PoppetShelfTileEntity) tileEntity))
                     .collect(Collectors.toList());
             poppetShelvesCache.put(player.getUUID(), cachedShelves);
@@ -91,7 +94,7 @@ public class PoppetUtil {
                         .getInventory()
                         .stream()
                         .filter(stack -> player.getUUID().equals(BindingUtil.getBoundUUID(stack)))
-                        .map(stack -> new Poppet(player, (PoppetItem) stack.getItem(), stack))
+                        .map(stack -> new Poppet(poppetShelf, player, (PoppetItem) stack.getItem(), stack))
                         .collect(Collectors.toList());
                 poppetCache.put(poppetShelf, poppetList);
             }
@@ -117,5 +120,25 @@ public class PoppetUtil {
      */
     public static void invalidateShelvesCache() {
         poppetShelvesCache.invalidateAll();
+    }
+
+    /**
+     * Searches for a specific poppet that is bound to a player.
+     *
+     * @param player     The player that the poppet must be bound to
+     * @param poppetType The type of the poppet
+     * @return The found poppet or null
+     */
+    public static Poppet getPlayerPoppet(PlayerEntity player, Poppet.PoppetType poppetType) {
+        return getPoppetsInInventory(player)
+                .stream()
+                .filter(poppet -> poppet.getItem().getPoppetType() == poppetType)
+                .findFirst()
+                .orElseGet(() -> getPoppetsInShelves(player)
+                        .stream()
+                        .filter(poppet -> poppet.getItem().getPoppetType() == poppetType)
+                        .findFirst()
+                        .orElse(null));
+
     }
 }

@@ -24,8 +24,9 @@ public class Poppet {
     private PoppetItem item;
     private ItemStack stack;
 
-    public Poppet(PoppetShelfTileEntity poppetShelf, PoppetItem item, ItemStack stack) {
+    public Poppet(PoppetShelfTileEntity poppetShelf, PlayerEntity player, PoppetItem item, ItemStack stack) {
         this.poppetShelf = poppetShelf;
+        this.player = player;
         this.item = item;
         this.stack = stack;
     }
@@ -34,33 +35,6 @@ public class Poppet {
         this.player = player;
         this.item = item;
         this.stack = stack;
-    }
-
-    public static Poppet getPlayerPoppet(PlayerEntity player, PoppetType poppetType) {
-        List<ItemStack> playerItems = new ArrayList<>();
-        playerItems.addAll(player.inventory.offhand);
-        playerItems.addAll(player.inventory.items);
-        for (ItemStack itemStack : playerItems) {
-            Item item = itemStack.getItem();
-            if (item instanceof PoppetItem && player.equals(BindingUtil.getBoundPlayer(itemStack, player.level))) {
-                PoppetItem poppetItem = (PoppetItem) item;
-                if (poppetItem.getPoppetType() == poppetType) {
-                    return new Poppet(player, poppetItem, itemStack);
-                }
-            }
-        }
-        World world = player.level;
-        List<TileEntity> tileEntities = world.blockEntityList;
-        for (TileEntity tileEntity : tileEntities) {
-            if (tileEntity instanceof PoppetShelfTileEntity) {
-                Poppet poppet = ((PoppetShelfTileEntity) tileEntity).getPoppet(poppetType);
-                if (poppet != null && player.equals(BindingUtil.getBoundPlayer(poppet.stack, player.level))) {
-                    poppet.player = player;
-                    return poppet;
-                }
-            }
-        }
-        return null;
     }
 
     public PlayerEntity getPlayer() {
@@ -72,6 +46,8 @@ public class Poppet {
     }
 
     public ItemStack getStack() {
+        if (poppetShelf != null)
+            poppetShelf.inventoryTouched();
         return stack;
     }
 
@@ -89,12 +65,18 @@ public class Poppet {
         } else {
             shrink();
         }
+        if (poppetShelf != null)
+            poppetShelf.inventoryTouched();
     }
 
     private void shrink() {
         stack.shrink(1);
         final TranslationTextComponent text = new TranslationTextComponent("text.voodoo.poppet.used_up", new TranslationTextComponent(item.getDescriptionId()));
         player.displayClientMessage(text, false);
+    }
+
+    public PoppetShelfTileEntity getPoppetShelf() {
+        return poppetShelf;
     }
 
     public enum PoppetType {

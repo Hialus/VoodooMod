@@ -12,7 +12,7 @@
   "item.voodoo.explosion_protection_poppet": "Explosion Protection Poppet",
   "item.voodoo.projectile_protection_poppet": "Projectile Protection Poppet",
   "item.voodoo.wither_protection_poppet": "Wither Protection Poppet",
-  "item.voodoo.hunger_protection_poppet": "Starve Protection Poppet",
+  "item.voodoo.hunger_protection_poppet": "Hunger Protection Poppet",
   "item.voodoo.potion_protection_poppet": "Potion Protection Poppet",
   "item.voodoo.void_protection_poppet": "Void Protection Poppet",
   "itemGroup.voodoo_group": "Voodoo",
@@ -24,6 +24,9 @@
   "text.voodoo.voodoo_protection.had": "%1$s had a Voodoo-Protection-Poppet",
   "text.voodoo.poppet.used_up": "Your %1$s was used up",
   "screen.voodoo.poppet_shelf": "Poppet Shelf (%1$s)",
+
+  "sound.poppet.voodoo_protection.used": "Voodoo Protection Poppet activated",
+  "sound.poppet.potion_protection.used": "Potion Protection Poppet activated",
 
   "commands.voodoo.player_not_found": "The player %1$s could not be found",
   "commands.voodoo.player_only": "Non players must specify the name of a player as last argument",

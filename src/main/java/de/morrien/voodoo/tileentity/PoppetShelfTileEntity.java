@@ -69,24 +69,11 @@ public class PoppetShelfTileEntity extends TileEntity implements ITickableTileEn
         }
     }
 
-    public Poppet getPoppet(Poppet.PoppetType type) {
-        for (int i = 0; i < 9; i++) {
-            ItemStack itemStack = itemHandler.getStackInSlot(i);
-            if (itemStack.isEmpty()) continue;
-            Item item = itemStack.getItem();
-            if (item instanceof PoppetItem) {
-                PoppetItem poppetItem = (PoppetItem) item;
-                if (poppetItem.getPoppetType() == type) {
-                    this.inventoryTouched = true;
-                    return new Poppet(this, poppetItem, itemStack);
-                }
-            }
-        }
-        return null;
+    public void inventoryTouched() {
+        this.inventoryTouched = true;
     }
 
     public List<ItemStack> getInventory() {
-        this.inventoryTouched = true;
         return itemHandler.getInventory();
     }
 
@@ -193,7 +180,7 @@ public class PoppetShelfTileEntity extends TileEntity implements ITickableTileEn
         @Override
         protected void onContentsChanged(int slot) {
             super.onContentsChanged(slot);
-            PoppetShelfTileEntity.this.inventoryTouched = true;
+            PoppetShelfTileEntity.this.inventoryTouched();
             PoppetUtil.invalidateShelfCache(PoppetShelfTileEntity.this);
         }
 
