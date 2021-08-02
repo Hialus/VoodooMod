@@ -7,16 +7,20 @@ import de.morrien.voodoo.command.VoodooCommand;
 import de.morrien.voodoo.item.ItemRegistry;
 import de.morrien.voodoo.util.BindingUtil;
 import de.morrien.voodoo.util.PoppetUtil;
+import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.PotionEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.*;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.EffectType;
+import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.PotionEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -40,28 +44,25 @@ public class VoodooEvents {
     }
 
     @SubscribeEvent
-    public static void onTickPlayerTick(TickEvent.PlayerTickEvent event) {
-        PlayerEntity player = event.player;
-        Poppet poppet = null;
-        for (Iterator<EffectInstance> iterator = player.getActiveEffects().iterator(); iterator.hasNext(); ) {
-            EffectInstance potionEffect = iterator.next();
+    public void onPotionAdded(PotionEvent.PotionAddedEvent event) {
+        final EffectInstance potionEffect = event.getPotionEffect();
+        if (event.getEntity() instanceof PlayerEntity) {
+            final PlayerEntity player = (PlayerEntity) event.getEntity();
+
             if (potionEffect.getEffect().getCategory() == EffectType.HARMFUL) {
                 if (potionEffect.getEffect() == Effects.WITHER) {
-                    if (!COMMON.witherProtection.enabled.get()) continue;
+                    if (!COMMON.witherProtection.enabled.get()) return;
                     Poppet witherPoppet = Poppet.getPlayerPoppet(player, WITHER_PROTECTION);
                     if (witherPoppet != null) {
                         player.removeEffectNoUpdate(potionEffect.getEffect());
                         witherPoppet.use();
                     }
                 } else {
-                    if (!COMMON.potionProtection.enabled.get()) continue;
-                    if (poppet == null)
-                        poppet = Poppet.getPlayerPoppet(player, POTION_PROTECTION);
+                    if (!COMMON.potionProtection.enabled.get()) return;
+                    Poppet poppet = Poppet.getPlayerPoppet(player, POTION_PROTECTION);
                     if (poppet != null) {
                         player.removeEffectNoUpdate(potionEffect.getEffect());
                         poppet.use(potionEffect.getAmplifier() + 1);
-                    } else {
-                        break;
                     }
                 }
             }
@@ -74,7 +75,7 @@ public class VoodooEvents {
         final DamageSource damageSource = event.getSource();
         if (event.getEntity() instanceof PlayerEntity && !((PlayerEntity) event.getEntity()).isCreative()) {
             final PlayerEntity player = (PlayerEntity) event.getEntity();
-            final List<Poppet.PoppetType> validPoppets = getProtectionPoppets(damageSource);
+            final List<Poppet.PoppetType> validPoppets = getProtectionPoppets(event);
 
             final Set<Poppet> poppetsInInventory = PoppetUtil.getPoppetsInInventory(player);
             poppetsInInventory.removeIf(poppet -> !validPoppets.contains(poppet.getItem().getPoppetType()));
@@ -135,7 +136,7 @@ public class VoodooEvents {
         final DamageSource damageSource = event.getSource();
         if (damageSource instanceof VoodooDamageSource && COMMON.voodooProtection.enabled.get())
             return 1;
-        if (damageSource.getDirectEntity() instanceof PotionEntity && COMMON.potionProtection.enabled.get())
+        if ((damageSource.getDirectEntity() instanceof PotionEntity || damageSource.getDirectEntity() instanceof AreaEffectCloudEntity) && COMMON.potionProtection.enabled.get())
             return (int) (Math.log(event.getAmount() / 6) / Math.log(2)) + 1;
         if (damageSource == FALL && COMMON.fallProtection.enabled.get())
             return (int) Math.min(event.getAmount(), Math.ceil(Math.log(event.getAmount()) * 3));
@@ -170,22 +171,20 @@ public class VoodooEvents {
             PoppetUtil.useVoodooProtectionPuppet(voodooDamageSource.getVoodooPoppet(), voodooDamageSource.getFromEntity());
         }
 
-        if (damageSource == OUT_OF_WORLD && COMMON.voidProtection.enabled.get()) {
-            if (player.getY() < 0) {
-                player.fallDistance = 0;
-                BlockPos spawnPos = ((ServerPlayerEntity) player).getRespawnPosition();
-                if (spawnPos == null) {
-                    spawnPos = new BlockPos(
-                            player.level.getLevelData().getXSpawn(),
-                            player.level.getLevelData().getYSpawn(),
-                            player.level.getLevelData().getZSpawn()
-                    );
-                }
-                player.teleportTo(
-                        spawnPos.getX(),
-                        spawnPos.getY() + 1,
-                        spawnPos.getZ());
+        if (damageSource == OUT_OF_WORLD && player.getY() < 0 && COMMON.voidProtection.enabled.get()) {
+            player.fallDistance = 0;
+            BlockPos spawnPos = ((ServerPlayerEntity) player).getRespawnPosition();
+            if (spawnPos == null) {
+                spawnPos = new BlockPos(
+                        player.level.getLevelData().getXSpawn(),
+                        player.level.getLevelData().getYSpawn(),
+                        player.level.getLevelData().getZSpawn()
+                );
             }
+            player.teleportTo(
+                    spawnPos.getX(),
+                    spawnPos.getY() + 1,
+                    spawnPos.getZ());
         }
     }
 
@@ -259,7 +258,8 @@ public class VoodooEvents {
     //    }
     //}
 
-    public static List<Poppet.PoppetType> getProtectionPoppets(DamageSource damageSource) {
+    public static List<Poppet.PoppetType> getProtectionPoppets(LivingAttackEvent event) {
+        final DamageSource damageSource = event.getSource();
         List<Poppet.PoppetType> suitablePoppets = new ArrayList<>();
 
         if (damageSource instanceof VoodooDamageSource && COMMON.voodooProtection.enabled.get())
@@ -278,7 +278,7 @@ public class VoodooEvents {
             suitablePoppets.add(WATER_PROTECTION);
         if (damageSource == STARVE && COMMON.hungerProtection.enabled.get())
             suitablePoppets.add(HUNGER_PROTECTION);
-        if (damageSource == OUT_OF_WORLD && COMMON.voidProtection.enabled.get())
+        if (damageSource == OUT_OF_WORLD && event.getEntity().getY() < 0 && COMMON.voidProtection.enabled.get())
             suitablePoppets.add(VOID_PROTECTION);
         return suitablePoppets;
     }
