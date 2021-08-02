@@ -2,7 +2,7 @@
   "parent": "minecraft:recipes/root",
   "rewards": {
     "recipes": [
-      "voodoo:fall_protection_poppet"
+      "voodoo:explosion_protection_poppet"
     ]
   },
   "criteria": {
@@ -16,16 +16,27 @@
         ]
       }
     },
+    "has_obsidian": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "minecraft:obsidian"
+          }
+        ]
+      }
+    },
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "voodoo:fall_protection_poppet"
+        "recipe": "voodoo:explosion_protection_poppet"
       }
     }
   },
   "requirements": [
     [
       "has_blank_poppet",
+      "has_obsidian",
       "has_the_recipe"
     ]
   ]

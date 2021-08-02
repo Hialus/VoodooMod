@@ -2,7 +2,7 @@
   "parent": "minecraft:recipes/root",
   "rewards": {
     "recipes": [
-      "voodoo:fall_protection_poppet"
+      "voodoo:potion_protection_poppet"
     ]
   },
   "criteria": {
@@ -16,16 +16,21 @@
         ]
       }
     },
+    "brewed_potion": {
+      "trigger": "minecraft:brewed_potion",
+      "conditions": {}
+    },
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "voodoo:fall_protection_poppet"
+        "recipe": "voodoo:potion_protection_poppet"
       }
     }
   },
   "requirements": [
     [
       "has_blank_poppet",
+      "brewed_potion",
       "has_the_recipe"
     ]
   ]

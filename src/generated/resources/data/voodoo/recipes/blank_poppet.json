@@ -9,9 +9,14 @@
     "W": {
       "item": "minecraft:brown_wool"
     },
-    "E": {
-      "item": "minecraft:coal"
-    },
+    "E": [
+      {
+        "item": "minecraft:coal"
+      },
+      {
+        "item": "minecraft:charcoal"
+      }
+    ],
     "S": {
       "item": "minecraft:string"
     },

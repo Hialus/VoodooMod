@@ -2,7 +2,7 @@
   "parent": "minecraft:recipes/root",
   "rewards": {
     "recipes": [
-      "voodoo:fall_protection_poppet"
+      "voodoo:water_protection_poppet"
     ]
   },
   "criteria": {
@@ -16,16 +16,23 @@
         ]
       }
     },
+    "entered_water": {
+      "trigger": "minecraft:enter_block",
+      "conditions": {
+        "block": "minecraft:water"
+      }
+    },
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "voodoo:fall_protection_poppet"
+        "recipe": "voodoo:water_protection_poppet"
       }
     }
   },
   "requirements": [
     [
       "has_blank_poppet",
+      "entered_water",
       "has_the_recipe"
     ]
   ]
