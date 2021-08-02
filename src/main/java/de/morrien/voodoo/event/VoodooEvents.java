@@ -11,7 +11,6 @@ import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
-import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.PotionEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.EffectInstance;
@@ -20,19 +19,18 @@ import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.PotionEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import static de.morrien.voodoo.Poppet.PoppetType.*;
-import static de.morrien.voodoo.Voodoo.logger;
 import static de.morrien.voodoo.VoodooConfig.COMMON;
 import static net.minecraft.util.DamageSource.*;
 
@@ -44,25 +42,37 @@ public class VoodooEvents {
     }
 
     @SubscribeEvent
-    public static void onPotionAdded(PotionEvent.PotionAddedEvent event) {
-        final EffectInstance potionEffect = event.getPotionEffect();
-        if (event.getEntity() instanceof PlayerEntity) {
-            final PlayerEntity player = (PlayerEntity) event.getEntity();
-
+    public static void onTickPlayerTick(TickEvent.PlayerTickEvent event) {
+        PlayerEntity player = event.player;
+        for (Iterator<EffectInstance> iterator = player.getActiveEffects().iterator(); iterator.hasNext(); ) {
+            EffectInstance potionEffect = iterator.next();
             if (potionEffect.getEffect().getCategory() == EffectType.HARMFUL) {
                 if (potionEffect.getEffect() == Effects.WITHER) {
-                    if (!COMMON.witherProtection.enabled.get()) return;
+                    if (!COMMON.witherProtection.enabled.get()) continue;
                     Poppet witherPoppet = Poppet.getPlayerPoppet(player, WITHER_PROTECTION);
                     if (witherPoppet != null) {
-                        player.removeEffectNoUpdate(potionEffect.getEffect());
+                        player.removeEffect(potionEffect.getEffect());
                         witherPoppet.use();
                     }
                 } else {
-                    if (!COMMON.potionProtection.enabled.get()) return;
-                    Poppet poppet = Poppet.getPlayerPoppet(player, POTION_PROTECTION);
-                    if (poppet != null) {
-                        player.removeEffect(potionEffect.getEffect());
-                        poppet.use(potionEffect.getAmplifier() + 1);
+                    if (!COMMON.potionProtection.enabled.get()) continue;
+                    int durabilityCost = potionEffect.getAmplifier() + 1;
+                    while (durabilityCost > 0) {
+                        Poppet poppet = Poppet.getPlayerPoppet(player, POTION_PROTECTION);
+                        if (poppet == null) break;
+                        durabilityCost = usePoppet(poppet, durabilityCost);
+                    }
+                    player.removeEffect(potionEffect.getEffect());
+                    if (durabilityCost > 0) {
+                        final EffectInstance effectInstance = new EffectInstance(
+                                potionEffect.getEffect(),
+                                potionEffect.getDuration(),
+                                durabilityCost - 1,
+                                potionEffect.isAmbient(),
+                                potionEffect.isVisible(),
+                                potionEffect.showIcon()
+                        );
+                        player.addEffect(effectInstance);
                     }
                 }
             }
@@ -103,14 +113,16 @@ public class VoodooEvents {
 
         int originalDurabilityCost = getDurabilityCost(event);
         int durabilityCost = originalDurabilityCost;
-        for (Poppet poppet : poppetsInInventory) {
+        for (int i = 0; i < poppetsInInventory.size() && durabilityCost > 0; i++) {
+            Poppet poppet = poppetsInInventory.get(i);
             durabilityCost = usePoppet(poppet, durabilityCost);
         }
         if (durabilityCost > 0) {
             final List<Poppet> poppetsInShelves = PoppetUtil.getPoppetsInShelves(player);
             poppetsInShelves.removeIf(poppet -> !validPoppets.contains(poppet.getItem().getPoppetType()));
 
-            for (Poppet poppet : poppetsInShelves) {
+            for (int i = 0; i < poppetsInShelves.size() && durabilityCost > 0; i++) {
+                Poppet poppet = poppetsInShelves.get(i);
                 durabilityCost = usePoppet(poppet, durabilityCost);
             }
         }
