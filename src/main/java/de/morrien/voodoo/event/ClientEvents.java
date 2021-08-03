@@ -1,5 +1,6 @@
 package de.morrien.voodoo.event;
 
+import de.morrien.voodoo.Poppet;
 import de.morrien.voodoo.Voodoo;
 import de.morrien.voodoo.container.ContainerRegistry;
 import de.morrien.voodoo.container.PoppetShelfScreen;
@@ -23,6 +24,11 @@ public class ClientEvents {
                     ItemRegistry.taglockKit.get(),
                     new ResourceLocation(Voodoo.MOD_ID, "filled"),
                     (itemStack, clientWorld, livingEntity) -> BindingUtil.isBound(itemStack) ? 1 : 0
+            );
+            ItemModelsProperties.register(
+                    ItemRegistry.poppetMap.get(Poppet.PoppetType.PROJECTILE_PROTECTION).get(),
+                    new ResourceLocation(Voodoo.MOD_ID, "percentageUsed"),
+                    (itemStack, clientWorld, livingEntity) -> Math.min(1, Math.max(0, itemStack.getDamageValue() / (float) itemStack.getMaxDamage()))
             );
         });
     }
