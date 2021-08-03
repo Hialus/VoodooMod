@@ -75,7 +75,7 @@ public class RecipeGen extends RecipeProvider {
                 .unlockedBy("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
                 .save(consumer);
 
-        ShapedRecipeBuilder.shaped(ItemRegistry.poppetMap.get(VOODOO).get())
+        ShapedRecipeBuilder.shaped(ItemRegistry.poppetMap.get(VAMPIRIC).get())
                 .pattern("GSG")
                 .pattern("CPW")
                 .pattern("RNR")
