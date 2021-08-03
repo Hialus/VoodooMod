@@ -1,9 +1,6 @@
 package de.morrien.voodoo.sound;
 
 import de.morrien.voodoo.Voodoo;
-import de.morrien.voodoo.block.BlockRegistry;
-import de.morrien.voodoo.tileentity.PoppetShelfTileEntity;
-import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fml.RegistryObject;

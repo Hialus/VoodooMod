@@ -1,7 +1,6 @@
 package de.morrien.voodoo.tileentity;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import de.morrien.voodoo.Poppet;
 import de.morrien.voodoo.item.PoppetItem;
 import de.morrien.voodoo.network.PoppetShelfSyncUpdate;
 import de.morrien.voodoo.network.VoodooNetwork;
@@ -12,10 +11,6 @@ import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.ItemStackHelper;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
@@ -36,7 +31,6 @@ import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -52,7 +46,6 @@ public class PoppetShelfTileEntity extends TileEntity implements ITickableTileEn
 
     public PoppetShelfTileEntity() {
         super(TileEntityTypeRegistry.poppetShelfTileEntity.get());
-        PoppetUtil.invalidateShelvesCache();
         this.itemHandler = new PoppetShelfItemStackHandler();
         this.handler = LazyOptional.of(() -> itemHandler);
     }
@@ -71,6 +64,7 @@ public class PoppetShelfTileEntity extends TileEntity implements ITickableTileEn
 
     public void inventoryTouched() {
         this.inventoryTouched = true;
+        PoppetUtil.invalidateShelfCache(PoppetShelfTileEntity.this);
     }
 
     public List<ItemStack> getInventory() {
@@ -139,10 +133,12 @@ public class PoppetShelfTileEntity extends TileEntity implements ITickableTileEn
 
     private void readFromTag(CompoundNBT compound) {
         itemHandler.deserializeNBT(compound.getCompound("inv"));
+        PoppetUtil.invalidateShelvesCache(this.ownerUuid);
         if (compound.hasUUID("owner_uuid"))
             this.ownerUuid = compound.getUUID("owner_uuid");
         if (compound.contains("owner_name"))
             this.ownerName = compound.getString("owner_name");
+        PoppetUtil.invalidateShelvesCache(this.ownerUuid);
     }
 
     public UUID getOwnerUuid() {
@@ -150,8 +146,12 @@ public class PoppetShelfTileEntity extends TileEntity implements ITickableTileEn
     }
 
     public void setOwnerUuid(UUID ownerUuid) {
-        this.ownerUuid = ownerUuid;
-        this.setChanged();
+        if (this.ownerUuid != ownerUuid) {
+            PoppetUtil.invalidateShelvesCache(this.ownerUuid);
+            this.ownerUuid = ownerUuid;
+            PoppetUtil.invalidateShelvesCache(this.ownerUuid);
+            this.setChanged();
+        }
     }
 
     public String getOwnerName() {
@@ -165,30 +165,6 @@ public class PoppetShelfTileEntity extends TileEntity implements ITickableTileEn
 
     public void updateInventory(CompoundNBT inventoryTag) {
         itemHandler.deserializeNBT(inventoryTag);
-    }
-
-    public class PoppetShelfItemStackHandler extends ItemStackHandler {
-        public PoppetShelfItemStackHandler() {
-            super(9);
-        }
-
-        @Override
-        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            return stack.getItem() instanceof PoppetItem;
-        }
-
-        @Override
-        protected void onContentsChanged(int slot) {
-            super.onContentsChanged(slot);
-            PoppetShelfTileEntity.this.inventoryTouched();
-            PoppetUtil.invalidateShelfCache(PoppetShelfTileEntity.this);
-        }
-
-        private NonNullList<ItemStack> getInventory() {
-            final NonNullList<ItemStack> inventory = NonNullList.create();
-            inventory.addAll(stacks);
-            return inventory;
-        }
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -214,6 +190,29 @@ public class PoppetShelfTileEntity extends TileEntity implements ITickableTileEn
                     matrixStack.popPose();
                 }
             }
+        }
+    }
+
+    public class PoppetShelfItemStackHandler extends ItemStackHandler {
+        public PoppetShelfItemStackHandler() {
+            super(9);
+        }
+
+        @Override
+        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+            return stack.getItem() instanceof PoppetItem;
+        }
+
+        @Override
+        protected void onContentsChanged(int slot) {
+            super.onContentsChanged(slot);
+            PoppetShelfTileEntity.this.inventoryTouched();
+        }
+
+        private NonNullList<ItemStack> getInventory() {
+            final NonNullList<ItemStack> inventory = NonNullList.create();
+            inventory.addAll(stacks);
+            return inventory;
         }
     }
 }

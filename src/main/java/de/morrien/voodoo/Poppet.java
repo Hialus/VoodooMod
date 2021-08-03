@@ -2,43 +2,35 @@ package de.morrien.voodoo;
 
 import de.morrien.voodoo.item.PoppetItem;
 import de.morrien.voodoo.tileentity.PoppetShelfTileEntity;
-import de.morrien.voodoo.util.BindingUtil;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeConfigSpec.IntValue;
 import org.apache.commons.lang3.text.WordUtils;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Timor Morrien
  */
 public class Poppet {
-    private PlayerEntity player;
-    private PoppetShelfTileEntity poppetShelf;
-    private PoppetItem item;
-    private ItemStack stack;
+    private final PlayerEntity player;
+    private final Optional<PoppetShelfTileEntity> poppetShelf;
+    private final PoppetItem item;
+    private final ItemStack stack;
 
     public Poppet(PoppetShelfTileEntity poppetShelf, PlayerEntity player, PoppetItem item, ItemStack stack) {
-        this.poppetShelf = poppetShelf;
+        this.poppetShelf = Optional.of(poppetShelf);
         this.player = player;
         this.item = item;
         this.stack = stack;
     }
 
     public Poppet(PlayerEntity player, PoppetItem item, ItemStack stack) {
+        this.poppetShelf = Optional.empty();
         this.player = player;
         this.item = item;
         this.stack = stack;
-    }
-
-    public PlayerEntity getPlayer() {
-        return player;
     }
 
     public PoppetItem getItem() {
@@ -46,8 +38,7 @@ public class Poppet {
     }
 
     public ItemStack getStack() {
-        if (poppetShelf != null)
-            poppetShelf.inventoryTouched();
+        poppetShelf.ifPresent(PoppetShelfTileEntity::inventoryTouched);
         return stack;
     }
 
@@ -65,18 +56,13 @@ public class Poppet {
         } else {
             shrink();
         }
-        if (poppetShelf != null)
-            poppetShelf.inventoryTouched();
+        poppetShelf.ifPresent(PoppetShelfTileEntity::inventoryTouched);
     }
 
     private void shrink() {
         stack.shrink(1);
         final TranslationTextComponent text = new TranslationTextComponent("text.voodoo.poppet.used_up", new TranslationTextComponent(item.getDescriptionId()));
         player.displayClientMessage(text, false);
-    }
-
-    public PoppetShelfTileEntity getPoppetShelf() {
-        return poppetShelf;
     }
 
     public enum PoppetType {

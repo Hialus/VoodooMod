@@ -6,11 +6,7 @@ import net.minecraft.advancements.criterion.BrewedPotionTrigger;
 import net.minecraft.advancements.criterion.ChangeDimensionTrigger;
 import net.minecraft.block.Blocks;
 import net.minecraft.data.*;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.potion.PotionUtils;
-import net.minecraft.potion.Potions;
 import net.minecraft.world.World;
 import net.minecraftforge.common.Tags;
 

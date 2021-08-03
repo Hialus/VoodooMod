@@ -8,10 +8,8 @@ import de.morrien.voodoo.sound.SoundRegistry;
 import de.morrien.voodoo.tileentity.PoppetShelfTileEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
@@ -31,13 +29,22 @@ public class PoppetUtil {
         poppetCache = new WeakHashMap<>();
     }
 
+    /**
+     * Code for handling all the events that happen when a voodoo protection poppet is activated.
+     * If the voodoo poppet was used by a player they will get a message telling them that the target had a protection poppet.
+     * If the voodoo poppet was used by the item entity it will not send such a message.
+     * In both cases the voodoo poppet that was used will be destroyed.
+     *
+     * @param voodooPoppet The voodoo poppet that was used
+     * @param source       The entity that used the voodoo poppet
+     */
     public static void useVoodooProtectionPuppet(ItemStack voodooPoppet, Entity source) {
         if (source instanceof PlayerEntity) {
             final PlayerEntity fromPlayer = (PlayerEntity) source;
             fromPlayer.displayClientMessage(new TranslationTextComponent("text.voodoo.voodoo_protection.had", BindingUtil.getBoundName(voodooPoppet)), true);
             voodooPoppet.hurtAndBreak(Integer.MAX_VALUE, fromPlayer, playerEntity -> {
                 playerEntity.broadcastBreakEvent(playerEntity.getUsedItemHand());
-                playerEntity.level.playSound(null, playerEntity, SoundEvents.TOTEM_USE, SoundCategory.PLAYERS, 1, 1);
+                playerEntity.level.playSound(null, playerEntity, SoundRegistry.voodooProtectionPoppetUsed.get(), SoundCategory.PLAYERS, 1, 1);
             });
         } else {
             source.level.playSound(null, source, SoundRegistry.voodooProtectionPoppetUsed.get(), SoundCategory.PLAYERS, 1, 1);
@@ -110,16 +117,19 @@ public class PoppetUtil {
      * @param poppetShelf The poppet shelf
      */
     public static void invalidateShelfCache(PoppetShelfTileEntity poppetShelf) {
-        poppetCache.remove(poppetShelf);
+        if (poppetShelf != null)
+            poppetCache.remove(poppetShelf);
     }
 
     /**
-     * Clear the cache holding all PoppetShelfTileEntities.
-     * Should be used everytime a new poppet shelf is created.
-     * TODO: Maybe replace with method to add poppet shelf into cache instead.
+     * Clear the cached poppets shelves of a player.
+     * Should be used everytime a new poppet shelf of a player is created.
+     *
+     * @param playerUUD The UUID of the owner of the player
      */
-    public static void invalidateShelvesCache() {
-        poppetShelvesCache.invalidateAll();
+    public static void invalidateShelvesCache(UUID playerUUD) {
+        if (playerUUD != null)
+            poppetShelvesCache.invalidate(playerUUD);
     }
 
     /**
