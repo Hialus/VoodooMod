@@ -25,7 +25,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class VoodooNetwork {
-
     private static final String PROTOCOL_VERSION = Integer.toString(1);
     private static VoodooNetwork instance = null;
     public final SimpleChannel network;

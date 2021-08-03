@@ -32,6 +32,7 @@ public class VoodooConfig {
     public static class Common {
         public VoodooPoppet voodoo;
         public VampiricPoppet vampiric;
+        public ReflectorPoppet reflector;
         public VoodooProtectionPoppet voodooProtection;
         public DeathProtectionPoppet deathProtection;
         public FireProtectionPoppet fireProtection;
@@ -48,6 +49,7 @@ public class VoodooConfig {
             builder.comment("Poppet configuration settings").push("poppets");
             this.voodoo = new VoodooPoppet(builder);
             this.vampiric = new VampiricPoppet(builder);
+            this.reflector = new ReflectorPoppet(builder);
             this.voodooProtection = new VoodooProtectionPoppet(builder);
             this.deathProtection = new DeathProtectionPoppet(builder);
             this.fireProtection = new FireProtectionPoppet(builder);
@@ -181,6 +183,16 @@ public class VoodooConfig {
                         .comment("The hit points that should be stolen per drain.")
                         .defineInRange("health_per_drain", 3, 1, Integer.MAX_VALUE);
                 builder.pop();
+            }
+        }
+
+        public static class ReflectorPoppet extends PoppetBase {
+            public ReflectorPoppet(Builder builder) {
+                super(builder,
+                        "Reflector Poppet",
+                        "reflector_poppet",
+                        10
+                );
             }
         }
 

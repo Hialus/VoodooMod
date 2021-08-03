@@ -10,7 +10,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
 
 public class PoppetShelfSyncUpdate implements IThreadsafePacket {
-
     private final BlockPos pos;
     private final CompoundNBT inventoryTag;
 
@@ -32,26 +31,13 @@ public class PoppetShelfSyncUpdate implements IThreadsafePacket {
 
     @Override
     public void handleThreadsafe(Context context) {
-        HandleClient.handle(this);
-    }
-
-    /**
-     * Safely runs client side only code in a method only called on client
-     */
-    private static class HandleClient {
-        private static void handle(PoppetShelfSyncUpdate packet) {
-            World world = Minecraft.getInstance().level;
-
-            if (world != null) {
-                TileEntity te = world.getBlockEntity(packet.pos);
-
-                if (te != null) {
-                    if (te instanceof PoppetShelfTileEntity) {
-                        ((PoppetShelfTileEntity) te).updateInventory(packet.inventoryTag);
-                        Minecraft.getInstance().levelRenderer.blockChanged(world, packet.pos, null, null, 0);
-                    }
-                }
-            }
+        World world = Minecraft.getInstance().level;
+        if (world == null) return;
+        TileEntity blockEntity = world.getBlockEntity(this.pos);
+        if (blockEntity == null) return;
+        if (blockEntity instanceof PoppetShelfTileEntity) {
+            ((PoppetShelfTileEntity) blockEntity).updateInventory(this.inventoryTag);
+            Minecraft.getInstance().levelRenderer.blockChanged(world, this.pos, null, null, 0);
         }
     }
 }

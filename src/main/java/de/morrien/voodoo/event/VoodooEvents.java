@@ -8,6 +8,7 @@ import de.morrien.voodoo.item.ItemRegistry;
 import de.morrien.voodoo.util.BindingUtil;
 import de.morrien.voodoo.util.PoppetUtil;
 import net.minecraft.entity.AreaEffectCloudEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
@@ -17,12 +18,15 @@ import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.EffectType;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EntityDamageSource;
+import net.minecraft.util.IndirectEntityDamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -148,6 +152,9 @@ public class VoodooEvents {
                 player.isDeadOrDying() ||
                 (event.getSource().isFire() && player.hasEffect(Effects.FIRE_RESISTANCE))
         ) return;
+
+        if (tryReflectorPoppet(event)) return;
+
         final DamageSource damageSource = event.getSource();
         final List<Poppet.PoppetType> validPoppets = getProtectionPoppets(event);
 
@@ -177,6 +184,20 @@ public class VoodooEvents {
                 player.hurt(damageSource, event.getAmount() * percentage);
             }
         }
+    }
+
+    private static boolean tryReflectorPoppet(LivingAttackEvent event) {
+        if (!(event.getSource() instanceof EntityDamageSource)) return false;
+        final Entity sourceEntity = event.getSource().getEntity();
+        if (sourceEntity == null) return false;
+        final ServerPlayerEntity player = (ServerPlayerEntity) event.getEntity();
+        if (player == sourceEntity) return false;
+        final Poppet reflectorPoppet = PoppetUtil.getPlayerPoppet(player, REFLECTOR);
+        if (reflectorPoppet == null) return false;
+        sourceEntity.hurt(event.getSource(), event.getAmount());
+        event.setCanceled(true);
+        reflectorPoppet.use();
+        return true;
     }
 
     private static int usePoppet(Poppet poppet, int durabilityCost) {
