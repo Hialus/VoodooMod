@@ -22,6 +22,7 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -114,6 +115,27 @@ public class VoodooEvents {
         }
     }
 
+    @SubscribeEvent
+    public static void onLivingDeath(LivingDeathEvent event) {
+        if (event.getEntity().level.isClientSide) return;
+        if (event.getSource() == OUT_OF_WORLD) return;
+        if (!COMMON.deathProtection.enabled.get()) return;
+        if (!(event.getEntityLiving() instanceof PlayerEntity)) return;
+
+        final PlayerEntity player = (PlayerEntity) event.getEntity();
+        Poppet poppet = PoppetUtil.getPlayerPoppet(player, DEATH_PROTECTION);
+        if (poppet != null) {
+            poppet.use();
+            event.setCanceled(true);
+            player.setHealth(player.getMaxHealth() / 2);
+            player.removeAllEffects();
+            player.addEffect(new EffectInstance(Effects.REGENERATION, 45 * 20, 1));
+            player.addEffect(new EffectInstance(Effects.ABSORPTION, 5 * 20, 1));
+            player.addEffect(new EffectInstance(Effects.FIRE_RESISTANCE, 40 * 20, 0));
+            player.level.broadcastEntityEvent(player, (byte) 35);
+        }
+    }
+
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onLivingAttack(LivingAttackEvent event) {
         if (!(event.getEntity() instanceof PlayerEntity)) return;
@@ -147,24 +169,11 @@ public class VoodooEvents {
                 durabilityCost = usePoppet(poppet, durabilityCost);
             }
         }
-        float percentage = durabilityCost == originalDurabilityCost ? 1 : ((float) durabilityCost) / ((float) originalDurabilityCost);
-        if (player.getHealth() - event.getAmount() * percentage <= 0 && COMMON.deathProtection.enabled.get()) {
-            Poppet poppet = PoppetUtil.getPlayerPoppet(player, DEATH_PROTECTION);
-            if (poppet != null) {
-                poppet.use();
-                durabilityCost = 0;
-                player.setHealth(player.getMaxHealth() / 2);
-                player.removeAllEffects();
-                player.addEffect(new EffectInstance(Effects.REGENERATION, 45 * 20, 1));
-                player.addEffect(new EffectInstance(Effects.ABSORPTION, 5 * 20, 1));
-                player.addEffect(new EffectInstance(Effects.FIRE_RESISTANCE, 40 * 20, 0));
-                player.level.broadcastEntityEvent(player, (byte) 35);
-            }
-        }
         if (durabilityCost != originalDurabilityCost) {
             doSpecialActions(event);
             event.setCanceled(true);
             if (durabilityCost > 0) {
+                float percentage = ((float) durabilityCost) / ((float) originalDurabilityCost);
                 player.hurt(damageSource, event.getAmount() * percentage);
             }
         }
