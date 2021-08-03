@@ -48,12 +48,12 @@ public class VoodooEvents {
     public static void onTickPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.side == LogicalSide.CLIENT) return;
         if (event.phase == TickEvent.Phase.START) return;
-        checkPotionEffects(event.player);
+        checkPotionEffects((ServerPlayerEntity) event.player);
         if (event.player.tickCount % 20 != 0) return;
-        checkFoodStatus(event.player);
+        checkFoodStatus((ServerPlayerEntity) event.player);
     }
 
-    private static void checkPotionEffects(PlayerEntity player) {
+    private static void checkPotionEffects(ServerPlayerEntity player) {
         for (Iterator<EffectInstance> iterator = player.getActiveEffects().iterator(); iterator.hasNext(); ) {
             EffectInstance potionEffect = iterator.next();
             if (potionEffect.getEffect().getCategory() != EffectType.HARMFUL) continue;
@@ -67,7 +67,7 @@ public class VoodooEvents {
 
     private static void removeWitherEffect(PlayerEntity player, EffectInstance potionEffect) {
         if (!COMMON.witherProtection.enabled.get()) return;
-        Poppet witherPoppet = PoppetUtil.getPlayerPoppet(player, WITHER_PROTECTION);
+        Poppet witherPoppet = PoppetUtil.getPlayerPoppet((ServerPlayerEntity) player, WITHER_PROTECTION);
         if (witherPoppet == null) return;
         player.removeEffect(potionEffect.getEffect());
         witherPoppet.use();
@@ -77,7 +77,7 @@ public class VoodooEvents {
         if (!COMMON.potionProtection.enabled.get()) return;
         int durabilityCost = potionEffect.getAmplifier() + 1;
         while (durabilityCost > 0) {
-            Poppet poppet = PoppetUtil.getPlayerPoppet(player, POTION_PROTECTION);
+            Poppet poppet = PoppetUtil.getPlayerPoppet((ServerPlayerEntity) player, POTION_PROTECTION);
             if (poppet == null) break;
             durabilityCost = usePoppet(poppet, durabilityCost);
         }
@@ -95,7 +95,7 @@ public class VoodooEvents {
         }
     }
 
-    private static void checkFoodStatus(PlayerEntity player) {
+    private static void checkFoodStatus(ServerPlayerEntity player) {
         if (player.getFoodData().getFoodLevel() > 10) return;
         final Poppet hungerPoppet = PoppetUtil.getPlayerPoppet(player, HUNGER_PROTECTION);
         if (hungerPoppet == null) return;
@@ -120,9 +120,9 @@ public class VoodooEvents {
         if (event.getEntity().level.isClientSide) return;
         if (event.getSource() == OUT_OF_WORLD) return;
         if (!COMMON.deathProtection.enabled.get()) return;
-        if (!(event.getEntityLiving() instanceof PlayerEntity)) return;
+        if (!(event.getEntityLiving() instanceof ServerPlayerEntity)) return;
 
-        final PlayerEntity player = (PlayerEntity) event.getEntity();
+        final ServerPlayerEntity player = (ServerPlayerEntity) event.getEntity();
         Poppet poppet = PoppetUtil.getPlayerPoppet(player, DEATH_PROTECTION);
         if (poppet != null) {
             poppet.use();
@@ -138,8 +138,8 @@ public class VoodooEvents {
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onLivingAttack(LivingAttackEvent event) {
-        if (!(event.getEntity() instanceof PlayerEntity)) return;
-        final PlayerEntity player = (PlayerEntity) event.getEntity();
+        if (!(event.getEntity() instanceof ServerPlayerEntity)) return;
+        final ServerPlayerEntity player = (ServerPlayerEntity) event.getEntity();
         if (event.isCanceled() ||
                 event.getAmount() == 0 ||
                 player.level.isClientSide ||

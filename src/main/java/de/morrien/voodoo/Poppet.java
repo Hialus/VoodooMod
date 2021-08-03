@@ -42,6 +42,10 @@ public class Poppet {
         return stack;
     }
 
+    public Optional<PoppetShelfTileEntity> getPoppetShelf() {
+        return poppetShelf;
+    }
+
     public void use() {
         use(1);
     }

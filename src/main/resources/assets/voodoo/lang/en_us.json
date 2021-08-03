@@ -28,6 +28,16 @@
   "sound.poppet.voodoo_protection.used": "Voodoo Protection Poppet activated",
   "sound.poppet.potion_protection.used": "Potion Protection Poppet activated",
 
+  "commands.voodoo.list.poppets.header": "Poppets of %1$s:",
+  "commands.voodoo.list.poppets.none": "No poppets found",
+  "commands.voodoo.list.poppets.line.inventory": "%1$s. %2$s (Inventory)",
+  "commands.voodoo.list.poppets.line.shelf": "%1$s. %2$s (%3$s: %4$s, %5$s, %6$s)",
+
+  "commands.voodoo.list.shelves.header": "Poppet shelves of %1$s:",
+  "commands.voodoo.list.shelves.none": "No poppet shelves found",
+  "commands.voodoo.list.shelves.line": "%1$s. %2$s, %3$s, %4$s (%5$s)",
+
+  "commands.voodoo.list.teleport": "Teleport to poppet shelf",
   "commands.voodoo.player_not_found": "The player %1$s could not be found",
   "commands.voodoo.player_only": "Non players must specify the name of a player as last argument",
   "commands.voodoo.usage": "/voodoo <list> <poppets|shelves> [player]"

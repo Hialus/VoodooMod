@@ -9,9 +9,7 @@ import net.minecraft.command.Commands;
 import net.minecraft.command.arguments.EntityArgument;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.text.Color;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.Style;
+import net.minecraft.util.text.*;
 import net.minecraft.util.text.event.ClickEvent;
 import net.minecraft.util.text.event.HoverEvent;
 import net.minecraft.world.server.ServerWorld;
@@ -20,7 +18,7 @@ public class ListShelvesCommand {
     public static ArgumentBuilder<CommandSource, ?> register(CommandDispatcher<CommandSource> dispatcher) {
         return Commands
                 .literal("shelves")
-                .then(Commands.argument("player", EntityArgument.players()).requires(cs -> cs.hasPermission(3)).executes(context -> {
+                .then(Commands.argument("player", EntityArgument.player()).requires(cs -> cs.hasPermission(3)).executes(context -> {
                     final ServerPlayerEntity player = EntityArgument.getPlayer(context, "player");
                     return list(context, player);
                 }))
@@ -31,7 +29,12 @@ public class ListShelvesCommand {
     }
 
     private static int list(CommandContext<CommandSource> context, ServerPlayerEntity player) {
-        StringTextComponent message = new StringTextComponent("Shelves of " + player.getDisplayName().getString() + ":");
+        TextComponent message = new StringTextComponent("");
+        message.append(new TranslationTextComponent(
+                "commands.voodoo.list.shelves.header",
+                player.getDisplayName())
+                .setStyle(Style.EMPTY.withColor(TextFormatting.GREEN).withBold(true))
+        );
         CommandSource source = context.getSource();
         int counter = 1;
         for (ServerWorld world : player.server.getAllLevels()) {
@@ -39,10 +42,23 @@ public class ListShelvesCommand {
                 if (tileEntity instanceof PoppetShelfTileEntity) {
                     if (player.getUUID().equals(((PoppetShelfTileEntity) tileEntity).getOwnerUuid())) {
                         message.append("\n");
-                        final StringTextComponent text = new StringTextComponent(counter + ". " + tileEntity.getBlockPos().getX() + ", " + tileEntity.getBlockPos().getY() + ", " + tileEntity.getBlockPos().getZ() + " (" + world.dimension().location().getPath() + ")");
+                        final TranslationTextComponent text = new TranslationTextComponent(
+                                "commands.voodoo.list.shelves.line",
+                                counter,
+                                tileEntity.getBlockPos().getX(),
+                                tileEntity.getBlockPos().getY(),
+                                tileEntity.getBlockPos().getZ(),
+                                world.dimension().location().getPath()
+                        );
                         Style style = Style.EMPTY
-                                .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/execute in " + world.dimension().location().toString() + " run tp " + player.getName().getString() + " " + tileEntity.getBlockPos().getX() + " " + tileEntity.getBlockPos().getY() + " " + tileEntity.getBlockPos().getZ()))
-                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new StringTextComponent("Teleport to shelf")));
+                                .withClickEvent(new ClickEvent(
+                                        ClickEvent.Action.SUGGEST_COMMAND,
+                                        "/execute in " + world.dimension().location().toString() + " run tp " + player.getName().getString() + " " + tileEntity.getBlockPos().getX() + " " + tileEntity.getBlockPos().getY() + " " + tileEntity.getBlockPos().getZ()
+                                ))
+                                .withHoverEvent(new HoverEvent(
+                                        HoverEvent.Action.SHOW_TEXT,
+                                        new TranslationTextComponent("commands.voodoo.list.teleport")
+                                ));
                         text.setStyle(style);
                         message.append(text);
                         counter++;
@@ -51,8 +67,8 @@ public class ListShelvesCommand {
             }
         }
         if (counter == 1) {
-            message = new StringTextComponent("No shelves found");
-            message.setStyle(Style.EMPTY.withColor(Color.parseColor("#ff0000")));
+            message = new TranslationTextComponent("commands.voodoo.list.shelves.none");
+            message.setStyle(Style.EMPTY.withColor(TextFormatting.RED));
         }
         source.sendSuccess(message, false);
         return 0;

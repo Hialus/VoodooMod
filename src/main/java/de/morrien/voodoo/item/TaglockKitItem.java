@@ -18,6 +18,8 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
@@ -41,9 +43,16 @@ public class TaglockKitItem extends Item {
         super.appendHoverText(stack, world, tooltip, flag);
         if (isBound(stack)) {
             checkForNameUpdate(stack, world);
-            tooltip.add(new TranslationTextComponent("text.voodoo.taglock_kit.bound", getBoundName(stack)));
+            final TranslationTextComponent text = new TranslationTextComponent(
+                    "text.voodoo.taglock_kit.bound",
+                    getBoundName(stack)
+            );
+            text.setStyle(Style.EMPTY.withColor(TextFormatting.GRAY));
+            tooltip.add(text);
         } else {
-            tooltip.add(new TranslationTextComponent("text.voodoo.taglock_kit.not_bound"));
+            final TranslationTextComponent text = new TranslationTextComponent("text.voodoo.taglock_kit.not_bound");
+            text.setStyle(Style.EMPTY.withColor(TextFormatting.GRAY));
+            tooltip.add(text);
         }
     }
 

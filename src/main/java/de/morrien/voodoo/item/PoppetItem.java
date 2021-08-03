@@ -11,6 +11,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.UseAction;
@@ -18,6 +19,8 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
@@ -90,7 +93,7 @@ public class PoppetItem extends Item {
                         });
                     }
                 } else if (COMMON.voodoo.enablePush.get()) {
-                    Poppet voodooProtectionPoppet = PoppetUtil.getPlayerPoppet(boundPlayer, Poppet.PoppetType.VOODOO_PROTECTION);
+                    Poppet voodooProtectionPoppet = PoppetUtil.getPlayerPoppet((ServerPlayerEntity) boundPlayer, Poppet.PoppetType.VOODOO_PROTECTION);
 
                     if (voodooProtectionPoppet != null) {
                         PoppetUtil.useVoodooProtectionPuppet(stack, livingEntity);
@@ -118,9 +121,16 @@ public class PoppetItem extends Item {
         super.appendHoverText(stack, world, tooltip, flag);
         if (isBound(stack)) {
             checkForNameUpdate(stack, world);
-            tooltip.add(new TranslationTextComponent("text.voodoo.poppet.bound", getBoundName(stack)));
+            final TranslationTextComponent text = new TranslationTextComponent(
+                    "text.voodoo.poppet.bound",
+                    getBoundName(stack)
+            );
+            text.setStyle(Style.EMPTY.withColor(TextFormatting.GRAY));
+            tooltip.add(text);
         } else if (stack.getItem() != ItemRegistry.poppetMap.get(BLANK).get()) {
-            tooltip.add(new TranslationTextComponent("text.voodoo.poppet.not_bound"));
+            final TranslationTextComponent text = new TranslationTextComponent("text.voodoo.poppet.not_bound");
+            text.setStyle(Style.EMPTY.withColor(TextFormatting.GRAY));
+            tooltip.add(text);
         }
     }
 

@@ -8,6 +8,7 @@ import de.morrien.voodoo.sound.SoundRegistry;
 import de.morrien.voodoo.tileentity.PoppetShelfTileEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -17,6 +18,7 @@ import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class PoppetUtil {
     private static final Cache<UUID, List<WeakReference<PoppetShelfTileEntity>>> poppetShelvesCache;
@@ -76,11 +78,12 @@ public class PoppetUtil {
      * @param player The player
      * @return The found poppets
      */
-    public static List<Poppet> getPoppetsInShelves(PlayerEntity player) {
+    public static List<Poppet> getPoppetsInShelves(ServerPlayerEntity player) {
         List<WeakReference<PoppetShelfTileEntity>> cachedShelves = poppetShelvesCache.getIfPresent(player.getUUID());
         if (cachedShelves == null) {
-            final World world = player.level;
-            cachedShelves = world.blockEntityList.stream()
+            cachedShelves = StreamSupport
+                    .stream(player.server.getAllLevels().spliterator(), false)
+                    .flatMap(world -> world.blockEntityList.stream())
                     .filter(tileEntity -> tileEntity instanceof PoppetShelfTileEntity)
                     .filter(poppetShelf -> player.getUUID().equals(((PoppetShelfTileEntity) poppetShelf).getOwnerUuid()))
                     .map(tileEntity -> new WeakReference<>((PoppetShelfTileEntity) tileEntity))
@@ -139,7 +142,7 @@ public class PoppetUtil {
      * @param poppetType The type of the poppet
      * @return The found poppet or null
      */
-    public static Poppet getPlayerPoppet(PlayerEntity player, Poppet.PoppetType poppetType) {
+    public static Poppet getPlayerPoppet(ServerPlayerEntity player, Poppet.PoppetType poppetType) {
         return getPoppetsInInventory(player)
                 .stream()
                 .filter(poppet -> poppet.getItem().getPoppetType() == poppetType)

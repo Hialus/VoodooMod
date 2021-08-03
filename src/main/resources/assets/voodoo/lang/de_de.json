@@ -28,6 +28,16 @@
   "sound.poppet.voodoo_protection.used": "Voodoo Beschützer-Puppe wurde aktiviert",
   "sound.poppet.potion_protection.used": "Trank Beschützer-Puppe wurde aktiviert",
 
+  "commands.voodoo.list.poppets.header": "Puppen von %1$s:",
+  "commands.voodoo.list.poppets.none": "Keine Puppen gefunden",
+  "commands.voodoo.list.poppets.line.inventory": "%1$s. %2$s (Inventar)",
+  "commands.voodoo.list.poppets.line.shelf": "%1$s. %2$s (%3$s: %4$s, %5$s, %6$s)",
+
+  "commands.voodoo.list.shelves.header": "Puppenregale von %1$s:",
+  "commands.voodoo.list.shelves.none": "Keine Puppenregale gefunden",
+  "commands.voodoo.list.shelves.line": "%1$s. %2$s, %3$s, %4$s (%5$s)",
+
+  "commands.voodoo.list.teleport": "Zum Puppenregal teleportieren",
   "commands.voodoo.player_not_found": "Der Spieler %1$s wurde nicht gefunden",
   "commands.voodoo.player_only": "Nicht Spieler müssen den Namen eines Spielers als letztes Argument übergeben",
   "commands.voodoo.usage": "/voodoo <list> <poppets|shelves> [player]"

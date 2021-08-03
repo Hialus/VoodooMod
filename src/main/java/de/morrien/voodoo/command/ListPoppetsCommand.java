@@ -3,30 +3,28 @@ package de.morrien.voodoo.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import de.morrien.voodoo.item.PoppetItem;
+import de.morrien.voodoo.Poppet;
 import de.morrien.voodoo.tileentity.PoppetShelfTileEntity;
-import de.morrien.voodoo.util.BindingUtil;
+import de.morrien.voodoo.util.PoppetUtil;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.command.arguments.EntityArgument;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.text.Color;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.Style;
+import net.minecraft.util.text.*;
 import net.minecraft.util.text.event.ClickEvent;
 import net.minecraft.util.text.event.HoverEvent;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ListPoppetsCommand {
     public static ArgumentBuilder<CommandSource, ?> register(CommandDispatcher<CommandSource> dispatcher) {
         return Commands
                 .literal("poppets")
-                .then(Commands.argument("player", EntityArgument.players()).requires(cs -> cs.hasPermission(3)).executes(context -> {
+                .then(Commands.argument("player", EntityArgument.player()).requires(cs -> cs.hasPermission(3)).executes(context -> {
                     final ServerPlayerEntity player = EntityArgument.getPlayer(context, "player");
                     return list(context, player);
                 }))
@@ -37,44 +35,57 @@ public class ListPoppetsCommand {
     }
 
     private static int list(CommandContext<CommandSource> context, ServerPlayerEntity player) {
-        StringTextComponent message = new StringTextComponent("Poppets of " + player.getDisplayName().getString() + ":");
+        TextComponent message = new StringTextComponent("");
+        message.append(new TranslationTextComponent(
+                "commands.voodoo.list.poppets.header",
+                player.getDisplayName())
+                .setStyle(Style.EMPTY.withColor(TextFormatting.GREEN).withBold(true))
+        );
         CommandSource source = context.getSource();
         int counter = 1;
-        List<ItemStack> playerventory = new ArrayList<>(player.inventory.items);
-        playerventory.addAll(player.inventory.offhand);
-        for (ItemStack stack : playerventory) {
-            if (!stack.isEmpty() && stack.getItem() instanceof PoppetItem && player.getUUID().equals(BindingUtil.getBoundUUID(stack))) {
-                message.append("\n");
-                message.append(new StringTextComponent(
-                        counter + ". " + ((PoppetItem) stack.getItem()).getPoppetType().toString() + " (Inventory)")
+        final List<Poppet> poppets = new ArrayList<>();
+        poppets.addAll(PoppetUtil.getPoppetsInInventory(player));
+        poppets.addAll(PoppetUtil.getPoppetsInShelves(player));
+        for (Poppet poppet : poppets) {
+            final ItemStack stack = poppet.getStack();
+            final Optional<PoppetShelfTileEntity> poppetShelf = poppet.getPoppetShelf();
+            message.append("\n");
+            final TranslationTextComponent poppetText = new TranslationTextComponent(stack.getItem().getDescriptionId());
+            if (poppetShelf.isPresent()) {
+                final PoppetShelfTileEntity tileEntity = poppetShelf.get();
+                final World world = tileEntity.getLevel();
+                TranslationTextComponent text = new TranslationTextComponent(
+                        "commands.voodoo.list.poppets.line.shelf",
+                        counter,
+                        poppetText,
+                        world.dimension().location().getPath(),
+                        tileEntity.getBlockPos().getX(),
+                        tileEntity.getBlockPos().getY(),
+                        tileEntity.getBlockPos().getZ()
                 );
-                counter++;
+                Style style = Style.EMPTY
+                        .withClickEvent(new ClickEvent(
+                                ClickEvent.Action.SUGGEST_COMMAND,
+                                "/execute in " + world.dimension().location().toString() + " run tp " + player.getName().getString() + " " + tileEntity.getBlockPos().getX() + " " + tileEntity.getBlockPos().getY() + " " + tileEntity.getBlockPos().getZ()
+                        ))
+                        .withHoverEvent(new HoverEvent(
+                                HoverEvent.Action.SHOW_TEXT,
+                                new TranslationTextComponent("commands.voodoo.list.teleport")
+                        ));
+                text.setStyle(style);
+                message.append(text);
+            } else {
+                message.append(new TranslationTextComponent(
+                        "commands.voodoo.list.poppets.line.inventory",
+                        counter,
+                        poppetText
+                ));
             }
-        }
-        for (ServerWorld world : player.server.getAllLevels()) {
-            for (TileEntity tileEntity : world.blockEntityList) {
-                if (tileEntity instanceof PoppetShelfTileEntity) {
-                    List<ItemStack> inventory = ((PoppetShelfTileEntity) tileEntity).getInventory();
-                    for (ItemStack stack : inventory) {
-                        if (!stack.isEmpty() && player.getUUID().equals(BindingUtil.getBoundUUID(stack))) {
-                            message.append("\n");
-                            StringTextComponent text = new StringTextComponent(counter + ". " + ((PoppetItem) stack.getItem()).getPoppetType().toString() + " ");
-                            StringTextComponent coords = new StringTextComponent("(" + world.dimension().location().getPath() + ": " + tileEntity.getBlockPos().getX() + ", " + tileEntity.getBlockPos().getY() + ", " + tileEntity.getBlockPos().getZ() + ")");
-                            Style style = Style.EMPTY
-                                    .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/execute in " + world.dimension().location().toString() + " run tp " + player.getName().getString() + " " + tileEntity.getBlockPos().getX() + " " + tileEntity.getBlockPos().getY() + " " + tileEntity.getBlockPos().getZ()))
-                                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new StringTextComponent("Teleport to shelf")));
-                            coords.setStyle(style);
-                            text.append(coords);
-                            message.append(text);
-                            counter++;
-                        }
-                    }
-                }
-            }
+            counter++;
         }
         if (counter == 1) {
-            message = new StringTextComponent("No poppets found");
-            message.setStyle(Style.EMPTY.withColor(Color.parseColor("#ff0000")));
+            message = new TranslationTextComponent("commands.voodoo.list.poppets.none");
+            message.setStyle(Style.EMPTY.withColor(TextFormatting.RED));
         }
         source.sendSuccess(message, false);
         return 0;
