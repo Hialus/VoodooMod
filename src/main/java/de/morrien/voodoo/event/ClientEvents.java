@@ -27,7 +27,7 @@ public class ClientEvents {
             );
             ItemModelsProperties.register(
                     ItemRegistry.poppetMap.get(Poppet.PoppetType.PROJECTILE_PROTECTION).get(),
-                    new ResourceLocation(Voodoo.MOD_ID, "percentageUsed"),
+                    new ResourceLocation(Voodoo.MOD_ID, "percentage_used"),
                     (itemStack, clientWorld, livingEntity) -> Math.min(1, Math.max(0, itemStack.getDamageValue() / (float) itemStack.getMaxDamage()))
             );
         });
