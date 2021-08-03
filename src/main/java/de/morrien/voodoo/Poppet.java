@@ -72,6 +72,7 @@ public class Poppet {
     public enum PoppetType {
         BLANK(null),
         VOODOO(VoodooConfig.COMMON.voodoo.durability),
+        VAMPIRIC(VoodooConfig.COMMON.vampiric.durability),
         VOODOO_PROTECTION(VoodooConfig.COMMON.voodooProtection.durability),
         DEATH_PROTECTION(VoodooConfig.COMMON.deathProtection.durability),
         FIRE_PROTECTION(VoodooConfig.COMMON.fireProtection.durability),

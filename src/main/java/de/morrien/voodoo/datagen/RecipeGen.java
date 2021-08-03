@@ -75,6 +75,20 @@ public class RecipeGen extends RecipeProvider {
                 .unlockedBy("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
                 .save(consumer);
 
+        ShapedRecipeBuilder.shaped(ItemRegistry.poppetMap.get(VOODOO).get())
+                .pattern("GSG")
+                .pattern("CPW")
+                .pattern("RNR")
+                .define('P', ItemRegistry.poppetMap.get(VOODOO).get())
+                .define('N', ItemRegistry.needle.get())
+                .define('R', RABBIT_HIDE)
+                .define('G', GHAST_TEAR)
+                .define('C', CRIMSON_FUNGUS)
+                .define('W', WARPED_FUNGUS)
+                .define('S', SOUL_LANTERN)
+                .unlockedBy("has_voodoo_poppet", has(ItemRegistry.poppetMap.get(VOODOO).get()))
+                .save(consumer);
+
         ShapedRecipeBuilder.shaped(ItemRegistry.poppetMap.get(DEATH_PROTECTION).get())
                 .pattern("FTF")
                 .pattern("GPG")

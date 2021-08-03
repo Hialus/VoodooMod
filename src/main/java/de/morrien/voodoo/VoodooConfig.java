@@ -3,6 +3,7 @@ package de.morrien.voodoo;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.common.ForgeConfigSpec.Builder;
+import net.minecraftforge.common.ForgeConfigSpec.DoubleValue;
 import net.minecraftforge.common.ForgeConfigSpec.IntValue;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -30,6 +31,7 @@ public class VoodooConfig {
 
     public static class Common {
         public VoodooPoppet voodoo;
+        public VampiricPoppet vampiric;
         public VoodooProtectionPoppet voodooProtection;
         public DeathProtectionPoppet deathProtection;
         public FireProtectionPoppet fireProtection;
@@ -45,6 +47,7 @@ public class VoodooConfig {
         Common(Builder builder) {
             builder.comment("Poppet configuration settings").push("poppets");
             this.voodoo = new VoodooPoppet(builder);
+            this.vampiric = new VampiricPoppet(builder);
             this.voodooProtection = new VoodooProtectionPoppet(builder);
             this.deathProtection = new DeathProtectionPoppet(builder);
             this.fireProtection = new FireProtectionPoppet(builder);
@@ -137,6 +140,10 @@ public class VoodooConfig {
             public final IntValue durability;
 
             public PoppetBase(Builder builder, String comment, String path, int defaultDurability) {
+                this(builder, comment, path, defaultDurability, true);
+            }
+
+            public PoppetBase(Builder builder, String comment, String path, int defaultDurability, boolean pop) {
                 builder.comment(comment).push(path);
                 this.enabled = builder
                         .comment("Set to false to disable this poppet")
@@ -144,6 +151,35 @@ public class VoodooConfig {
                 this.durability = builder
                         .comment("Durability of the poppet")
                         .defineInRange("durability", defaultDurability, 0, Integer.MAX_VALUE);
+                if (pop)
+                    builder.pop();
+            }
+        }
+
+        public static class VampiricPoppet extends PoppetBase {
+            public final IntValue healthLimit;
+            public final IntValue drainageInterval;
+            public final IntValue healthPerDrain;
+
+            public VampiricPoppet(Builder builder) {
+                super(builder,
+                        "Vampiric Poppet",
+                        "vampiric_poppet",
+                        20,
+                        false
+                );
+                this.healthLimit = builder
+                        .comment(
+                                "The hit point limit for draining health",
+                                "If the target players health is below this number no health will be drained"
+                            )
+                        .defineInRange("health_limit", 3, 0, Integer.MAX_VALUE);
+                this.drainageInterval = builder
+                        .comment("The interval in which health should be drained in ticks.")
+                        .defineInRange("drainage_interval", 20, 1, Integer.MAX_VALUE);
+                this.healthPerDrain = builder
+                        .comment("The hit points that should be stolen per drain.")
+                        .defineInRange("health_per_drain", 3, 1, Integer.MAX_VALUE);
                 builder.pop();
             }
         }

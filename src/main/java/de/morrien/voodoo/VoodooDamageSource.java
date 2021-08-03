@@ -70,6 +70,7 @@ public class VoodooDamageSource extends DamageSource {
     public enum VoodooDamageType {
         NEEDLE,
         FIRE,
-        WATER
+        WATER,
+        VAMPIRIC
     }
 }
