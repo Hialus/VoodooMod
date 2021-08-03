@@ -68,6 +68,7 @@ public class VoodooConfig {
             public IntValue drownDurabilityCost;
             public BooleanValue enableNeedle;
             public IntValue needleDurabilityCost;
+            public IntValue needleDamage;
             public BooleanValue enablePush;
             public IntValue pushDurabilityCost;
 
@@ -97,6 +98,9 @@ public class VoodooConfig {
                 this.needleDurabilityCost = builder
                         .comment("The durability that should be removed each time the poppet does damage with a needle")
                         .defineInRange("needle_durability_cost", 1, 0, Integer.MAX_VALUE);
+                this.needleDamage = builder
+                        .comment("The amount of hit points that should be removed from the target player. Given in half hearts")
+                        .defineInRange("needle_damage", 1, 0, Integer.MAX_VALUE);
                 this.enablePush = builder
                         .comment("Allow pushing bound player around")
                         .define("enable_push", true);

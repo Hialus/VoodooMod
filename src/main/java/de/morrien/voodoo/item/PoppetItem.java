@@ -26,6 +26,7 @@ import java.util.List;
 
 import static de.morrien.voodoo.Poppet.PoppetType.BLANK;
 import static de.morrien.voodoo.Poppet.PoppetType.VOODOO;
+import static de.morrien.voodoo.VoodooConfig.COMMON;
 import static de.morrien.voodoo.util.BindingUtil.*;
 
 /**
@@ -66,7 +67,7 @@ public class PoppetItem extends Item {
     @Override
     public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         if (poppetType != VOODOO) return ActionResult.pass(player.getItemInHand(hand));
-        if (!VoodooConfig.COMMON.voodoo.enableNeedle.get() && !VoodooConfig.COMMON.voodoo.enablePush.get())
+        if (!COMMON.voodoo.enableNeedle.get() && !COMMON.voodoo.enablePush.get())
             return ActionResult.pass(player.getItemInHand(hand));
         player.startUsingItem(hand);
         return ActionResult.success(player.getItemInHand(hand));
@@ -75,27 +76,27 @@ public class PoppetItem extends Item {
     @Override
     public void releaseUsing(ItemStack stack, World world, LivingEntity livingEntity, int timeLeft) {
         if (!world.isClientSide &&
-                timeLeft <= 72000 - VoodooConfig.COMMON.voodoo.pullDuration.get() &&
+                timeLeft <= 72000 - COMMON.voodoo.pullDuration.get() &&
                 livingEntity instanceof PlayerEntity) {
             PlayerEntity player = (PlayerEntity) livingEntity;
             PlayerEntity boundPlayer = getBoundPlayer(stack, world);
             if (boundPlayer != null) {
                 ItemStack offhand = livingEntity.getOffhandItem();
-                if (VoodooConfig.COMMON.voodoo.enableNeedle.get() && !offhand.isEmpty() && offhand.getItem() == ItemRegistry.needle.get()) {
+                if (COMMON.voodoo.enableNeedle.get() && !offhand.isEmpty() && offhand.getItem() == ItemRegistry.needle.get()) {
                     offhand.shrink(1);
-                    if (boundPlayer.hurt(new VoodooDamageSource(VoodooDamageSource.VoodooDamageType.NEEDLE, stack, player), 1f)) {
-                        stack.hurtAndBreak(VoodooConfig.COMMON.voodoo.needleDurabilityCost.get(), livingEntity, (e) -> {
+                    if (boundPlayer.hurt(new VoodooDamageSource(VoodooDamageSource.VoodooDamageType.NEEDLE, stack, player), COMMON.voodoo.needleDamage.get())) {
+                        stack.hurtAndBreak(COMMON.voodoo.needleDurabilityCost.get(), livingEntity, (e) -> {
                             player.broadcastBreakEvent(player.getUsedItemHand());
                         });
                     }
-                } else if (VoodooConfig.COMMON.voodoo.enablePush.get()) {
+                } else if (COMMON.voodoo.enablePush.get()) {
                     Poppet voodooProtectionPoppet = PoppetUtil.getPlayerPoppet(boundPlayer, Poppet.PoppetType.VOODOO_PROTECTION);
 
                     if (voodooProtectionPoppet != null) {
                         PoppetUtil.useVoodooProtectionPuppet(stack, livingEntity);
                         voodooProtectionPoppet.use();
                     } else {
-                        stack.hurtAndBreak(VoodooConfig.COMMON.voodoo.pushDurabilityCost.get(), livingEntity, (e) -> {
+                        stack.hurtAndBreak(COMMON.voodoo.pushDurabilityCost.get(), livingEntity, (e) -> {
                             player.broadcastBreakEvent(player.getUsedItemHand());
                         });
                         Vector3d vec = player.getLookAngle();
