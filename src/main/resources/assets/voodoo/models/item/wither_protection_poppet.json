@@ -2,7 +2,8 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [64, 64],
 	"textures": {
-		"1": "voodoo:item/wither_protection_poppet"
+		"1": "voodoo:item/wither_protection_poppet",
+		"particle": "voodoo:item/wither_protection_poppet"
 	},
 	"elements": [
 		{
