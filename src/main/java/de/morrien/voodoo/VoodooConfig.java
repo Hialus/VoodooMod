@@ -271,7 +271,7 @@ public class VoodooConfig {
                 super(builder,
                         "Wither Protection Poppet",
                         "wither_protection_poppet",
-                        5
+                        10
                 );
             }
         }

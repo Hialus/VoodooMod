@@ -42,8 +42,8 @@ public class VampiricPoppetItem extends PoppetItem {
     }
 
     @Override
-    public UseAction getUseAnimation(ItemStack p_77661_1_) {
-        return UseAction.BOW;
+    public UseAction getUseAnimation(ItemStack stack) {
+        return UseAction.DRINK;
     }
 
     @Override
