@@ -2,19 +2,25 @@ package de.morrien.voodoo.datagen;
 
 import de.morrien.voodoo.item.ItemRegistry;
 import de.morrien.voodoo.recipe.RecipeRegistry;
-import net.minecraft.advancements.criterion.BrewedPotionTrigger;
-import net.minecraft.advancements.criterion.ChangeDimensionTrigger;
-import net.minecraft.block.Blocks;
+import net.minecraft.advancements.critereon.BrewedPotionTrigger;
+import net.minecraft.advancements.critereon.ChangeDimensionTrigger;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.data.*;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.world.World;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.Tags;
 
 import java.util.function.Consumer;
 
 import static de.morrien.voodoo.Poppet.PoppetType.*;
 import static de.morrien.voodoo.Voodoo.MOD_ID;
-import static net.minecraft.item.Items.*;
+import static net.minecraft.world.item.Items.*;
+
+import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.ShapelessRecipeBuilder;
+import net.minecraft.data.recipes.SpecialRecipeBuilder;
 
 public class RecipeGen extends RecipeProvider {
     public RecipeGen(DataGenerator generator) {
@@ -22,7 +28,7 @@ public class RecipeGen extends RecipeProvider {
     }
 
     @Override
-    protected void buildShapelessRecipes(Consumer<IFinishedRecipe> consumer) {
+    protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
         ShapedRecipeBuilder.shaped(ItemRegistry.needle.get())
                 .pattern(" I ")
                 .pattern(" B ")
@@ -127,7 +133,7 @@ public class RecipeGen extends RecipeProvider {
                 .define('F', FIRE_CHARGE)
                 .define('B', BLAZE_ROD)
                 .unlockedBy("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
-                .unlockedBy("entered_nether", ChangeDimensionTrigger.Instance.changedDimensionTo(World.NETHER))
+                .unlockedBy("entered_nether", ChangeDimensionTrigger.TriggerInstance.changedDimensionTo(Level.NETHER))
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(ItemRegistry.poppetMap.get(FALL_PROTECTION).get())
@@ -169,7 +175,7 @@ public class RecipeGen extends RecipeProvider {
                 .define('B', BONE_BLOCK)
                 .define('H', GOLDEN_APPLE)
                 .unlockedBy("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
-                .unlockedBy("entered_nether", ChangeDimensionTrigger.Instance.changedDimensionTo(World.NETHER))
+                .unlockedBy("entered_nether", ChangeDimensionTrigger.TriggerInstance.changedDimensionTo(Level.NETHER))
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(ItemRegistry.poppetMap.get(POTION_PROTECTION).get())
@@ -184,7 +190,7 @@ public class RecipeGen extends RecipeProvider {
                 .define('C', GOLDEN_CARROT)
                 .define('H', GOLDEN_APPLE)
                 .unlockedBy("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
-                .unlockedBy("brewed_potion", BrewedPotionTrigger.Instance.brewedPotion())
+                .unlockedBy("brewed_potion", BrewedPotionTrigger.TriggerInstance.brewedPotion())
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(ItemRegistry.poppetMap.get(VOID_PROTECTION).get())
@@ -253,7 +259,7 @@ public class RecipeGen extends RecipeProvider {
                 .unlockedBy("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
                 .save(consumer);
 
-        CustomRecipeBuilder.special(RecipeRegistry.bindPoppetRecipe.get())
+        SpecialRecipeBuilder.special(RecipeRegistry.bindPoppetRecipe.get())
                 .save(consumer, MOD_ID + ":bind_poppet");
     }
 }

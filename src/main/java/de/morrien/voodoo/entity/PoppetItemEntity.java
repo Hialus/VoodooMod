@@ -3,33 +3,33 @@ package de.morrien.voodoo.entity;
 import de.morrien.voodoo.VoodooConfig;
 import de.morrien.voodoo.VoodooDamageSource;
 import de.morrien.voodoo.util.BindingUtil;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.EffectUtils;
-import net.minecraft.util.DamageSource;
-import net.minecraft.world.World;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.effect.MobEffectUtil;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.level.Level;
 
 /**
  * Created by Timor Morrien
  */
 public class PoppetItemEntity extends ItemEntity {
-    public PoppetItemEntity(World world) {
+    public PoppetItemEntity(Level world) {
         this(EntityType.ITEM, world);
     }
 
-    public PoppetItemEntity(EntityType<? extends ItemEntity> entityType, World world) {
+    public PoppetItemEntity(EntityType<? extends ItemEntity> entityType, Level world) {
         super(entityType, world);
     }
 
-    public PoppetItemEntity(World world, ItemEntity base, ItemStack stack) {
+    public PoppetItemEntity(Level world, ItemEntity base, ItemStack stack) {
         super(world, base.getX(), base.getY(), base.getZ(), stack);
         this.setPickUpDelay(40);
         this.setThrower(base.getThrower());
         this.setDeltaMovement(base.getDeltaMovement());
-        this.yRot = base.yRot;
+        this.setYRot(base.getYRot());
     }
 
     /**
@@ -44,12 +44,12 @@ public class PoppetItemEntity extends ItemEntity {
     public boolean hurt(DamageSource source, float amount) {
         if (source.isFire()) {
             if (VoodooConfig.COMMON.voodoo.enableFire.get()) {
-                PlayerEntity boundPlayer = BindingUtil.getBoundPlayer(getItem(), level);
+                Player boundPlayer = BindingUtil.getBoundPlayer(getItem(), level);
                 if (boundPlayer != null) {
                     boundPlayer.setSecondsOnFire(1);
                     boundPlayer.hurt(new VoodooDamageSource(VoodooDamageSource.VoodooDamageType.FIRE, getItem(), this), amount);
                     this.getItem().hurtAndBreak(VoodooConfig.COMMON.voodoo.fireDurabilityCost.get(), boundPlayer, (e) -> {
-                        this.remove();
+                        this.remove(RemovalReason.KILLED);
                     });
                 }
             }
@@ -69,10 +69,10 @@ public class PoppetItemEntity extends ItemEntity {
         if (!this.isInWaterOrBubble()) return;
         if (!VoodooConfig.COMMON.voodoo.enableDrowning.get()) return;
         if (!BindingUtil.isBound(this.getItem())) return;
-        final PlayerEntity boundPlayer = BindingUtil.getBoundPlayer(this.getItem(), this.level);
+        final Player boundPlayer = BindingUtil.getBoundPlayer(this.getItem(), this.level);
         if (boundPlayer == null) return;
         if (boundPlayer.isInvulnerable()) return;
-        if (boundPlayer.canBreatheUnderwater() || EffectUtils.hasWaterBreathing(boundPlayer)) return;
+        if (boundPlayer.canBreatheUnderwater() || MobEffectUtil.hasWaterBreathing(boundPlayer)) return;
         this.decreaseAirSupply(boundPlayer);
         if (boundPlayer.getAirSupply() > -40) return;
         boundPlayer.setAirSupply(0);
@@ -85,7 +85,7 @@ public class PoppetItemEntity extends ItemEntity {
      *
      * @param playerEntity The player
      */
-    private void decreaseAirSupply(PlayerEntity playerEntity) {
+    private void decreaseAirSupply(Player playerEntity) {
         final int airSupply = playerEntity.getAirSupply();
         int respiration = EnchantmentHelper.getRespiration(playerEntity);
         playerEntity.setAirSupply(respiration > 0 && this.random.nextInt(respiration + 1) > 0 ? airSupply : airSupply - 5);

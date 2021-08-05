@@ -1,42 +1,42 @@
 package de.morrien.voodoo.network;
 
-import de.morrien.voodoo.tileentity.PoppetShelfTileEntity;
+import de.morrien.voodoo.blockentity.PoppetShelfBlockEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkEvent.Context;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 public class PoppetShelfSyncUpdate implements IThreadsafePacket {
     private final BlockPos pos;
-    private final CompoundNBT inventoryTag;
+    private final CompoundTag inventoryTag;
 
-    public PoppetShelfSyncUpdate(CompoundNBT inventoryTag, BlockPos pos) {
+    public PoppetShelfSyncUpdate(CompoundTag inventoryTag, BlockPos pos) {
         this.inventoryTag = inventoryTag;
         this.pos = pos;
     }
 
-    public PoppetShelfSyncUpdate(PacketBuffer buffer) {
+    public PoppetShelfSyncUpdate(FriendlyByteBuf buffer) {
         this.inventoryTag = buffer.readNbt();
         this.pos = buffer.readBlockPos();
     }
 
     @Override
-    public void encode(PacketBuffer buffer) {
+    public void encode(FriendlyByteBuf buffer) {
         buffer.writeNbt(this.inventoryTag);
         buffer.writeBlockPos(this.pos);
     }
 
     @Override
-    public void handleThreadsafe(Context context) {
-        World world = Minecraft.getInstance().level;
+    public void handleThreadsafe(NetworkEvent.Context context) {
+        Level world = Minecraft.getInstance().level;
         if (world == null) return;
-        TileEntity blockEntity = world.getBlockEntity(this.pos);
+        BlockEntity blockEntity = world.getBlockEntity(this.pos);
         if (blockEntity == null) return;
-        if (blockEntity instanceof PoppetShelfTileEntity) {
-            ((PoppetShelfTileEntity) blockEntity).updateInventory(this.inventoryTag);
+        if (blockEntity instanceof PoppetShelfBlockEntity) {
+            ((PoppetShelfBlockEntity) blockEntity).updateInventory(this.inventoryTag);
             Minecraft.getInstance().levelRenderer.blockChanged(world, this.pos, null, null, 0);
         }
     }

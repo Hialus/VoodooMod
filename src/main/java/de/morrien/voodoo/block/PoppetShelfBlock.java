@@ -1,43 +1,43 @@
 package de.morrien.voodoo.block;
 
+import de.morrien.voodoo.blockentity.PoppetShelfBlockEntity;
 import de.morrien.voodoo.container.PoppetShelfContainer;
-import de.morrien.voodoo.tileentity.PoppetShelfTileEntity;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import de.morrien.voodoo.blockentity.BlockEntityTypeRegistry;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.*;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.ToolType;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.fmllegacy.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
 /**
  * Created by Timor Morrien
  */
-public class PoppetShelfBlock extends Block {
+public class PoppetShelfBlock extends BaseEntityBlock {
     protected static final VoxelShape voxelShape = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 12.0D, 16.0D);
 
     public PoppetShelfBlock() {
@@ -52,48 +52,48 @@ public class PoppetShelfBlock extends Block {
     }
 
     @Override
-    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!world.isClientSide) {
-            TileEntity tileEntity = world.getBlockEntity(pos);
-            if (tileEntity instanceof PoppetShelfTileEntity) {
-                INamedContainerProvider containerProvider = new INamedContainerProvider() {
+            BlockEntity blockEntity = world.getBlockEntity(pos);
+            if (blockEntity instanceof PoppetShelfBlockEntity) {
+                MenuProvider containerProvider = new MenuProvider() {
                     @Override
-                    public ITextComponent getDisplayName() {
-                        final PoppetShelfTileEntity poppetShelf = (PoppetShelfTileEntity) tileEntity;
-                        ITextComponent component;
+                    public Component getDisplayName() {
+                        final PoppetShelfBlockEntity poppetShelf = (PoppetShelfBlockEntity) blockEntity;
+                        Component component;
                         if (poppetShelf.getOwnerName() == null) {
-                            component = new TranslationTextComponent("text.voodoo.poppet.not_bound");
+                            component = new TranslatableComponent("text.voodoo.poppet.not_bound");
                         } else {
-                            final PlayerEntity player = world.getPlayerByUUID(poppetShelf.getOwnerUuid());
+                            final Player player = world.getPlayerByUUID(poppetShelf.getOwnerUuid());
                             if (player != null && !poppetShelf.getOwnerName().equals(player.getName().getString()))
                                 poppetShelf.setOwnerName(player.getName().getString());
-                            component = new StringTextComponent(poppetShelf.getOwnerName());
+                            component = new TextComponent(poppetShelf.getOwnerName());
                         }
-                        return new TranslationTextComponent("screen.voodoo.poppet_shelf", component);
+                        return new TranslatableComponent("screen.voodoo.poppet_shelf", component);
                     }
 
                     @Override
-                    public Container createMenu(int i, PlayerInventory playerventory, PlayerEntity playerEntity) {
+                    public AbstractContainerMenu createMenu(int i, Inventory playerventory, Player playerEntity) {
                         return new PoppetShelfContainer(i, world, pos, playerventory, playerEntity);
                     }
                 };
-                NetworkHooks.openGui((ServerPlayerEntity) player, containerProvider, tileEntity.getBlockPos());
+                NetworkHooks.openGui((ServerPlayer) player, containerProvider, blockEntity.getBlockPos());
             }
         }
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     @Override
-    public BlockRenderType getRenderShape(BlockState state) {
-        return BlockRenderType.MODEL;
+    public RenderShape getRenderShape(BlockState state) {
+        return RenderShape.MODEL;
     }
 
     @Override
-    public void onRemove(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (!state.is(newState.getBlock())) {
-            TileEntity tileentity = world.getBlockEntity(pos);
-            if (tileentity instanceof IInventory) {
-                InventoryHelper.dropContents(world, pos, (IInventory) tileentity);
+            BlockEntity blockEntity = world.getBlockEntity(pos);
+            if (blockEntity instanceof Container) {
+                Containers.dropContents(world, pos, (Container) blockEntity);
                 world.updateNeighbourForOutputSignal(pos, this);
             }
 
@@ -102,28 +102,29 @@ public class PoppetShelfBlock extends Block {
     }
 
     @Override
-    public void setPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+    public void setPlacedBy(Level world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         super.setPlacedBy(world, pos, state, placer, stack);
-        final TileEntity tileEntity = world.getBlockEntity(pos);
-        if (tileEntity instanceof PoppetShelfTileEntity && placer != null) {
-            ((PoppetShelfTileEntity) tileEntity).setOwnerUuid(placer.getUUID());
-            ((PoppetShelfTileEntity) tileEntity).setOwnerName(placer.getName().getString());
+        final BlockEntity blockEntity = world.getBlockEntity(pos);
+        if (blockEntity instanceof PoppetShelfBlockEntity && placer != null) {
+            ((PoppetShelfBlockEntity) blockEntity).setOwnerName(placer.getName().getString());
+            ((PoppetShelfBlockEntity) blockEntity).setOwnerUuid(placer.getUUID());
         }
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
         return voxelShape;
-    }
-
-    @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
     }
 
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new PoppetShelfTileEntity();
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
+        return createTickerHelper(blockEntityType, BlockEntityTypeRegistry.poppetShelfBlockEntity.get(), PoppetShelfBlockEntity::tick);
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
+        return new PoppetShelfBlockEntity(blockPos, blockState);
     }
 }

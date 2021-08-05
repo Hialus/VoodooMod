@@ -1,9 +1,9 @@
 package de.morrien.voodoo.util;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.Level;
 
 import java.util.UUID;
 
@@ -18,7 +18,7 @@ public class BindingUtil {
      * @param itemStack    The ItemStack that should be bound
      * @param playerEntity The player to bind it to
      */
-    public static void bind(ItemStack itemStack, PlayerEntity playerEntity) {
+    public static void bind(ItemStack itemStack, Player playerEntity) {
         bind(itemStack, playerEntity.getUUID(), playerEntity.getName().getString());
     }
 
@@ -30,7 +30,7 @@ public class BindingUtil {
      * @param name      The name to bind it to
      */
     public static void bind(ItemStack itemStack, UUID uuid, String name) {
-        final CompoundNBT tag = itemStack.getOrCreateTag();
+        final CompoundTag tag = itemStack.getOrCreateTag();
         tag.putUUID(BOUND_UUID, uuid);
         tag.putString(BOUND_NAME, name);
     }
@@ -54,9 +54,9 @@ public class BindingUtil {
      * @param stack The bound ItemStack
      * @param world The world instance used to check
      */
-    public static void checkForNameUpdate(ItemStack stack, World world) {
+    public static void checkForNameUpdate(ItemStack stack, Level world) {
         if (world != null && isBound(stack)) {
-            PlayerEntity player = world.getPlayerByUUID(getBoundUUID(stack));
+            Player player = world.getPlayerByUUID(getBoundUUID(stack));
             if (player != null) {
                 final String playerName = player.getName().getString();
                 if (!playerName.equals(getBoundName(stack))) {
@@ -74,7 +74,7 @@ public class BindingUtil {
      * @param world The world to retrieve the player
      * @return The bound player or null
      */
-    public static PlayerEntity getBoundPlayer(ItemStack stack, World world) {
+    public static Player getBoundPlayer(ItemStack stack, Level world) {
         if (isBound(stack)) {
             return world.getPlayerByUUID(getBoundUUID(stack));
         }

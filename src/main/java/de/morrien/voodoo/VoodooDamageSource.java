@@ -1,11 +1,11 @@
 package de.morrien.voodoo;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 import static de.morrien.voodoo.VoodooDamageSource.VoodooDamageType.FIRE;
 
@@ -25,8 +25,8 @@ public class VoodooDamageSource extends DamageSource {
     }
 
     @Override
-    public ITextComponent getLocalizedDeathMessage(LivingEntity livingEntity) {
-        return new StringTextComponent(livingEntity.getName().getContents() + " was killed by voodoo-magic."); // TODO: Translation
+    public Component getLocalizedDeathMessage(LivingEntity livingEntity) {
+        return new TextComponent(livingEntity.getName().getContents() + " was killed by voodoo-magic."); // TODO: Translation
     }
 
     @Override

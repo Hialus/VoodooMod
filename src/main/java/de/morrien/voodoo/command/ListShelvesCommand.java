@@ -3,61 +3,63 @@ package de.morrien.voodoo.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import de.morrien.voodoo.tileentity.PoppetShelfTileEntity;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.Commands;
-import net.minecraft.command.arguments.EntityArgument;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.text.*;
-import net.minecraft.util.text.event.ClickEvent;
-import net.minecraft.util.text.event.HoverEvent;
-import net.minecraft.world.server.ServerWorld;
+import de.morrien.voodoo.blockentity.PoppetShelfBlockEntity;
+import de.morrien.voodoo.util.PoppetUtil;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.network.chat.*;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.block.entity.BlockEntity;
+
+import java.util.stream.Collectors;
 
 public class ListShelvesCommand {
-    public static ArgumentBuilder<CommandSource, ?> register(CommandDispatcher<CommandSource> dispatcher) {
+    public static ArgumentBuilder<CommandSourceStack, ?> register(CommandDispatcher<CommandSourceStack> dispatcher) {
         return Commands
                 .literal("shelves")
                 .then(Commands.argument("player", EntityArgument.player()).requires(cs -> cs.hasPermission(3)).executes(context -> {
-                    final ServerPlayerEntity player = EntityArgument.getPlayer(context, "player");
+                    final ServerPlayer player = EntityArgument.getPlayer(context, "player");
                     return list(context, player);
                 }))
                 .executes(context -> {
-                    final ServerPlayerEntity player = context.getSource().getPlayerOrException();
+                    final ServerPlayer player = context.getSource().getPlayerOrException();
                     return list(context, player);
                 });
     }
 
-    private static int list(CommandContext<CommandSource> context, ServerPlayerEntity player) {
-        TextComponent message = new StringTextComponent("");
-        message.append(new TranslationTextComponent(
+    private static int list(CommandContext<CommandSourceStack> context, ServerPlayer player) {
+        BaseComponent message = new TextComponent("");
+        message.append(new TranslatableComponent(
                 "commands.voodoo.list.shelves.header",
                 player.getDisplayName())
-                .setStyle(Style.EMPTY.withColor(TextFormatting.GREEN).withBold(true))
+                .setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN).withBold(true))
         );
-        CommandSource source = context.getSource();
+        CommandSourceStack source = context.getSource();
         int counter = 1;
-        for (ServerWorld world : player.server.getAllLevels()) {
-            for (TileEntity tileEntity : world.blockEntityList) {
-                if (tileEntity instanceof PoppetShelfTileEntity) {
-                    if (player.getUUID().equals(((PoppetShelfTileEntity) tileEntity).getOwnerUuid())) {
+        for (ServerLevel world : player.server.getAllLevels()) {
+            for (BlockEntity blockEntity : PoppetUtil.getPoppetShelvesStream(player.server).collect(Collectors.toList())) {
+                if (blockEntity instanceof PoppetShelfBlockEntity) {
+                    if (player.getUUID().equals(((PoppetShelfBlockEntity) blockEntity).getOwnerUuid())) {
                         message.append("\n");
-                        final TranslationTextComponent text = new TranslationTextComponent(
+                        final TranslatableComponent text = new TranslatableComponent(
                                 "commands.voodoo.list.shelves.line",
                                 counter,
-                                tileEntity.getBlockPos().getX(),
-                                tileEntity.getBlockPos().getY(),
-                                tileEntity.getBlockPos().getZ(),
+                                blockEntity.getBlockPos().getX(),
+                                blockEntity.getBlockPos().getY(),
+                                blockEntity.getBlockPos().getZ(),
                                 world.dimension().location().getPath()
                         );
                         Style style = Style.EMPTY
                                 .withClickEvent(new ClickEvent(
                                         ClickEvent.Action.SUGGEST_COMMAND,
-                                        "/execute in " + world.dimension().location().toString() + " run tp " + player.getName().getString() + " " + tileEntity.getBlockPos().getX() + " " + tileEntity.getBlockPos().getY() + " " + tileEntity.getBlockPos().getZ()
+                                        "/execute in " + world.dimension().location().toString() + " run tp " + player.getName().getString() + " " + blockEntity.getBlockPos().getX() + " " + blockEntity.getBlockPos().getY() + " " + blockEntity.getBlockPos().getZ()
                                 ))
                                 .withHoverEvent(new HoverEvent(
                                         HoverEvent.Action.SHOW_TEXT,
-                                        new TranslationTextComponent("commands.voodoo.list.teleport")
+                                        new TranslatableComponent("commands.voodoo.list.teleport")
                                 ));
                         text.setStyle(style);
                         message.append(text);
@@ -67,8 +69,8 @@ public class ListShelvesCommand {
             }
         }
         if (counter == 1) {
-            message = new TranslationTextComponent("commands.voodoo.list.shelves.none");
-            message.setStyle(Style.EMPTY.withColor(TextFormatting.RED));
+            message = new TranslatableComponent("commands.voodoo.list.shelves.none");
+            message.setStyle(Style.EMPTY.withColor(ChatFormatting.RED));
         }
         source.sendSuccess(message, false);
         return 0;

@@ -1,10 +1,10 @@
 package de.morrien.voodoo;
 
 import de.morrien.voodoo.item.ItemRegistry;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
 
-public class VoodooGroup extends ItemGroup {
+public class VoodooGroup extends CreativeModeTab {
     public static final VoodooGroup INSTANCE = new VoodooGroup();
 
     public VoodooGroup() {

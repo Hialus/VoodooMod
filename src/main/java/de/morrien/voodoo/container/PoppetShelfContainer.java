@@ -1,13 +1,13 @@
 package de.morrien.voodoo.container;
 
-import de.morrien.voodoo.tileentity.PoppetShelfTileEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import de.morrien.voodoo.blockentity.PoppetShelfBlockEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
@@ -16,14 +16,14 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 /**
  * Created by Timor Morrien
  */
-public class PoppetShelfContainer extends Container {
-    protected PoppetShelfTileEntity poppetShelf;
-    protected PlayerEntity playerEntity;
+public class PoppetShelfContainer extends AbstractContainerMenu {
+    protected PoppetShelfBlockEntity poppetShelf;
+    protected Player playerEntity;
     protected IItemHandler playerInventory;
 
-    public PoppetShelfContainer(int windowId, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity player) {
+    public PoppetShelfContainer(int windowId, Level world, BlockPos pos, Inventory playerInventory, Player player) {
         super(ContainerRegistry.poppetShelf.get(), windowId);
-        poppetShelf = (PoppetShelfTileEntity) world.getBlockEntity(pos);
+        poppetShelf = (PoppetShelfBlockEntity) world.getBlockEntity(pos);
         this.playerEntity = player;
         this.playerInventory = new InvWrapper(playerInventory);
 
@@ -69,12 +69,12 @@ public class PoppetShelfContainer extends Container {
     }
 
     @Override
-    public boolean stillValid(PlayerEntity player) {
+    public boolean stillValid(Player player) {
         return true;
     }
 
     @Override
-    public ItemStack quickMoveStack(PlayerEntity player, int index) {
+    public ItemStack quickMoveStack(Player player, int index) {
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = slots.get(index);
 
@@ -82,7 +82,7 @@ public class PoppetShelfContainer extends Container {
             ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
 
-            int containerSlots = slots.size() - player.inventory.items.size();
+            int containerSlots = slots.size() - player.getInventory().items.size();
 
             if (index < containerSlots) {
                 if (!this.moveItemStackTo(itemstack1, containerSlots, slots.size(), true)) {

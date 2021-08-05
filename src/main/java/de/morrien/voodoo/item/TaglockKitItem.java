@@ -2,26 +2,26 @@ package de.morrien.voodoo.item;
 
 import de.morrien.voodoo.VoodooGroup;
 import de.morrien.voodoo.util.BindingUtil;
-import net.minecraft.block.BedBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.state.properties.BedPart;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BedBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BedPart;
 
 import javax.annotation.Nullable;
 import java.util.Comparator;
@@ -39,29 +39,29 @@ public class TaglockKitItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, world, tooltip, flag);
         if (isBound(stack)) {
             checkForNameUpdate(stack, world);
-            final TranslationTextComponent text = new TranslationTextComponent(
+            final TranslatableComponent text = new TranslatableComponent(
                     "text.voodoo.taglock_kit.bound",
                     getBoundName(stack)
             );
-            text.setStyle(Style.EMPTY.withColor(TextFormatting.GRAY));
+            text.setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY));
             tooltip.add(text);
         } else {
-            final TranslationTextComponent text = new TranslationTextComponent("text.voodoo.taglock_kit.not_bound");
-            text.setStyle(Style.EMPTY.withColor(TextFormatting.GRAY));
+            final TranslatableComponent text = new TranslatableComponent("text.voodoo.taglock_kit.not_bound");
+            text.setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY));
             tooltip.add(text);
         }
     }
 
     @Override
-    public ActionResultType useOn(ItemUseContext context) {
-        World world = context.getLevel();
+    public InteractionResult useOn(UseOnContext context) {
+        Level world = context.getLevel();
         BlockPos pos = context.getClickedPos();
         BlockState state = world.getBlockState(pos);
-        PlayerEntity player = context.getPlayer();
+        Player player = context.getPlayer();
         if (world != null &&
                 !world.isClientSide &&
                 player != null &&
@@ -73,27 +73,27 @@ public class TaglockKitItem extends Item {
 
             BlockPos finalPos = pos;
             server.getPlayerList().getPlayers().stream()
-                    .sorted(Comparator.comparing(ServerPlayerEntity::getSleepTimer))
+                    .sorted(Comparator.comparing(ServerPlayer::getSleepTimer))
                     .filter(p -> finalPos.equals(p.getRespawnPosition()))
                     .findFirst()
                     .ifPresent(serverPlayerEntity -> bind(context.getItemInHand(), serverPlayerEntity));
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
-        return ActionResultType.PASS;
+        return InteractionResult.PASS;
     }
 
     @Override
-    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
         if (!world.isClientSide) {
             ItemStack stack = player.getItemInHand(hand);
-            if (isBound(stack)) return new ActionResult<>(ActionResultType.PASS, stack);
+            if (isBound(stack)) return new InteractionResultHolder<>(InteractionResult.PASS, stack);
             if (player.isShiftKeyDown()) {
                 if (!stack.hasTag()) {
-                    stack.setTag(new CompoundNBT());
+                    stack.setTag(new CompoundTag());
                 }
                 if (!BindingUtil.isBound(stack)) {
                     BindingUtil.bind(stack, player);
-                    return new ActionResult<>(ActionResultType.SUCCESS, stack);
+                    return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
                 }
             }
         }

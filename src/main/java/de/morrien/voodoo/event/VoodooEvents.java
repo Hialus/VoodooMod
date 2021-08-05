@@ -7,26 +7,24 @@ import de.morrien.voodoo.command.VoodooCommand;
 import de.morrien.voodoo.item.ItemRegistry;
 import de.morrien.voodoo.util.BindingUtil;
 import de.morrien.voodoo.util.PoppetUtil;
-import net.minecraft.entity.AreaEffectCloudEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.entity.projectile.AbstractArrowEntity;
-import net.minecraft.entity.projectile.PotionEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.EffectType;
-import net.minecraft.potion.Effects;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EntityDamageSource;
-import net.minecraft.util.IndirectEntityDamageSource;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.EntityDamageSource;
+import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.AreaEffectCloud;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.ThrownPotion;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -39,7 +37,7 @@ import java.util.List;
 
 import static de.morrien.voodoo.Poppet.PoppetType.*;
 import static de.morrien.voodoo.VoodooConfig.COMMON;
-import static net.minecraft.util.DamageSource.*;
+import static net.minecraft.world.damagesource.DamageSource.*;
 
 @Mod.EventBusSubscriber(modid = Voodoo.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class VoodooEvents {
@@ -52,16 +50,16 @@ public class VoodooEvents {
     public static void onTickPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.side == LogicalSide.CLIENT) return;
         if (event.phase == TickEvent.Phase.START) return;
-        checkPotionEffects((ServerPlayerEntity) event.player);
+        checkPotionEffects((ServerPlayer) event.player);
         if (event.player.tickCount % 20 != 0) return;
-        checkFoodStatus((ServerPlayerEntity) event.player);
+        checkFoodStatus((ServerPlayer) event.player);
     }
 
-    private static void checkPotionEffects(ServerPlayerEntity player) {
-        for (Iterator<EffectInstance> iterator = player.getActiveEffects().iterator(); iterator.hasNext(); ) {
-            EffectInstance potionEffect = iterator.next();
-            if (potionEffect.getEffect().getCategory() != EffectType.HARMFUL) continue;
-            if (potionEffect.getEffect() == Effects.WITHER) {
+    private static void checkPotionEffects(ServerPlayer player) {
+        for (Iterator<MobEffectInstance> iterator = player.getActiveEffects().iterator(); iterator.hasNext(); ) {
+            MobEffectInstance potionEffect = iterator.next();
+            if (potionEffect.getEffect().getCategory() != MobEffectCategory.HARMFUL) continue;
+            if (potionEffect.getEffect() == MobEffects.WITHER) {
                 removeWitherEffect(player, potionEffect);
             } else {
                 removePotionEffect(player, potionEffect);
@@ -69,25 +67,25 @@ public class VoodooEvents {
         }
     }
 
-    private static void removeWitherEffect(PlayerEntity player, EffectInstance potionEffect) {
+    private static void removeWitherEffect(Player player, MobEffectInstance potionEffect) {
         if (!COMMON.witherProtection.enabled.get()) return;
-        Poppet witherPoppet = PoppetUtil.getPlayerPoppet((ServerPlayerEntity) player, WITHER_PROTECTION);
+        Poppet witherPoppet = PoppetUtil.getPlayerPoppet((ServerPlayer) player, WITHER_PROTECTION);
         if (witherPoppet == null) return;
         player.removeEffect(potionEffect.getEffect());
         witherPoppet.use();
     }
 
-    private static void removePotionEffect(PlayerEntity player, EffectInstance potionEffect) {
+    private static void removePotionEffect(Player player, MobEffectInstance potionEffect) {
         if (!COMMON.potionProtection.enabled.get()) return;
         int durabilityCost = potionEffect.getAmplifier() + 1;
         while (durabilityCost > 0) {
-            Poppet poppet = PoppetUtil.getPlayerPoppet((ServerPlayerEntity) player, POTION_PROTECTION);
+            Poppet poppet = PoppetUtil.getPlayerPoppet((ServerPlayer) player, POTION_PROTECTION);
             if (poppet == null) break;
             durabilityCost = usePoppet(poppet, durabilityCost);
         }
         player.removeEffect(potionEffect.getEffect());
         if (durabilityCost > 0) {
-            final EffectInstance effectInstance = new EffectInstance(
+            final MobEffectInstance effectInstance = new MobEffectInstance(
                     potionEffect.getEffect(),
                     potionEffect.getDuration(),
                     durabilityCost - 1,
@@ -99,11 +97,11 @@ public class VoodooEvents {
         }
     }
 
-    private static void checkFoodStatus(ServerPlayerEntity player) {
+    private static void checkFoodStatus(ServerPlayer player) {
         if (player.getFoodData().getFoodLevel() > 10) return;
         final Poppet hungerPoppet = PoppetUtil.getPlayerPoppet(player, HUNGER_PROTECTION);
         if (hungerPoppet == null) return;
-        player.addEffect(new EffectInstance(Effects.SATURATION, 60 * 20, 1));
+        player.addEffect(new MobEffectInstance(MobEffects.SATURATION, 60 * 20, 1));
         usePoppet(hungerPoppet, 1);
     }
 
@@ -111,10 +109,10 @@ public class VoodooEvents {
     public static void onPlayerInteract(PlayerInteractEvent.EntityInteract event) {
         if (event.getWorld().isClientSide) return;
         if (event.getItemStack().getItem() != ItemRegistry.taglockKit.get()) return;
-        if (event.getTarget() instanceof PlayerEntity) {
+        if (event.getTarget() instanceof Player) {
             ItemStack stack = event.getItemStack();
             if (BindingUtil.isBound(stack)) return;
-            PlayerEntity player = (PlayerEntity) event.getTarget();
+            Player player = (Player) event.getTarget();
             BindingUtil.bind(stack, player);
         }
     }
@@ -124,33 +122,33 @@ public class VoodooEvents {
         if (event.getEntity().level.isClientSide) return;
         if (event.getSource() == OUT_OF_WORLD) return;
         if (!COMMON.deathProtection.enabled.get()) return;
-        if (!(event.getEntityLiving() instanceof ServerPlayerEntity)) return;
+        if (!(event.getEntityLiving() instanceof ServerPlayer)) return;
 
-        final ServerPlayerEntity player = (ServerPlayerEntity) event.getEntity();
+        final ServerPlayer player = (ServerPlayer) event.getEntity();
         Poppet poppet = PoppetUtil.getPlayerPoppet(player, DEATH_PROTECTION);
         if (poppet != null) {
             poppet.use();
             event.setCanceled(true);
             player.setHealth(player.getMaxHealth() / 2);
             player.removeAllEffects();
-            player.addEffect(new EffectInstance(Effects.REGENERATION, 45 * 20, 1));
-            player.addEffect(new EffectInstance(Effects.ABSORPTION, 5 * 20, 1));
-            player.addEffect(new EffectInstance(Effects.FIRE_RESISTANCE, 40 * 20, 0));
+            player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 45 * 20, 1));
+            player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 5 * 20, 1));
+            player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 40 * 20, 0));
             player.level.broadcastEntityEvent(player, (byte) 35);
         }
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onLivingAttack(LivingAttackEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayerEntity)) return;
-        final ServerPlayerEntity player = (ServerPlayerEntity) event.getEntity();
+        if (!(event.getEntity() instanceof ServerPlayer)) return;
+        final ServerPlayer player = (ServerPlayer) event.getEntity();
         if (event.isCanceled() ||
                 event.getAmount() == 0 ||
                 player.level.isClientSide ||
                 player.isInvulnerableTo(event.getSource()) ||
                 player.isCreative() ||
                 player.isDeadOrDying() ||
-                (event.getSource().isFire() && player.hasEffect(Effects.FIRE_RESISTANCE))
+                (event.getSource().isFire() && player.hasEffect(MobEffects.FIRE_RESISTANCE))
         ) return;
 
         if (tryReflectorPoppet(event)) return;
@@ -190,7 +188,7 @@ public class VoodooEvents {
         if (!(event.getSource() instanceof EntityDamageSource)) return false;
         final Entity sourceEntity = event.getSource().getEntity();
         if (sourceEntity == null) return false;
-        final ServerPlayerEntity player = (ServerPlayerEntity) event.getEntity();
+        final ServerPlayer player = (ServerPlayer) event.getEntity();
         if (player == sourceEntity) return false;
         final Poppet reflectorPoppet = PoppetUtil.getPlayerPoppet(player, REFLECTOR);
         if (reflectorPoppet == null) return false;
@@ -217,7 +215,7 @@ public class VoodooEvents {
         final DamageSource damageSource = event.getSource();
         if (damageSource instanceof VoodooDamageSource && COMMON.voodooProtection.enabled.get())
             return 1;
-        if ((damageSource.getDirectEntity() instanceof PotionEntity || damageSource.getDirectEntity() instanceof AreaEffectCloudEntity) && COMMON.potionProtection.enabled.get())
+        if ((damageSource.getDirectEntity() instanceof ThrownPotion || damageSource.getDirectEntity() instanceof AreaEffectCloud) && COMMON.potionProtection.enabled.get())
             return (int) (Math.log(event.getAmount() / 6) / Math.log(2)) + 1;
         if (damageSource == FALL && COMMON.fallProtection.enabled.get())
             return (int) Math.min(event.getAmount(), Math.ceil(Math.log(event.getAmount()) * 3));
@@ -236,20 +234,20 @@ public class VoodooEvents {
 
     private static void doSpecialActions(LivingAttackEvent event) {
         final DamageSource damageSource = event.getSource();
-        final PlayerEntity player = (PlayerEntity) event.getEntity();
+        final Player player = (Player) event.getEntity();
 
         if (damageSource.isFire()) {
             event.getEntity().clearFire();
-            ((PlayerEntity) event.getEntity()).addEffect(new EffectInstance(Effects.FIRE_RESISTANCE, 10 * 20, 0));
+            ((Player) event.getEntity()).addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 10 * 20, 0));
         }
 
         if (damageSource == DROWN && COMMON.waterProtection.enabled.get()) {
             player.setAirSupply(300);
-            ((PlayerEntity) event.getEntity()).addEffect(new EffectInstance(Effects.WATER_BREATHING, 20 * 20, 0));
+            ((Player) event.getEntity()).addEffect(new MobEffectInstance(MobEffects.WATER_BREATHING, 20 * 20, 0));
         }
 
-        if (damageSource.isProjectile() && damageSource.getDirectEntity() instanceof AbstractArrowEntity && COMMON.projectileProtection.enabled.get()) {
-            damageSource.getDirectEntity().remove();
+        if (damageSource.isProjectile() && damageSource.getDirectEntity() instanceof AbstractArrow && COMMON.projectileProtection.enabled.get()) {
+            damageSource.getDirectEntity().remove(Entity.RemovalReason.KILLED);
         }
 
         if (damageSource instanceof VoodooDamageSource && COMMON.voodooProtection.enabled.get()) {
@@ -259,9 +257,9 @@ public class VoodooEvents {
 
         if (damageSource == OUT_OF_WORLD && player.getY() < 0 && COMMON.voidProtection.enabled.get()) {
             player.fallDistance = 0;
-            final ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
+            final ServerPlayer serverPlayer = (ServerPlayer) player;
             BlockPos spawnPos = serverPlayer.getRespawnPosition();
-            ServerWorld serverWorld = serverPlayer.server.getLevel(serverPlayer.getRespawnDimension());
+            ServerLevel serverWorld = serverPlayer.server.getLevel(serverPlayer.getRespawnDimension());
             if (serverWorld == null)
                 serverWorld = serverPlayer.server.overworld();
             if (spawnPos == null) {
@@ -276,8 +274,8 @@ public class VoodooEvents {
                     spawnPos.getX(),
                     spawnPos.getY() + 1,
                     spawnPos.getZ(),
-                    serverPlayer.xRot,
-                    serverPlayer.yRot
+                    serverPlayer.getXRot(),
+                    serverPlayer.getYRot()
             );
         }
     }
@@ -288,7 +286,7 @@ public class VoodooEvents {
 
         if (damageSource instanceof VoodooDamageSource && COMMON.voodooProtection.enabled.get())
             suitablePoppets.add(VOODOO_PROTECTION);
-        if (damageSource.getDirectEntity() instanceof PotionEntity && COMMON.potionProtection.enabled.get())
+        if (damageSource.getDirectEntity() instanceof ThrownPotion && COMMON.potionProtection.enabled.get())
             suitablePoppets.add(POTION_PROTECTION);
         if (damageSource == FALL && COMMON.fallProtection.enabled.get())
             suitablePoppets.add(FALL_PROTECTION);

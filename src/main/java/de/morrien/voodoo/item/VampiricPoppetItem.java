@@ -1,36 +1,26 @@
 package de.morrien.voodoo.item;
 
-import de.morrien.voodoo.Poppet;
 import de.morrien.voodoo.VoodooDamageSource;
-import de.morrien.voodoo.util.BindingUtil;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Rarity;
-import net.minecraft.item.UseAction;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.level.Level;
 
-import javax.annotation.Nullable;
-import java.util.List;
-
-import static de.morrien.voodoo.Poppet.PoppetType.BLANK;
 import static de.morrien.voodoo.Poppet.PoppetType.VAMPIRIC;
 import static de.morrien.voodoo.VoodooConfig.COMMON;
-import static de.morrien.voodoo.util.BindingUtil.*;
+import static de.morrien.voodoo.util.BindingUtil.getBoundPlayer;
 
 /**
  * Created by Timor Morrien
  */
 public class VampiricPoppetItem extends PoppetItem {
-    private final Rarity rarity = Rarity.create("vampiric", TextFormatting.RED);
+    private final Rarity rarity = Rarity.create("vampiric", ChatFormatting.RED);
 
     public VampiricPoppetItem() {
         super(VAMPIRIC);
@@ -42,27 +32,27 @@ public class VampiricPoppetItem extends PoppetItem {
     }
 
     @Override
-    public UseAction getUseAnimation(ItemStack stack) {
-        return UseAction.DRINK;
+    public UseAnim getUseAnimation(ItemStack stack) {
+        return UseAnim.DRINK;
     }
 
     @Override
-    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
         if (!COMMON.vampiric.enabled.get())
-            return ActionResult.pass(player.getItemInHand(hand));
+            return InteractionResultHolder.pass(player.getItemInHand(hand));
         player.startUsingItem(hand);
-        return ActionResult.success(player.getItemInHand(hand));
+        return InteractionResultHolder.success(player.getItemInHand(hand));
     }
 
     @Override
-    public void onUseTick(World world, LivingEntity entity, ItemStack stack, int remainingTicks) {
+    public void onUseTick(Level world, LivingEntity entity, ItemStack stack, int remainingTicks) {
         if (world.isClientSide) return;
         if ((remainingTicks - 1) % COMMON.vampiric.drainageInterval.get() != 0) return;
-        if (!(entity instanceof ServerPlayerEntity)) return;
-        final ServerPlayerEntity player = (ServerPlayerEntity) entity;
+        if (!(entity instanceof ServerPlayer)) return;
+        final ServerPlayer player = (ServerPlayer) entity;
         final float playerDifference = player.getMaxHealth() - player.getHealth();
         if (playerDifference == 0) return;
-        final PlayerEntity boundPlayer = getBoundPlayer(stack, world);
+        final Player boundPlayer = getBoundPlayer(stack, world);
         if (boundPlayer == null) return;
         final float boundDifference = boundPlayer.getHealth() - COMMON.vampiric.healthLimit.get();
         if (boundDifference <= 0) return;
