@@ -6,12 +6,12 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": ""
+      "text": "While damaging other players with needles can be fun it does not give you any direct benefit. What if the damage you inflict would be added to your own health? $(br)By combining the Voodoo Poppet with a soul lantern, ghast tears and nether mushrooms you can make it do exactly that."
     },
     {
       "type": "patchouli:crafting",
       "recipe": "voodoo:vampiric_poppet",
-      "text": ""
+      "text": "The $(c)Vampiric Poppet$() is used by holding down the right mouse button. It won't steal health if the health of the target is below a certain amount or your health is full."
     }
   ]
 }

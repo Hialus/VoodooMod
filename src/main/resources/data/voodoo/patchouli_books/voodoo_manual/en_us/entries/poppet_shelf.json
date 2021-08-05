@@ -12,7 +12,7 @@
     {
       "type": "patchouli:crafting",
       "recipe": "voodoo:poppet_shelf",
-      "text": "The poppet shelf also displays the poppets it contains on top of it."
+      "text": "Only poppets bound to the placer of the poppet shelf will be usable. The poppet shelf also displays the poppets it contains on top of it."
     }
   ]
 }
