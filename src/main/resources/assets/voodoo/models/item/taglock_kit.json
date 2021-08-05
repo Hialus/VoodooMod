@@ -1,7 +1,7 @@
 {
   "ambientocclusion": false,
   "textures": {
-    "particle": "minecraft:item/potion_bottle_drinkable",
+    "particle": "minecraft:block/glass",
     "texture": "minecraft:block/glass",
     "inside": "voodoo:item/empty",
     "brown": "minecraft:block/brown_terracotta",
