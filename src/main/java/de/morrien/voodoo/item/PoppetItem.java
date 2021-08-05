@@ -84,7 +84,6 @@ public class PoppetItem extends Item {
         return false;
     }
 
-
     @Nullable
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
