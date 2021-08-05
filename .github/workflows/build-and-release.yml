@@ -29,6 +29,15 @@ jobs:
       
     - name: Print version
       run: echo "Mod Version=${{ env.mod_version }}"
+
+    - name: Generate changelog
+      run: |
+        echo 'CHANGELOG<<EOF' >> $GITHUB_ENV
+        git log $(git describe --tags --abbrev=0)..HEAD --no-merges --pretty="- %s" | grep -vE 'Revert|Update' >> $GITHUB_ENV
+        echo 'EOF' >> $GITHUB_ENV
+        
+    - name: Print changelog
+      run: echo ${{ env.CHANGELOG }}
       
     - name: Set up JDK ${{ matrix.jdk }}
       uses: actions/setup-java@v2
@@ -55,12 +64,6 @@ jobs:
     
     - name: Build with Gradle
       run: ./gradlew build
-
-    - name: Generate changelog
-      run: |
-        echo 'CHANGELOG<<EOF' >> $GITHUB_ENV
-        git log $(git describe --tags --abbrev=0)..HEAD --no-merges --pretty="- %s" | grep -vE 'Revert|Update'
-        echo 'EOF' >> $GITHUB_ENV
     
     - name: Create GitHub Release
       id: create_release
