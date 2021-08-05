@@ -11,20 +11,31 @@ jobs:
       matrix:
         include:
           - version: 1.16.5
-            branch: master
+            branch: 1.16
             jdk: 15
+          - version: 1.17.1
+            branch: 1.17
+            jdk: 16
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
       with:
         ref: ${{ matrix.branch }}
+        lfs: true
+        fetch-depth: 0
     
     - name: Extract version
       run: sed -n '/^mod_version=/p' gradle.properties >> $GITHUB_ENV
       
     - name: Print version
       run: echo "Mod Version=${{ env.mod_version }}"
+
+    - name: Generate changelog
+      run: |
+        echo 'CHANGELOG<<EOF' >> $GITHUB_ENV
+        git log $(git describe --tags --abbrev=0)..HEAD --no-merges --pretty="- %s" | grep -vE 'Revert|Update' >> $GITHUB_ENV
+        echo 'EOF' >> $GITHUB_ENV
       
     - name: Set up JDK ${{ matrix.jdk }}
       uses: actions/setup-java@v2
@@ -51,20 +62,23 @@ jobs:
     
     - name: Build with Gradle
       run: ./gradlew build
-
-    - name: Upload artifact
-      uses: actions/upload-artifact@v2
-      with:
-        path: build/libs/*.jar
     
-    - name: Create GitHub release
-      uses: marvinpinto/action-automatic-releases@latest
+    - name: Create GitHub Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
       with:
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: "${{ matrix.version }}-${{ env.mod_version }}"
+        tag_name: ${{ matrix.version }}-${{ env.mod_version }}
+        release_name: VoodooMod ${{ matrix.version }}-${{ env.mod_version }}
+        body: ${{ env.CHANGELOG }}
+        commitish: ${{ matrix.branch }}
+        draft: false
         prerelease: false
-        title: "VoodooMod ${{ matrix.version }}-${{ env.mod_version }}"
-        files: |
-          LICENSE
-          build/libs/*.jar
-
+        
+    - name: Upload Release Asset
+      uses: AButler/upload-release-assets@v2.0
+      with:
+        files: 'LICENSE;build/libs/*.jar'
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        release-tag: ${{ matrix.version }}-${{ env.mod_version }}
