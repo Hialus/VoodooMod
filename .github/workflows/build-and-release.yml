@@ -73,22 +73,29 @@ jobs:
         draft: false
         prerelease: false
         
-    - name: Upload Mod JAR
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload Release Asset
+      uses: AButler/upload-release-assets@v2.0
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: build/libs/Voodoo-${{ matrix.version }}-${{ env.mod_version }}.jar
-        asset_name: Voodoo-${{ matrix.version }}-${{ env.mod_version }}.jar
-        asset_content_type: application/jar
-    
-    - name: Upload LICENSE
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: LICENSE
-        asset_name: LICENSE
-        asset_content_type: text/plain
+        files: 'LICENSE;build/libs/*.jar'
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        release-tag: ${{ matrix.version }}-${{ env.mod_version }}
+        
+    #- name: Upload Mod JAR
+    #  uses: actions/upload-release-asset@v1
+    #  env:
+    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #  with:
+    #    upload_url: ${{ steps.create_release.outputs.upload_url }}
+    #    asset_path: build/libs/Voodoo-${{ matrix.version }}-${{ env.mod_version }}.jar
+    #    asset_name: Voodoo-${{ matrix.version }}-${{ env.mod_version }}.jar
+    #    asset_content_type: application/jar
+    #
+    #- name: Upload LICENSE
+    #  uses: actions/upload-release-asset@v1
+    #  env:
+    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #  with:
+    #    upload_url: ${{ steps.create_release.outputs.upload_url }}
+    #    asset_path: LICENSE
+    #    asset_name: LICENSE
+    #    asset_content_type: text/plain
