@@ -100,7 +100,7 @@ public class PoppetItem extends Item {
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
         final CompoundNBT tag = stack.getOrCreateTag();
-        if (poppetType == VOODOO_PROTECTION && !tag.contains("Enchantments")) {
+        if ((poppetType == VOODOO_PROTECTION || poppetType == REFLECTOR) && !tag.contains("Enchantments")) {
             stack.enchant(Enchantments.ALL_DAMAGE_PROTECTION, 10);
             tag.putInt("HideFlags", 1);
         }
