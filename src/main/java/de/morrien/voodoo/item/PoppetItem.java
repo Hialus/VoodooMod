@@ -15,6 +15,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Rarity;
 import net.minecraft.item.UseAction;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
@@ -105,5 +106,10 @@ public class PoppetItem extends Item {
             tag.putInt("HideFlags", 1);
         }
         return null;
+    }
+
+    @Override
+    public Rarity getRarity(ItemStack stack) {
+        return poppetType == DEATH_PROTECTION ? Rarity.UNCOMMON : super.getRarity(stack);
     }
 }
