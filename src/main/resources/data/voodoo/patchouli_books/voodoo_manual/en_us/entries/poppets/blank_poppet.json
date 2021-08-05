@@ -1,0 +1,16 @@
+{
+  "name": "About Poppets",
+  "icon": "voodoo:blank_poppet",
+  "category": "voodoo:poppets",
+  "priority": true,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": ""
+    },
+    {
+      "type": "patchouli:text",
+      "text": ""
+    }
+  ]
+}

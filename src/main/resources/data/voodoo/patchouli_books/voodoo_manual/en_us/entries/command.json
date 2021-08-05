@@ -1,0 +1,16 @@
+{
+  "name": "/voodoo command",
+  "icon": "minecraft:command_block",
+  "category": "voodoo:basics",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": ""
+    },
+    {
+      "type": "patchouli:text",
+      "text": ""
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "Voodoo Poppet",
+  "icon": "voodoo:voodoo_poppet",
+  "category": "voodoo:poppets",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": ""
+    },
+    {
+      "type": "patchouli:text",
+      "text": ""
+    }
+  ]
+}
