@@ -73,12 +73,12 @@ jobs:
         draft: false
         prerelease: false
     - name: Upload Release Asset
-      uses: NBTX/upload-release-assets@v1
+      uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} 
-        targets: |
-          LICENSE
-          build/libs/*.jar
+        asset_path: build/libs/*.jar
+        asset_name: Voodoo-${{ matrix.version }}-${{ env.mod_version }}.jar
+        asset_content_type: application/jar
 
