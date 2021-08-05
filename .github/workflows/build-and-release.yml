@@ -60,14 +60,24 @@ jobs:
       with:
         path: build/libs/*.jar
     
-    - name: Create GitHub release
-      uses: marvinpinto/action-automatic-releases@latest
+    - name: Create GitHub Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
       with:
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: "${{ matrix.version }}-${{ env.mod_version }}"
+        tag_name: ${{ matrix.version }}-${{ env.mod_version }}
+        release_name: VoodooMod ${{ matrix.version }}-${{ env.mod_version }}
+        body: Version ${{ env.mod_version }} of the Voodoo mod for Minecraft Version ${{ matrix.version }}.
+        commitish: ${{ matrix.branch }}
+        draft: false
         prerelease: false
-        title: "VoodooMod ${{ matrix.version }}-${{ env.mod_version }}"
-        files: |
-          LICENSE
-          build/libs/*.jar
+    - name: Upload Release Asset
+      id: upload-release-asset 
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }} 
+        asset_path: build/libs/*.jar
 
