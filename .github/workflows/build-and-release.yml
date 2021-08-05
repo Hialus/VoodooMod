@@ -11,8 +11,11 @@ jobs:
       matrix:
         include:
           - version: 1.16.5
-            branch: master
+            branch: 1.16
             jdk: 15
+          - version: 1.17.1
+            branch: 1.17
+            jdk: 16
 
     steps:
     - name: Checkout repository
@@ -57,14 +60,42 @@ jobs:
       with:
         path: build/libs/*.jar
     
-    - name: Create GitHub release
-      uses: marvinpinto/action-automatic-releases@latest
+    - name: Create GitHub Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
       with:
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: "${{ matrix.version }}-${{ env.mod_version }}"
+        tag_name: ${{ matrix.version }}-${{ env.mod_version }}
+        release_name: VoodooMod ${{ matrix.version }}-${{ env.mod_version }}
+        body: Version ${{ env.mod_version }} of the Voodoo mod for Minecraft Version ${{ matrix.version }}.
+        commitish: ${{ matrix.branch }}
+        draft: false
         prerelease: false
-        title: "VoodooMod ${{ matrix.version }}-${{ env.mod_version }}"
-        files: |
-          LICENSE
-          build/libs/*.jar
-
+        
+    - name: Upload Release Asset
+      uses: AButler/upload-release-assets@v2.0
+      with:
+        files: 'LICENSE;build/libs/*.jar'
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        release-tag: ${{ matrix.version }}-${{ env.mod_version }}
+        
+    #- name: Upload Mod JAR
+    #  uses: actions/upload-release-asset@v1
+    #  env:
+    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #  with:
+    #    upload_url: ${{ steps.create_release.outputs.upload_url }}
+    #    asset_path: build/libs/Voodoo-${{ matrix.version }}-${{ env.mod_version }}.jar
+    #    asset_name: Voodoo-${{ matrix.version }}-${{ env.mod_version }}.jar
+    #    asset_content_type: application/jar
+    #
+    #- name: Upload LICENSE
+    #  uses: actions/upload-release-asset@v1
+    #  env:
+    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #  with:
+    #    upload_url: ${{ steps.create_release.outputs.upload_url }}
+    #    asset_path: LICENSE
+    #    asset_name: LICENSE
+    #    asset_content_type: text/plain
