@@ -56,10 +56,11 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
 
-    - name: Upload artifact
-      uses: actions/upload-artifact@v2
-      with:
-        path: build/libs/*.jar
+    - name: Generate changelog
+      run: |
+        echo 'CHANGELOG<<EOF' >> $GITHUB_ENV
+        git log $(git describe --tags --abbrev=0)..HEAD --no-merges --pretty="- %s" | grep -vE 'Revert|Update'
+        echo 'EOF' >> $GITHUB_ENV
     
     - name: Create GitHub Release
       id: create_release
@@ -69,7 +70,7 @@ jobs:
       with:
         tag_name: ${{ matrix.version }}-${{ env.mod_version }}
         release_name: VoodooMod ${{ matrix.version }}-${{ env.mod_version }}
-        body: Version ${{ env.mod_version }} of the Voodoo mod for Minecraft Version ${{ matrix.version }}.
+        body: ${{ env.CHANGELOG }}
         commitish: ${{ matrix.branch }}
         draft: false
         prerelease: false
@@ -80,23 +81,3 @@ jobs:
         files: 'LICENSE;build/libs/*.jar'
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         release-tag: ${{ matrix.version }}-${{ env.mod_version }}
-        
-    #- name: Upload Mod JAR
-    #  uses: actions/upload-release-asset@v1
-    #  env:
-    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #  with:
-    #    upload_url: ${{ steps.create_release.outputs.upload_url }}
-    #    asset_path: build/libs/Voodoo-${{ matrix.version }}-${{ env.mod_version }}.jar
-    #    asset_name: Voodoo-${{ matrix.version }}-${{ env.mod_version }}.jar
-    #    asset_content_type: application/jar
-    #
-    #- name: Upload LICENSE
-    #  uses: actions/upload-release-asset@v1
-    #  env:
-    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #  with:
-    #    upload_url: ${{ steps.create_release.outputs.upload_url }}
-    #    asset_path: LICENSE
-    #    asset_name: LICENSE
-    #    asset_content_type: text/plain
