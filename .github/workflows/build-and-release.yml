@@ -73,12 +73,8 @@ jobs:
         draft: false
         prerelease: false
     - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: AButler/upload-release-assets@v2.0
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }} 
-        asset_path: build/libs/*.jar
-        asset_name: Voodoo-${{ matrix.version }}-${{ env.mod_version }}.jar
-        asset_content_type: application/jar
-
+        files: 'LICENSE;build/libs/*.jar'
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        release-tag: ${{ matrix.version }}-${{ env.mod_version }}
