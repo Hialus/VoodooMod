@@ -1,6 +1,6 @@
 {
-  "name": "Voodoo Poppet",
-  "icon": "voodoo:voodoo_poppet",
+  "name": "Reflector Poppet",
+  "icon": "voodoo:reflector_poppet",
   "category": "voodoo:poppets",
   "read_by_default": true,
   "pages": [
@@ -10,7 +10,7 @@
     },
     {
       "type": "patchouli:crafting",
-      "recipe": "voodoo:voodoo_poppet",
+      "recipe": "voodoo:reflector_poppet",
       "text": ""
     }
   ]

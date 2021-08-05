@@ -2,6 +2,7 @@
   "name": "Binding Poppets",
   "icon": "voodoo:taglock_kit",
   "category": "voodoo:basics",
+  "read_by_default": true,
   "sortnum": 3,
   "pages": [
     {

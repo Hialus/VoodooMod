@@ -2,6 +2,7 @@
   "name": "Poppet Shelf",
   "icon": "voodoo:poppet_shelf",
   "category": "voodoo:basics",
+  "read_by_default": true,
   "sortnum": 3,
   "pages": [
     {

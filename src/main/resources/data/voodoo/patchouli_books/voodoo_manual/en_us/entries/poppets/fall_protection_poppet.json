@@ -1,6 +1,6 @@
 {
-  "name": "Voodoo Poppet",
-  "icon": "voodoo:voodoo_poppet",
+  "name": "Fall Protection",
+  "icon": "voodoo:fall_protection_poppet",
   "category": "voodoo:poppets",
   "read_by_default": true,
   "pages": [
@@ -10,7 +10,8 @@
     },
     {
       "type": "patchouli:crafting",
-      "recipe": "voodoo:voodoo_poppet",
+      "title": "Fall Protection Poppet",
+      "recipe": "voodoo:fall_protection_poppet",
       "text": ""
     }
   ]
