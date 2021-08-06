@@ -35,7 +35,6 @@ public class PoppetShelfSyncUpdate implements IThreadsafePacket {
     @OnlyIn(Dist.CLIENT)
     public void handleThreadsafe(NetworkEvent.Context context) {
         Level world = Minecraft.getInstance().level;
-
         if (world == null) return;
         BlockEntity blockEntity = world.getBlockEntity(this.pos);
         if (blockEntity == null) return;
