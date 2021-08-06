@@ -1,6 +1,6 @@
 {
-  "name": "Fire Protection",
-  "icon": "voodoo:fire_protection_poppet",
+  "name": "Projectile Protection",
+  "icon": "voodoo:projectile_protection_poppet",
   "category": "voodoo:poppets",
   "read_by_default": true,
   "pages": [
@@ -10,7 +10,8 @@
     },
     {
       "type": "patchouli:crafting",
-      "recipe": "voodoo:fire_protection_poppet",
+      "title": "Projectile Protection",
+      "recipe": "voodoo:projectile_protection_poppet",
       "text": ""
     }
   ]
