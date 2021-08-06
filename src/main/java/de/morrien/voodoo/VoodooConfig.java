@@ -3,7 +3,6 @@ package de.morrien.voodoo;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.common.ForgeConfigSpec.Builder;
-import net.minecraftforge.common.ForgeConfigSpec.DoubleValue;
 import net.minecraftforge.common.ForgeConfigSpec.IntValue;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -174,7 +173,7 @@ public class VoodooConfig {
                         .comment(
                                 "The hit point limit for draining health",
                                 "If the target players health is below this number no health will be drained"
-                            )
+                        )
                         .defineInRange("health_limit", 3, 0, Integer.MAX_VALUE);
                 this.drainageInterval = builder
                         .comment("The interval in which health should be drained in ticks.")

@@ -29,7 +29,7 @@ public class RecipeGen extends RecipeProvider {
 
     @Override
     protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
-        ShapedRecipeBuilder.shaped(ItemRegistry.needle.get())
+        ShapedRecipeBuilder.shaped(ItemRegistry.needle.get(), 4)
                 .pattern(" I ")
                 .pattern(" B ")
                 .pattern(" B ")
