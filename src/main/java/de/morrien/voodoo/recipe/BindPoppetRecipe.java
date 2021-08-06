@@ -3,11 +3,11 @@ package de.morrien.voodoo.recipe;
 import de.morrien.voodoo.item.ItemRegistry;
 import de.morrien.voodoo.item.PoppetItem;
 import de.morrien.voodoo.util.BindingUtil;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.CustomRecipe;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;

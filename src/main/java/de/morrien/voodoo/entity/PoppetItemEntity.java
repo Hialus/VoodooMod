@@ -3,13 +3,13 @@ package de.morrien.voodoo.entity;
 import de.morrien.voodoo.VoodooConfig;
 import de.morrien.voodoo.VoodooDamageSource;
 import de.morrien.voodoo.util.BindingUtil;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectUtil;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.effect.MobEffectUtil;
-import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 
 /**

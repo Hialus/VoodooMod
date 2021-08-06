@@ -4,10 +4,11 @@ import de.morrien.voodoo.item.ItemRegistry;
 import de.morrien.voodoo.recipe.RecipeRegistry;
 import net.minecraft.advancements.critereon.BrewedPotionTrigger;
 import net.minecraft.advancements.critereon.ChangeDimensionTrigger;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.data.*;
+import net.minecraft.data.DataGenerator;
+import net.minecraft.data.recipes.*;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.Tags;
 
 import java.util.function.Consumer;
@@ -15,12 +16,6 @@ import java.util.function.Consumer;
 import static de.morrien.voodoo.Poppet.PoppetType.*;
 import static de.morrien.voodoo.Voodoo.MOD_ID;
 import static net.minecraft.world.item.Items.*;
-
-import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.data.recipes.ShapedRecipeBuilder;
-import net.minecraft.data.recipes.ShapelessRecipeBuilder;
-import net.minecraft.data.recipes.SpecialRecipeBuilder;
 
 public class RecipeGen extends RecipeProvider {
     public RecipeGen(DataGenerator generator) {

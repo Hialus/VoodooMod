@@ -1,11 +1,11 @@
 package de.morrien.voodoo;
 
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 
 import static de.morrien.voodoo.VoodooDamageSource.VoodooDamageType.FIRE;
 

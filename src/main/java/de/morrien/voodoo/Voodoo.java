@@ -1,6 +1,7 @@
 package de.morrien.voodoo;
 
 import de.morrien.voodoo.block.BlockRegistry;
+import de.morrien.voodoo.blockentity.BlockEntityTypeRegistry;
 import de.morrien.voodoo.blockentity.PoppetShelfBlockEntity;
 import de.morrien.voodoo.container.ContainerRegistry;
 import de.morrien.voodoo.datagen.RecipeGen;
@@ -8,7 +9,6 @@ import de.morrien.voodoo.item.ItemRegistry;
 import de.morrien.voodoo.network.VoodooNetwork;
 import de.morrien.voodoo.recipe.RecipeRegistry;
 import de.morrien.voodoo.sound.SoundRegistry;
-import de.morrien.voodoo.blockentity.BlockEntityTypeRegistry;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.eventbus.api.IEventBus;

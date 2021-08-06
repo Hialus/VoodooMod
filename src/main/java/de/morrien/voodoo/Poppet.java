@@ -2,9 +2,9 @@ package de.morrien.voodoo;
 
 import de.morrien.voodoo.blockentity.PoppetShelfBlockEntity;
 import de.morrien.voodoo.item.PoppetItem;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.common.ForgeConfigSpec.IntValue;
 import org.apache.commons.lang3.text.WordUtils;
 

@@ -1,8 +1,8 @@
 package de.morrien.voodoo.block;
 
+import de.morrien.voodoo.blockentity.BlockEntityTypeRegistry;
 import de.morrien.voodoo.blockentity.PoppetShelfBlockEntity;
 import de.morrien.voodoo.container.PoppetShelfContainer;
-import de.morrien.voodoo.blockentity.BlockEntityTypeRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
