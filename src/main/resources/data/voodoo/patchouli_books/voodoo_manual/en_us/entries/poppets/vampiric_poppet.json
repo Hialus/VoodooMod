@@ -11,7 +11,7 @@
     {
       "type": "patchouli:crafting",
       "recipe": "voodoo:vampiric_poppet",
-      "text": "The $(c)Vampiric Poppet$() is used by holding down the right mouse button. It won't steal health if the health of the target is below a certain amount or your health is full."
+      "text": "The $(c)Vampiric Poppet$() is used by holding down the right mouse button. It won't steal health if the health of the target is below a certain amount or your health is full. $(br)$(c)$(l)Important$()$(br)If the target has a $(l:poppets/voodoo_protection_poppet)Voodoo Protection Poppet$(/l) bound to them it will destroy this poppet when activated."
     }
   ]
 }
