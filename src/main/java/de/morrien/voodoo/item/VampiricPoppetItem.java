@@ -1,9 +1,6 @@
 package de.morrien.voodoo.item;
 
-import de.morrien.voodoo.Poppet;
 import de.morrien.voodoo.VoodooDamageSource;
-import de.morrien.voodoo.util.BindingUtil;
-import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -12,19 +9,12 @@ import net.minecraft.item.Rarity;
 import net.minecraft.item.UseAction;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
-import java.util.List;
-
-import static de.morrien.voodoo.Poppet.PoppetType.BLANK;
 import static de.morrien.voodoo.Poppet.PoppetType.VAMPIRIC;
 import static de.morrien.voodoo.VoodooConfig.COMMON;
-import static de.morrien.voodoo.util.BindingUtil.*;
+import static de.morrien.voodoo.util.BindingUtil.getBoundPlayer;
 
 /**
  * Created by Timor Morrien
