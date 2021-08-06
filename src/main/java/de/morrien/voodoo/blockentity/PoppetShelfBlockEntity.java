@@ -142,6 +142,12 @@ public class PoppetShelfBlockEntity extends BlockEntity {
     }
 
     @Override
+    public void setRemoved() {
+        super.setRemoved();
+        PoppetUtil.removePoppetShelf(this.ownerUuid, this);
+    }
+
+    @Override
     public void onChunkUnloaded() {
         super.onChunkUnloaded();
         PoppetUtil.removePoppetShelf(this.ownerUuid, this);
