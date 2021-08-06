@@ -56,8 +56,8 @@ public class VoodooEvents {
     }
 
     private static void checkPotionEffects(ServerPlayerEntity player) {
-        for (Iterator<EffectInstance> iterator = player.getActiveEffects().iterator(); iterator.hasNext(); ) {
-            EffectInstance potionEffect = iterator.next();
+        final ArrayList<EffectInstance> effects = new ArrayList<>(player.getActiveEffects());
+        for (EffectInstance potionEffect : effects) {
             if (potionEffect.getEffect().getCategory() != EffectType.HARMFUL) continue;
             if (potionEffect.getEffect() == Effects.WITHER) {
                 removeWitherEffect(player, potionEffect);
@@ -83,6 +83,7 @@ public class VoodooEvents {
             if (poppet == null) break;
             durabilityCost = usePoppet(poppet, durabilityCost);
         }
+        if (durabilityCost == potionEffect.getAmplifier() + 1) return;
         player.removeEffect(potionEffect.getEffect());
         if (durabilityCost > 0) {
             final EffectInstance effectInstance = new EffectInstance(
