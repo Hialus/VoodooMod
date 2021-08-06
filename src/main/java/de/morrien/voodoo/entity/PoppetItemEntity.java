@@ -32,22 +32,25 @@ public class PoppetItemEntity extends ItemEntity {
         this.setYRot(base.getYRot());
     }
 
+    private int lastFireTick = -20;
+
     /**
      * Detects fire damage to the poppet.
      * If the poppet is bound to a player the bound player will be set on fire.
      *
      * @param source The source of the damage
-     * @param amount THe amount of damage that should be inflicted
+     * @param amount The amount of damage that should be inflicted
      * @return If the damage to this entity should be canceled
      */
     @Override
     public boolean hurt(DamageSource source, float amount) {
         if (source.isFire()) {
-            if (VoodooConfig.COMMON.voodoo.enableFire.get()) {
+            if (VoodooConfig.COMMON.voodoo.enableFire.get() && this.tickCount - this.lastFireTick >= 20) {
+                this.lastFireTick = this.tickCount;
                 Player boundPlayer = BindingUtil.getBoundPlayer(getItem(), level);
                 if (boundPlayer != null) {
-                    boundPlayer.setSecondsOnFire(1);
-                    boundPlayer.hurt(new VoodooDamageSource(VoodooDamageSource.VoodooDamageType.FIRE, getItem(), this), amount);
+                    boundPlayer.setSecondsOnFire(2);
+                    boundPlayer.hurt(new VoodooDamageSource(VoodooDamageSource.VoodooDamageType.FIRE, getItem(), this), 1);
                     this.getItem().hurtAndBreak(VoodooConfig.COMMON.voodoo.fireDurabilityCost.get(), boundPlayer, (e) -> {
                         this.remove(RemovalReason.KILLED);
                     });

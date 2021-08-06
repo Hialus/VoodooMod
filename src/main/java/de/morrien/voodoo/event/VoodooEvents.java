@@ -55,9 +55,9 @@ public class VoodooEvents {
         checkFoodStatus((ServerPlayer) event.player);
     }
 
-    private static void checkPotionEffects(ServerPlayer player) {
-        for (Iterator<MobEffectInstance> iterator = player.getActiveEffects().iterator(); iterator.hasNext(); ) {
-            MobEffectInstance potionEffect = iterator.next();
+   private static void checkPotionEffects(ServerPlayer player) {
+        final ArrayList<MobEffectInstance> effects = new ArrayList<>(player.getActiveEffects());
+        for (MobEffectInstance potionEffect : effects) {
             if (potionEffect.getEffect().getCategory() != MobEffectCategory.HARMFUL) continue;
             if (potionEffect.getEffect() == MobEffects.WITHER) {
                 removeWitherEffect(player, potionEffect);
@@ -83,6 +83,7 @@ public class VoodooEvents {
             if (poppet == null) break;
             durabilityCost = usePoppet(poppet, durabilityCost);
         }
+        if (durabilityCost == potionEffect.getAmplifier() + 1) return;
         player.removeEffect(potionEffect.getEffect());
         if (durabilityCost > 0) {
             final MobEffectInstance effectInstance = new MobEffectInstance(
