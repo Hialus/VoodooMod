@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": ""
+      "text": "Whether it is an arrow, a snowball or any other kind of projectile: The Projectile Protection Poppet will defend you against them. $(br)While damaging projectiles like arrows will damage the poppet in the process, projectiles like snowballs or eggs will do no such thing."
     },
     {
       "type": "patchouli:crafting",
