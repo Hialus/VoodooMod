@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": ""
+      "text": "The Potion Protection Poppet protects you from all negative potion effects, except the wither effect. $(br)If you are subjected to any negative effect the poppet will try to fully negate it. Each level of the effect will require one durability point. $(br)If there are not enough durability points on all your Potion Protection Poppets left it will only reduce the level accordingly."
     },
     {
       "type": "patchouli:crafting",
