@@ -19,14 +19,12 @@ import net.minecraft.potion.EffectType;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
-import net.minecraft.util.IndirectEntityDamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -58,8 +56,8 @@ public class VoodooEvents {
     }
 
     private static void checkPotionEffects(ServerPlayerEntity player) {
-        for (Iterator<EffectInstance> iterator = player.getActiveEffects().iterator(); iterator.hasNext(); ) {
-            EffectInstance potionEffect = iterator.next();
+        final ArrayList<EffectInstance> effects = new ArrayList<>(player.getActiveEffects());
+        for (EffectInstance potionEffect : effects) {
             if (potionEffect.getEffect().getCategory() != EffectType.HARMFUL) continue;
             if (potionEffect.getEffect() == Effects.WITHER) {
                 removeWitherEffect(player, potionEffect);
@@ -85,6 +83,7 @@ public class VoodooEvents {
             if (poppet == null) break;
             durabilityCost = usePoppet(poppet, durabilityCost);
         }
+        if (durabilityCost == potionEffect.getAmplifier() + 1) return;
         player.removeEffect(potionEffect.getEffect());
         if (durabilityCost > 0) {
             final EffectInstance effectInstance = new EffectInstance(

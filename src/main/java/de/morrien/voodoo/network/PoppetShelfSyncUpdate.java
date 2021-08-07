@@ -7,6 +7,8 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
 
 public class PoppetShelfSyncUpdate implements IThreadsafePacket {
@@ -30,6 +32,7 @@ public class PoppetShelfSyncUpdate implements IThreadsafePacket {
     }
 
     @Override
+    @OnlyIn(Dist.CLIENT)
     public void handleThreadsafe(Context context) {
         World world = Minecraft.getInstance().level;
         if (world == null) return;

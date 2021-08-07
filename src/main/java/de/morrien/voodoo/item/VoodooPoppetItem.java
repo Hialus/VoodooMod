@@ -18,7 +18,6 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
-import static de.morrien.voodoo.Poppet.PoppetType.VAMPIRIC;
 import static de.morrien.voodoo.Poppet.PoppetType.VOODOO;
 import static de.morrien.voodoo.VoodooConfig.COMMON;
 import static de.morrien.voodoo.util.BindingUtil.getBoundPlayer;

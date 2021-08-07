@@ -1,5 +1,7 @@
 package de.morrien.voodoo.network;
 
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -9,6 +11,7 @@ import java.util.function.Supplier;
  */
 public interface IThreadsafePacket extends ISimplePacket {
     @Override
+    @OnlyIn(Dist.CLIENT)
     default void handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context context = supplier.get();
         context.enqueueWork(() -> handleThreadsafe(context));
@@ -21,5 +24,6 @@ public interface IThreadsafePacket extends ISimplePacket {
      *
      * @param context Packet context
      */
+    @OnlyIn(Dist.CLIENT)
     void handleThreadsafe(NetworkEvent.Context context);
 }

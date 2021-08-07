@@ -2,10 +2,7 @@ package de.morrien.voodoo.block;
 
 import de.morrien.voodoo.container.PoppetShelfContainer;
 import de.morrien.voodoo.tileentity.PoppetShelfTileEntity;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
+import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraft.entity.LivingEntity;
@@ -44,6 +41,7 @@ public class PoppetShelfBlock extends Block {
         super(Properties
                 .of(Material.STONE, MaterialColor.NETHER)
                 .strength(6, 6)
+                .requiresCorrectToolForDrops()
                 .harvestTool(ToolType.PICKAXE)
                 .harvestLevel(2)
                 .sound(SoundType.NETHER_BRICKS)
@@ -92,11 +90,10 @@ public class PoppetShelfBlock extends Block {
     public void onRemove(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (!state.is(newState.getBlock())) {
             TileEntity tileentity = world.getBlockEntity(pos);
-            if (tileentity instanceof IInventory) {
-                InventoryHelper.dropContents(world, pos, (IInventory) tileentity);
+            if (tileentity instanceof PoppetShelfTileEntity) {
+                InventoryHelper.dropContents(world, pos, ((PoppetShelfTileEntity) tileentity).getInventory());
                 world.updateNeighbourForOutputSignal(pos, this);
             }
-
             super.onRemove(state, world, pos, newState, isMoving);
         }
     }
