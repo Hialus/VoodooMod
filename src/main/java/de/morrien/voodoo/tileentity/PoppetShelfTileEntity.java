@@ -67,7 +67,7 @@ public class PoppetShelfTileEntity extends TileEntity implements ITickableTileEn
         PoppetUtil.invalidateShelfCache(PoppetShelfTileEntity.this);
     }
 
-    public List<ItemStack> getInventory() {
+    public NonNullList<ItemStack> getInventory() {
         return itemHandler.getInventory();
     }
 
