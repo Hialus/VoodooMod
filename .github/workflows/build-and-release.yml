@@ -36,6 +36,7 @@ jobs:
         echo 'CHANGELOG<<EOF' >> $GITHUB_ENV
         git log $(git describe --tags --abbrev=0 --always)..HEAD --no-merges --pretty="- %s" | grep -vE 'Revert|Update|\[NC\]' >> $GITHUB_ENV
         echo 'EOF' >> $GITHUB_ENV
+      continue-on-error: true
       
     - name: Set up JDK ${{ matrix.jdk }}
       uses: actions/setup-java@v2

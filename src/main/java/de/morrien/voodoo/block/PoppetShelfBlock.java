@@ -8,7 +8,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.*;
+import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -44,6 +47,7 @@ public class PoppetShelfBlock extends BaseEntityBlock {
         super(Properties
                 .of(Material.STONE, MaterialColor.NETHER)
                 .strength(6, 6)
+                .requiresCorrectToolForDrops()
                 .harvestTool(ToolType.PICKAXE)
                 .harvestLevel(2)
                 .sound(SoundType.NETHER_BRICKS)
@@ -92,11 +96,10 @@ public class PoppetShelfBlock extends BaseEntityBlock {
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (!state.is(newState.getBlock())) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof Container) {
-                Containers.dropContents(world, pos, (Container) blockEntity);
+            if (blockEntity instanceof PoppetShelfBlockEntity) {
+                Containers.dropContents(world, pos, ((PoppetShelfBlockEntity) blockEntity).getInventory());
                 world.updateNeighbourForOutputSignal(pos, this);
             }
-
             super.onRemove(state, world, pos, newState, isMoving);
         }
     }

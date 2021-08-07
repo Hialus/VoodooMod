@@ -67,7 +67,7 @@ public class PoppetShelfBlockEntity extends BlockEntity {
         PoppetUtil.invalidateShelfCache(PoppetShelfBlockEntity.this);
     }
 
-    public List<ItemStack> getInventory() {
+    public NonNullList<ItemStack> getInventory() {
         return itemHandler.getInventory();
     }
 
