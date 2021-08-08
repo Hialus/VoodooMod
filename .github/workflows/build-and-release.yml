@@ -1,4 +1,4 @@
-name: Builds and releases the mod
+name: Build and Release
 
 on:
   workflow_dispatch
