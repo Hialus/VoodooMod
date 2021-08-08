@@ -11,7 +11,7 @@
     {
       "type": "patchouli:text",
       "title": "Voodoo Poppets",
-      "text": "After you created a poppet you will want to bind them to a player. In $(l:binding)Binding Poppets$(/l) you can learn how to do this. $(br)Finally if you want to store you poppets in a safe place you want to use a $(l:poppet_shelf)Poppet Shelf$(/l)."
+      "text": "After you created a poppet you will want to bind them to a player. In $(l:binding)Binding Poppets$(/l) you can learn how to do this. $(br)Finally if your want to store you poppets in a safe place you want to use a $(l:poppet_shelf)Poppet Shelf$(/l)."
     }
   ]
 }

@@ -16,11 +16,11 @@
     {
       "type": "patchouli:text",
       "title": "Abilities",
-      "text": "You can use the Voodoo Poppet in 4 different ways: $(li)You can insert needles into the poppet. This will inflict minor damage to the target. $(li)You can push the target into any direction you want. Even from a large distance. $(li)You can throw the poppet underwater. This will cause the target to slowly drown. $(li)You can throw the poppet into fire. While the poppet will slowly burn away it will cause significant harm to the target."
+      "text": "You can use the Voodoo Poppet in 4 different ways: $(li)You can sting needles into the poppet. This will inflict minor damage to the target. $(li)You can push the target into any direction you want. Even from a large distance. $(li)You can throw the poppet underwater. This will cause the target to slowly drown. $(li)You can throw the poppet into fire. While the poppet will slowly burn away it will cause significant harm to the target."
     },
     {
       "type": "patchouli:text",
-      "text": "You can insert needles by holding the poppet in you main hand, a needle in you offhand and then holding and after a few seconds releasing the right mouse button. $(br)If you do the same without a needle in you offhand you will instead push the target around. $(br)$(c)$(l)Important$()$(br)If the target has a $(l:poppets/voodoo_protection_poppet)Voodoo Protection Poppet$(/l) bound to them it will destroy this poppet when activated."
+      "text": "You can use needles by holding the poppet in you main hand, a needle in you offhand and then holding and after a few seconds releasing the right mouse button. $(br)If you do the same without a needle in you offhand you will instead push the target around. $(br)$(c)$(l)Important$()$(br)If the target has a $(l:poppets/voodoo_protection_poppet)Voodoo Protection Poppet$(/l) bound to them it will destroy this poppet when activated."
     }
   ]
 }

@@ -96,7 +96,7 @@ public class VoodooConfig {
                             .defineInRange("needle_durability_cost", 1, 0, Integer.MAX_VALUE);
                     this.needleDamage = builder
                             .comment("The amount of hit points that should be removed from the target player. Given in half hearts")
-                            .defineInRange("needle_damage", 1, 0, Integer.MAX_VALUE);
+                            .defineInRange("needle_damage", 2, 0, Integer.MAX_VALUE);
                 }
                 builder.pop();
 
@@ -174,7 +174,7 @@ public class VoodooConfig {
                                 "The hit point limit for draining health",
                                 "If the target players health is below this number no health will be drained"
                         )
-                        .defineInRange("health_limit", 3, 0, Integer.MAX_VALUE);
+                        .defineInRange("health_limit", 6, 0, Integer.MAX_VALUE);
                 this.drainageInterval = builder
                         .comment("The interval in which health should be drained in ticks.")
                         .defineInRange("drainage_interval", 20, 1, Integer.MAX_VALUE);
