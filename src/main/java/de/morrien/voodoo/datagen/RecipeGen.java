@@ -6,6 +6,7 @@ import net.minecraft.advancements.critereon.BrewedPotionTrigger;
 import net.minecraft.advancements.critereon.ChangeDimensionTrigger;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.*;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -41,12 +42,12 @@ public class RecipeGen extends RecipeProvider {
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(ItemRegistry.poppetShelf.get())
-                .pattern("CCC")
-                .pattern("ODO")
-                .pattern("NNN")
+                .pattern("ACA")
+                .pattern("NON")
+                .pattern("ACA")
                 .define('C', GREEN_CARPET)
                 .define('O', Tags.Items.OBSIDIAN)
-                .define('D', Tags.Items.GEMS_DIAMOND)
+                .define('A', AMETHYST_SHARD)
                 .define('N', RED_NETHER_BRICKS)
                 .unlockedBy("has_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
                 .save(consumer);
