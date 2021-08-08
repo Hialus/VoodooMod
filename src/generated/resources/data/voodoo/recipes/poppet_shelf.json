@@ -1,9 +1,9 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "CCC",
-    "ODO",
-    "NNN"
+    "ACA",
+    "NON",
+    "ACA"
   ],
   "key": {
     "C": {
@@ -12,8 +12,8 @@
     "O": {
       "tag": "forge:obsidian"
     },
-    "D": {
-      "tag": "forge:gems/diamond"
+    "A": {
+      "item": "minecraft:amethyst_shard"
     },
     "N": {
       "item": "minecraft:red_nether_bricks"

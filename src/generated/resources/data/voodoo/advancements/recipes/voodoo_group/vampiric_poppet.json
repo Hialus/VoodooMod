@@ -11,7 +11,9 @@
       "conditions": {
         "items": [
           {
-            "item": "voodoo:voodoo_poppet"
+            "items": [
+              "voodoo:voodoo_poppet"
+            ]
           }
         ]
       }
