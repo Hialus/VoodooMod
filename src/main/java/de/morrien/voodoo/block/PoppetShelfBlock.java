@@ -32,7 +32,6 @@ import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.ToolType;
 import net.minecraftforge.fmllegacy.network.NetworkHooks;
 
 import javax.annotation.Nullable;
@@ -48,8 +47,6 @@ public class PoppetShelfBlock extends BaseEntityBlock {
                 .of(Material.STONE, MaterialColor.NETHER)
                 .strength(6, 6)
                 .requiresCorrectToolForDrops()
-                .harvestTool(ToolType.PICKAXE)
-                .harvestLevel(2)
                 .sound(SoundType.NETHER_BRICKS)
                 .noOcclusion()
         );
