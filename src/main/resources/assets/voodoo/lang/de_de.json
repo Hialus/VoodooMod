@@ -34,6 +34,10 @@
   "commands.voodoo.list.poppets.none": "Keine Puppen gefunden",
   "commands.voodoo.list.poppets.line.inventory": "%1$s. %2$s (Inventar)",
   "commands.voodoo.list.poppets.line.shelf": "%1$s. %2$s (%3$s: %4$s, %5$s, %6$s)",
+  "commands.voodoo.bind.noitem": "Du must ein Taglock Kit oder eine Puppe in der Hand halten.",
+  "commands.voodoo.bind.success": "%1$s wurde erfolgreich an %2$s gebunden.",
+  "commands.voodoo.unbind.noitem": "Du must ein Taglock Kit oder eine Puppe in der Hand halten.",
+  "commands.voodoo.unbind.success": "%1$s wurde erfolgreich entbunden.",
 
   "commands.voodoo.list.shelves.header": "Puppenregale von %1$s:",
   "commands.voodoo.list.shelves.none": "Keine Puppenregale gefunden",
