@@ -54,13 +54,18 @@ minecraft {
         data {
             workingDirectory project.file('run')
 
-            property 'forge.logging.markers', 'REGISTRIES'
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
 
-            args '--mod', 'voodoo', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            args '--mod', 'voodoo', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources')
+
+            environment 'target', 'fmluserdevdata'
 
             mods {
-                voodoo {
+                examplemod {
                     source sourceSets.main
                 }
             }
@@ -77,8 +82,8 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    compileOnly fg.deobf("vazkii.patchouli:Patchouli:1.16.4-53.1:api")
-    runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:1.16.4-53.1")
+    compileOnly fg.deobf("vazkii.patchouli:Patchouli:1.15.2-1.2-35.2:api")
+    runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:1.15.2-1.2-35.2")
 }
 
 task replaceResources(type: Copy) {

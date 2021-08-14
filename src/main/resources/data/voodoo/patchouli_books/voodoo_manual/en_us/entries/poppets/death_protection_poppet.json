@@ -5,11 +5,11 @@
   "read_by_default": true,
   "pages": [
     {
-      "type": "patchouli:text",
+      "type": "text",
       "text": "Even if you have a lot of protection poppet they are sometimes simply not enough. They don't protect against every damage source and can also break at the most inconvenient times. $(br)The Death Protection Poppet is your ultimate life anchor. It can save you from all forms of death, except falling into the void. "
     },
     {
-      "type": "patchouli:crafting",
+      "type": "crafting",
       "recipe": "voodoo:death_protection_poppet",
       "text": "It takes the powers of the Totem of Undying and increases them with the feet of a rabbit and two gold apples to accomplish this feat."
     }

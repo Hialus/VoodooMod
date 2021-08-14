@@ -33,7 +33,7 @@ public class ListShelvesCommand {
         message.append(new TranslationTextComponent(
                 "commands.voodoo.list.shelves.header",
                 player.getDisplayName())
-                .setStyle(Style.EMPTY.withColor(TextFormatting.GREEN).withBold(true))
+                .setStyle(new Style().setColor(TextFormatting.GREEN).setBold(true))
         );
         CommandSource source = context.getSource();
         int counter = 1;
@@ -48,14 +48,14 @@ public class ListShelvesCommand {
                                 tileEntity.getBlockPos().getX(),
                                 tileEntity.getBlockPos().getY(),
                                 tileEntity.getBlockPos().getZ(),
-                                world.dimension().location().getPath()
+                                world.dimension.getType().getRegistryName().getPath()
                         );
-                        Style style = Style.EMPTY
-                                .withClickEvent(new ClickEvent(
+                        Style style = new Style()
+                                .setClickEvent(new ClickEvent(
                                         ClickEvent.Action.SUGGEST_COMMAND,
-                                        "/execute in " + world.dimension().location().toString() + " run tp " + player.getName().getString() + " " + tileEntity.getBlockPos().getX() + " " + tileEntity.getBlockPos().getY() + " " + tileEntity.getBlockPos().getZ()
+                                        "/execute in " + world.dimension.getType().getRegistryName().toString() + " run tp " + player.getName().getString() + " " + tileEntity.getBlockPos().getX() + " " + tileEntity.getBlockPos().getY() + " " + tileEntity.getBlockPos().getZ()
                                 ))
-                                .withHoverEvent(new HoverEvent(
+                                .setHoverEvent(new HoverEvent(
                                         HoverEvent.Action.SHOW_TEXT,
                                         new TranslationTextComponent("commands.voodoo.list.teleport")
                                 ));
@@ -68,7 +68,7 @@ public class ListShelvesCommand {
         }
         if (counter == 1) {
             message = new TranslationTextComponent("commands.voodoo.list.shelves.none");
-            message.setStyle(Style.EMPTY.withColor(TextFormatting.RED));
+            message.setStyle(new Style().setColor(TextFormatting.RED));
         }
         source.sendSuccess(message, false);
         return 0;

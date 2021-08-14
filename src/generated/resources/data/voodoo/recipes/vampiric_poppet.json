@@ -19,13 +19,13 @@
       "item": "minecraft:ghast_tear"
     },
     "C": {
-      "item": "minecraft:crimson_fungus"
+      "item": "minecraft:quartz"
     },
     "W": {
-      "item": "minecraft:warped_fungus"
+      "item": "minecraft:nether_wart"
     },
     "S": {
-      "item": "minecraft:soul_lantern"
+      "item": "minecraft:soul_sand"
     }
   },
   "result": {

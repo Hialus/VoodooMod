@@ -39,7 +39,7 @@ public class ListPoppetsCommand {
         message.append(new TranslationTextComponent(
                 "commands.voodoo.list.poppets.header",
                 player.getDisplayName())
-                .setStyle(Style.EMPTY.withColor(TextFormatting.GREEN).withBold(true))
+                .setStyle(new Style().setColor(TextFormatting.GREEN).setBold(true))
         );
         CommandSource source = context.getSource();
         int counter = 1;
@@ -58,17 +58,17 @@ public class ListPoppetsCommand {
                         "commands.voodoo.list.poppets.line.shelf",
                         counter,
                         poppetText,
-                        world.dimension().location().getPath(),
+                        world.dimension.getType().getRegistryName().getPath(),
                         tileEntity.getBlockPos().getX(),
                         tileEntity.getBlockPos().getY(),
                         tileEntity.getBlockPos().getZ()
                 );
-                Style style = Style.EMPTY
-                        .withClickEvent(new ClickEvent(
+                Style style = new Style()
+                        .setClickEvent(new ClickEvent(
                                 ClickEvent.Action.SUGGEST_COMMAND,
-                                "/execute in " + world.dimension().location().toString() + " run tp " + player.getName().getString() + " " + tileEntity.getBlockPos().getX() + " " + tileEntity.getBlockPos().getY() + " " + tileEntity.getBlockPos().getZ()
+                                "/execute in " + world.dimension.getType().getRegistryName().toString() + " run tp " + player.getName().getString() + " " + tileEntity.getBlockPos().getX() + " " + tileEntity.getBlockPos().getY() + " " + tileEntity.getBlockPos().getZ()
                         ))
-                        .withHoverEvent(new HoverEvent(
+                        .setHoverEvent(new HoverEvent(
                                 HoverEvent.Action.SHOW_TEXT,
                                 new TranslationTextComponent("commands.voodoo.list.teleport")
                         ));
@@ -85,7 +85,7 @@ public class ListPoppetsCommand {
         }
         if (counter == 1) {
             message = new TranslationTextComponent("commands.voodoo.list.poppets.none");
-            message.setStyle(Style.EMPTY.withColor(TextFormatting.RED));
+            message.setStyle(new Style().setColor(TextFormatting.RED));
         }
         source.sendSuccess(message, false);
         return 0;

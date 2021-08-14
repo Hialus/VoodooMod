@@ -8,6 +8,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.data.*;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.Tags;
 
 import java.util.function.Consumer;
@@ -29,14 +30,14 @@ public class RecipeGen extends RecipeProvider {
                 .pattern(" B ")
                 .define('I', Tags.Items.INGOTS_IRON)
                 .define('B', IRON_BARS)
-                .unlockedBy("has_iron", has(Tags.Items.INGOTS_IRON))
+                .unlocks("has_iron", has(Tags.Items.INGOTS_IRON))
                 .save(consumer);
 
         ShapelessRecipeBuilder.shapeless(ItemRegistry.taglockKit.get())
                 .requires(ItemRegistry.needle.get())
                 .requires(Tags.Items.STRING)
                 .requires(GLASS_BOTTLE)
-                .unlockedBy("has_iron", has(Tags.Items.INGOTS_IRON))
+                .unlocks("has_iron", has(Tags.Items.INGOTS_IRON))
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(ItemRegistry.poppetShelf.get())
@@ -47,7 +48,7 @@ public class RecipeGen extends RecipeProvider {
                 .define('O', Tags.Items.OBSIDIAN)
                 .define('D', Tags.Items.GEMS_DIAMOND)
                 .define('N', RED_NETHER_BRICKS)
-                .unlockedBy("has_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
+                .unlocks("has_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(ItemRegistry.poppetMap.get(BLANK).get())
@@ -59,7 +60,7 @@ public class RecipeGen extends RecipeProvider {
                 .define('S', STRING)
                 .define('R', RABBIT_HIDE)
                 .define('N', ItemRegistry.needle.get())
-                .unlockedBy("has_rabbit_hide", has(RABBIT_HIDE))
+                .unlocks("has_rabbit_hide", has(RABBIT_HIDE))
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(ItemRegistry.poppetMap.get(VOODOO).get())
@@ -72,7 +73,7 @@ public class RecipeGen extends RecipeProvider {
                 .define('E', ENDER_PEARL)
                 .define('S', SPIDER_EYE)
                 .define('L', LEAD)
-                .unlockedBy("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
+                .unlocks("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(ItemRegistry.poppetMap.get(VAMPIRIC).get())
@@ -83,10 +84,10 @@ public class RecipeGen extends RecipeProvider {
                 .define('N', ItemRegistry.needle.get())
                 .define('R', RABBIT_HIDE)
                 .define('G', GHAST_TEAR)
-                .define('C', CRIMSON_FUNGUS)
-                .define('W', WARPED_FUNGUS)
-                .define('S', SOUL_LANTERN)
-                .unlockedBy("has_voodoo_poppet", has(ItemRegistry.poppetMap.get(VOODOO).get()))
+                .define('C', QUARTZ)
+                .define('W', NETHER_WART)
+                .define('S', SOUL_SAND)
+                .unlocks("has_voodoo_poppet", has(ItemRegistry.poppetMap.get(VOODOO).get()))
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(ItemRegistry.poppetMap.get(REFLECTOR).get())
@@ -99,7 +100,7 @@ public class RecipeGen extends RecipeProvider {
                 .define('F', Ingredient.of(PUFFERFISH, PUFFERFISH_BUCKET))
                 .define('E', END_CRYSTAL)
                 .define('C', CACTUS)
-                .unlockedBy("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
+                .unlocks("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(ItemRegistry.poppetMap.get(DEATH_PROTECTION).get())
@@ -112,8 +113,8 @@ public class RecipeGen extends RecipeProvider {
                 .define('T', TOTEM_OF_UNDYING)
                 .define('G', GOLDEN_APPLE)
                 .define('F', RABBIT_FOOT)
-                .unlockedBy("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
-                .unlockedBy("has_totem_of_undying", has(TOTEM_OF_UNDYING))
+                .unlocks("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
+                .unlocks("has_totem_of_undying", has(TOTEM_OF_UNDYING))
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(ItemRegistry.poppetMap.get(FIRE_PROTECTION).get())
@@ -126,8 +127,8 @@ public class RecipeGen extends RecipeProvider {
                 .define('G', Tags.Items.INGOTS_GOLD)
                 .define('F', FIRE_CHARGE)
                 .define('B', BLAZE_ROD)
-                .unlockedBy("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
-                .unlockedBy("entered_nether", ChangeDimensionTrigger.Instance.changedDimensionTo(World.NETHER))
+                .unlocks("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
+                .unlocks("entered_nether", ChangeDimensionTrigger.Instance.changedDimensionTo(DimensionType.NETHER))
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(ItemRegistry.poppetMap.get(FALL_PROTECTION).get())
@@ -140,7 +141,7 @@ public class RecipeGen extends RecipeProvider {
                 .define('W', WHITE_WOOL)
                 .define('F', FEATHER)
                 .define('S', STRING)
-                .unlockedBy("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
+                .unlocks("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(ItemRegistry.poppetMap.get(WATER_PROTECTION).get())
@@ -153,8 +154,8 @@ public class RecipeGen extends RecipeProvider {
                 .define('F', Ingredient.of(SALMON_BUCKET, COD_BUCKET, PUFFERFISH_BUCKET, TROPICAL_FISH_BUCKET))
                 .define('S', SEA_PICKLE)
                 .define('K', KELP)
-                .unlockedBy("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
-                .unlockedBy("entered_water", insideOf(Blocks.WATER))
+                .unlocks("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
+                .unlocks("entered_water", insideOf(Blocks.WATER))
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(ItemRegistry.poppetMap.get(WITHER_PROTECTION).get())
@@ -168,8 +169,8 @@ public class RecipeGen extends RecipeProvider {
                 .define('C', Ingredient.of(COAL, CHARCOAL))
                 .define('B', BONE_BLOCK)
                 .define('H', GOLDEN_APPLE)
-                .unlockedBy("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
-                .unlockedBy("entered_nether", ChangeDimensionTrigger.Instance.changedDimensionTo(World.NETHER))
+                .unlocks("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
+                .unlocks("entered_nether", ChangeDimensionTrigger.Instance.changedDimensionTo(DimensionType.NETHER))
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(ItemRegistry.poppetMap.get(POTION_PROTECTION).get())
@@ -183,8 +184,8 @@ public class RecipeGen extends RecipeProvider {
                 .define('G', GLISTERING_MELON_SLICE)
                 .define('C', GOLDEN_CARROT)
                 .define('H', GOLDEN_APPLE)
-                .unlockedBy("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
-                .unlockedBy("brewed_potion", BrewedPotionTrigger.Instance.brewedPotion())
+                .unlocks("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
+                .unlocks("brewed_potion", BrewedPotionTrigger.Instance.brewedPotion())
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(ItemRegistry.poppetMap.get(VOID_PROTECTION).get())
@@ -195,10 +196,10 @@ public class RecipeGen extends RecipeProvider {
                 .define('N', ItemRegistry.needle.get())
                 .define('R', RABBIT_HIDE)
                 .define('E', ENDER_PEARL)
-                .define('O', CRYING_OBSIDIAN)
+                .define('O', OBSIDIAN)
                 .define('M', PHANTOM_MEMBRANE)
-                .unlockedBy("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
-                .unlockedBy("has_phantom_membrane", has(PHANTOM_MEMBRANE))
+                .unlocks("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
+                .unlocks("has_phantom_membrane", has(PHANTOM_MEMBRANE))
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(ItemRegistry.poppetMap.get(HUNGER_PROTECTION).get())
@@ -210,7 +211,7 @@ public class RecipeGen extends RecipeProvider {
                 .define('R', RABBIT_HIDE)
                 .define('C', COOKIE)
                 .define('K', CAKE)
-                .unlockedBy("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
+                .unlocks("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(ItemRegistry.poppetMap.get(EXPLOSION_PROTECTION).get())
@@ -223,8 +224,8 @@ public class RecipeGen extends RecipeProvider {
                 .define('W', WATER_BUCKET)
                 .define('I', IRON_BLOCK)
                 .define('O', OBSIDIAN)
-                .unlockedBy("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
-                .unlockedBy("has_obsidian", has(OBSIDIAN))
+                .unlocks("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
+                .unlocks("has_obsidian", has(OBSIDIAN))
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(ItemRegistry.poppetMap.get(PROJECTILE_PROTECTION).get())
@@ -236,8 +237,8 @@ public class RecipeGen extends RecipeProvider {
                 .define('R', RABBIT_HIDE)
                 .define('H', Ingredient.of(HONEY_BLOCK, SLIME_BLOCK))
                 .define('S', SHIELD)
-                .define('T', TARGET)
-                .unlockedBy("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
+                .define('T', IRON_INGOT)
+                .unlocks("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
                 .save(consumer);
 
         ShapedRecipeBuilder.shaped(ItemRegistry.poppetMap.get(VOODOO_PROTECTION).get())
@@ -250,7 +251,7 @@ public class RecipeGen extends RecipeProvider {
                 .define('M', PHANTOM_MEMBRANE)
                 .define('E', ENDER_PEARL)
                 .define('T', TNT)
-                .unlockedBy("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
+                .unlocks("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
                 .save(consumer);
 
         CustomRecipeBuilder.special(RecipeRegistry.bindPoppetRecipe.get())

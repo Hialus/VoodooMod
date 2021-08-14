@@ -20,8 +20,8 @@ import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -30,6 +30,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -42,8 +43,8 @@ import static net.minecraft.util.DamageSource.*;
 @Mod.EventBusSubscriber(modid = Voodoo.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class VoodooEvents {
     @SubscribeEvent
-    public static void onRegisterCommands(RegisterCommandsEvent event) {
-        VoodooCommand.register(event.getDispatcher());
+    public static void serverLoad(FMLServerStartingEvent event) {
+        VoodooCommand.register(event.getCommandDispatcher());
     }
 
     @SubscribeEvent
@@ -148,7 +149,7 @@ public class VoodooEvents {
                 player.level.isClientSide ||
                 player.isInvulnerableTo(event.getSource()) ||
                 player.isCreative() ||
-                player.isDeadOrDying() ||
+                player.getHealth() <= 0.0F ||
                 (event.getSource().isFire() && player.hasEffect(Effects.FIRE_RESISTANCE))
         ) return;
 
@@ -260,9 +261,7 @@ public class VoodooEvents {
             player.fallDistance = 0;
             final ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
             BlockPos spawnPos = serverPlayer.getRespawnPosition();
-            ServerWorld serverWorld = serverPlayer.server.getLevel(serverPlayer.getRespawnDimension());
-            if (serverWorld == null)
-                serverWorld = serverPlayer.server.overworld();
+            ServerWorld serverWorld = serverPlayer.server.getLevel(serverPlayer.getSpawnDimension());
             if (spawnPos == null) {
                 spawnPos = new BlockPos(
                         serverWorld.getLevelData().getXSpawn(),

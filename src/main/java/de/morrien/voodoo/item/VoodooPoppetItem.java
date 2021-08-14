@@ -13,7 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.UseAction;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -85,7 +85,7 @@ public class VoodooPoppetItem extends PoppetItem {
                         stack.hurtAndBreak(COMMON.voodoo.pushDurabilityCost.get(), livingEntity, (e) -> {
                             player.broadcastBreakEvent(player.getUsedItemHand());
                         });
-                        Vector3d vec = player.getLookAngle();
+                        Vec3d vec = player.getLookAngle();
                         boundPlayer.push(vec.x * 1.5, vec.y * 1.2, vec.z * 1.5);
                         boundPlayer.hurtMarked = true;
                     }

@@ -8,6 +8,7 @@ import de.morrien.voodoo.util.PoppetUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
@@ -19,7 +20,6 @@ import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -94,7 +94,7 @@ public class PoppetShelfTileEntity extends TileEntity implements ITickableTileEn
 
     @Override
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-        handleUpdateTag(level.getBlockState(pkt.getPos()), pkt.getTag());
+        handleUpdateTag(pkt.getTag());
     }
 
     @Override
@@ -104,9 +104,11 @@ public class PoppetShelfTileEntity extends TileEntity implements ITickableTileEn
         return compound;
     }
 
+
+
     @Override
-    public void handleUpdateTag(BlockState state, CompoundNBT compound) {
-        super.handleUpdateTag(state, compound);
+    public void handleUpdateTag(CompoundNBT compound) {
+        super.handleUpdateTag(compound);
         this.readFromTag(compound);
     }
 
@@ -118,8 +120,8 @@ public class PoppetShelfTileEntity extends TileEntity implements ITickableTileEn
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT compound) {
-        super.load(state, compound);
+    public void load(CompoundNBT compound) {
+        super.load(compound);
         this.readFromTag(compound);
     }
 

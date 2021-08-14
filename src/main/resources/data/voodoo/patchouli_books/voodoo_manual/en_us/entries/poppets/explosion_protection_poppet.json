@@ -5,11 +5,11 @@
   "read_by_default": true,
   "pages": [
     {
-      "type": "patchouli:text",
+      "type": "text",
       "text": "Creepers, TNT or fireballs: The Explosion Protection Poppet doesn't care. It will protect you against any explosions regardless of the source. $(br)It can even protect you from the strongest explosion imaginable, like those pesky nukes you keep hearing about. (Radiation prevention not included)"
     },
     {
-      "type": "patchouli:crafting",
+      "type": "crafting",
       "title": "Explosion Protection",
       "recipe": "voodoo:explosion_protection_poppet",
       "text": ""

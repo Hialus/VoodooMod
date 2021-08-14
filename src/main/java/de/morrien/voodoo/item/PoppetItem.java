@@ -46,11 +46,11 @@ public class PoppetItem extends Item {
                     "text.voodoo.poppet.bound",
                     getBoundName(stack)
             );
-            text.setStyle(Style.EMPTY.withColor(TextFormatting.GRAY));
+            text.setStyle(new Style().setColor(TextFormatting.GRAY));
             tooltip.add(text);
         } else if (stack.getItem() != ItemRegistry.poppetMap.get(BLANK).get()) {
             final TranslationTextComponent text = new TranslationTextComponent("text.voodoo.poppet.not_bound");
-            text.setStyle(Style.EMPTY.withColor(TextFormatting.GRAY));
+            text.setStyle(new Style().setColor(TextFormatting.GRAY));
             tooltip.add(text);
         }
     }

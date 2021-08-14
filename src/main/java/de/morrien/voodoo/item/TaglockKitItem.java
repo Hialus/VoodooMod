@@ -47,11 +47,11 @@ public class TaglockKitItem extends Item {
                     "text.voodoo.taglock_kit.bound",
                     getBoundName(stack)
             );
-            text.setStyle(Style.EMPTY.withColor(TextFormatting.GRAY));
+            text.setStyle(new Style().setColor(TextFormatting.GRAY));
             tooltip.add(text);
         } else {
             final TranslationTextComponent text = new TranslationTextComponent("text.voodoo.taglock_kit.not_bound");
-            text.setStyle(Style.EMPTY.withColor(TextFormatting.GRAY));
+            text.setStyle(new Style().setColor(TextFormatting.GRAY));
             tooltip.add(text);
         }
     }

@@ -41,10 +41,9 @@ public class PoppetShelfBlock extends Block {
         super(Properties
                 .of(Material.STONE, MaterialColor.NETHER)
                 .strength(6, 6)
-                .requiresCorrectToolForDrops()
                 .harvestTool(ToolType.PICKAXE)
                 .harvestLevel(2)
-                .sound(SoundType.NETHER_BRICKS)
+                .sound(SoundType.STONE)
                 .noOcclusion()
         );
     }
@@ -88,7 +87,7 @@ public class PoppetShelfBlock extends Block {
 
     @Override
     public void onRemove(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!state.is(newState.getBlock())) {
+        if (state.getBlock() != newState.getBlock()) {
             TileEntity tileentity = world.getBlockEntity(pos);
             if (tileentity instanceof PoppetShelfTileEntity) {
                 InventoryHelper.dropContents(world, pos, ((PoppetShelfTileEntity) tileentity).getInventory());
