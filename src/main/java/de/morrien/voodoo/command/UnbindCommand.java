@@ -40,7 +40,7 @@ public class UnbindCommand {
                 "commands.voodoo.unbind.success",
                 itemStack.getDisplayName()
         );
-        text.setStyle(Style.EMPTY.withColor(TextFormatting.GREEN));
+        text.setStyle(new Style().setColor(TextFormatting.GREEN));
         source.sendSuccess(text, true);
         return 0;
     }

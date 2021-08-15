@@ -62,7 +62,7 @@ public class PoppetItem extends Item {
         if (config == null) return;
         if (!config.enabled.get()) {
             final TranslationTextComponent text = new TranslationTextComponent("text.voodoo.poppet.disabled");
-            text.setStyle(Style.EMPTY.withColor(TextFormatting.RED));
+            text.setStyle(new Style().setColor(TextFormatting.RED));
             tooltip.add(text);
         }
     }

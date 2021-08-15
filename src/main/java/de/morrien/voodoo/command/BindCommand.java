@@ -54,7 +54,7 @@ public class BindCommand {
                 itemStack.getDisplayName(),
                 target.getDisplayName()
         );
-        text.setStyle(Style.EMPTY.withColor(TextFormatting.GREEN));
+        text.setStyle(new Style().setColor(TextFormatting.GREEN));
         source.sendSuccess(text, true);
         return 0;
     }
