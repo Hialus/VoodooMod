@@ -8,32 +8,33 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import de.morrien.voodoo.Poppet;
 import de.morrien.voodoo.item.ItemRegistry;
 import de.morrien.voodoo.item.PoppetItem;
-import de.morrien.voodoo.item.TaglockKitItem;
-import de.morrien.voodoo.tileentity.PoppetShelfTileEntity;
 import de.morrien.voodoo.util.BindingUtil;
-import de.morrien.voodoo.util.PoppetUtil;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.command.arguments.EntityArgument;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.*;
-import net.minecraft.util.text.event.ClickEvent;
-import net.minecraft.util.text.event.HoverEvent;
-import net.minecraft.world.World;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public class BindCommand {
     public static ArgumentBuilder<CommandSource, ?> register(CommandDispatcher<CommandSource> dispatcher) {
         return Commands
                 .literal("bind")
-                .then(Commands.argument("player", EntityArgument.player()).requires(cs -> cs.hasPermission(3)).executes(context -> {
-                    final ServerPlayerEntity player = EntityArgument.getPlayer(context, "player");
+                .then(Commands
+                        .argument("player", EntityArgument.player())
+                        .requires(cs -> cs.hasPermission(3))
+                        .executes(context -> {
+                            final ServerPlayerEntity player = EntityArgument.getPlayer(context, "player");
+                            return bind(context, player);
+                        })
+                )
+                .requires(cs -> cs.hasPermission(3))
+                .executes(context -> {
+                    final ServerPlayerEntity player = context.getSource().getPlayerOrException();
                     return bind(context, player);
-                }));
+                });
     }
 
     private static int bind(CommandContext<CommandSource> context, ServerPlayerEntity target) throws CommandSyntaxException {
