@@ -1,13 +1,13 @@
-name: Build for 1.16
+name: Build for 1.15
 
 on:
   push:
-    branches: [ "1.16" ]
+    branches: [ "1.15" ]
   pull_request:
-    branches: [ "1.16" ]
+    branches: [ "1.15" ]
 
 jobs:
-  build-1_16:
+  build-1_15:
     runs-on: ubuntu-latest
 
     steps:

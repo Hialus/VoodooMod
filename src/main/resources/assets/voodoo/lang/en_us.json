@@ -27,6 +27,12 @@
   "text.voodoo.poppet.used_up": "Your %1$s was used up",
   "screen.voodoo.poppet_shelf": "Poppet Shelf (%1$s)",
 
+  "text.voodoo.poppet.disabled": "Disabled",
+  "text.voodoo.poppet.needle.disabled": "Needles disabled",
+  "text.voodoo.poppet.push.disabled": "Pushing disabled",
+  "text.voodoo.poppet.fire.disabled": "Burning disabled",
+  "text.voodoo.poppet.drowning.disabled": "Drowning disabled",
+
   "sound.poppet.voodoo_protection.used": "Voodoo Protection Poppet activated",
   "sound.poppet.potion_protection.used": "Potion Protection Poppet activated",
 
@@ -34,6 +40,10 @@
   "commands.voodoo.list.poppets.none": "No poppets found",
   "commands.voodoo.list.poppets.line.inventory": "%1$s. %2$s (Inventory)",
   "commands.voodoo.list.poppets.line.shelf": "%1$s. %2$s (%3$s: %4$s, %5$s, %6$s)",
+  "commands.voodoo.bind.noitem": "You must hold a taglock kit or poppet in your main hand.",
+  "commands.voodoo.bind.success": "%1$s has been successfully bound to %2$s.",
+  "commands.voodoo.unbind.noitem": "You must hold a taglock kit or poppet in your main hand.",
+  "commands.voodoo.unbind.success": "%1$s was successfully unbound.",
 
   "commands.voodoo.list.shelves.header": "Poppet shelves of %1$s:",
   "commands.voodoo.list.shelves.none": "No poppet shelves found",

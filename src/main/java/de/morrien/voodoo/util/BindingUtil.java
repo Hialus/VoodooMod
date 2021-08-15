@@ -36,6 +36,17 @@ public class BindingUtil {
     }
 
     /**
+     * Unbinds an ItemStack
+     *
+     * @param itemStack The ItemStack that should be unbound
+     */
+    public static void unbind(ItemStack itemStack) {
+        final CompoundNBT tag = itemStack.getOrCreateTag();
+        tag.remove(BOUND_UUID);
+        tag.remove(BOUND_NAME);
+    }
+
+    /**
      * Transfers the binding from one ItemStack to another.
      * This is used for the binding crafting recipe.
      *

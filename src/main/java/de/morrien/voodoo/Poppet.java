@@ -1,6 +1,7 @@
 package de.morrien.voodoo;
 
 import de.morrien.voodoo.blockentity.PoppetShelfBlockEntity;
+import de.morrien.voodoo.VoodooConfig.Common.PoppetBase;
 import de.morrien.voodoo.item.PoppetItem;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.player.Player;
@@ -70,26 +71,42 @@ public class Poppet {
     }
 
     public enum PoppetType {
-        BLANK(null),
+        BLANK(),
         VOODOO(VoodooConfig.COMMON.voodoo.durability),
-        VAMPIRIC(VoodooConfig.COMMON.vampiric.durability),
-        REFLECTOR(VoodooConfig.COMMON.reflector.durability),
-        VOODOO_PROTECTION(VoodooConfig.COMMON.voodooProtection.durability),
-        DEATH_PROTECTION(VoodooConfig.COMMON.deathProtection.durability),
-        FIRE_PROTECTION(VoodooConfig.COMMON.fireProtection.durability),
-        WATER_PROTECTION(VoodooConfig.COMMON.waterProtection.durability),
-        FALL_PROTECTION(VoodooConfig.COMMON.fallProtection.durability),
-        EXPLOSION_PROTECTION(VoodooConfig.COMMON.explosionProtection.durability),
-        PROJECTILE_PROTECTION(VoodooConfig.COMMON.projectileProtection.durability),
-        WITHER_PROTECTION(VoodooConfig.COMMON.witherProtection.durability),
-        HUNGER_PROTECTION(VoodooConfig.COMMON.hungerProtection.durability),
-        POTION_PROTECTION(VoodooConfig.COMMON.potionProtection.durability),
-        VOID_PROTECTION(VoodooConfig.COMMON.voidProtection.durability);
+        VAMPIRIC(VoodooConfig.COMMON.vampiric),
+        REFLECTOR(VoodooConfig.COMMON.reflector),
+        VOODOO_PROTECTION(VoodooConfig.COMMON.voodooProtection),
+        DEATH_PROTECTION(VoodooConfig.COMMON.deathProtection),
+        FIRE_PROTECTION(VoodooConfig.COMMON.fireProtection),
+        WATER_PROTECTION(VoodooConfig.COMMON.waterProtection),
+        FALL_PROTECTION(VoodooConfig.COMMON.fallProtection),
+        EXPLOSION_PROTECTION(VoodooConfig.COMMON.explosionProtection),
+        PROJECTILE_PROTECTION(VoodooConfig.COMMON.projectileProtection),
+        WITHER_PROTECTION(VoodooConfig.COMMON.witherProtection),
+        HUNGER_PROTECTION(VoodooConfig.COMMON.hungerProtection),
+        POTION_PROTECTION(VoodooConfig.COMMON.potionProtection),
+        VOID_PROTECTION(VoodooConfig.COMMON.voidProtection);
 
+        private final PoppetBase config;
         private final IntValue durability;
 
+        PoppetType() {
+            this.config = null;
+            this.durability = null;
+        }
+
+        PoppetType(PoppetBase config) {
+            this.config = config;
+            this.durability = config.durability;
+        }
+
         PoppetType(IntValue durability) {
+            this.config = null;
             this.durability = durability;
+        }
+
+        public PoppetBase getConfig() {
+            return config;
         }
 
         public boolean hasDurability() {

@@ -14,6 +14,8 @@ public class VoodooCommand {
                                         .then(ListPoppetsCommand.register(dispatcher))
                                         .then(ListShelvesCommand.register(dispatcher))
                         )
+                        .then(BindCommand.register(dispatcher))
+                        .then(UnbindCommand.register(dispatcher))
         );
     }
 }
