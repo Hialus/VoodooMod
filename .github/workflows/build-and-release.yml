@@ -15,7 +15,7 @@ jobs:
             jdk: 8
           - version: 1.16.5
             branch: 1.16
-            jdk: 15
+            jdk: 8
           - version: 1.17.1
             branch: 1.17
             jdk: 16
@@ -86,3 +86,15 @@ jobs:
         files: 'LICENSE;build/libs/*.jar'
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         release-tag: ${{ matrix.version }}-${{ env.mod_version }}
+        
+    - name: Upload to CurseForge
+      uses: itsmeow/curseforge-upload@master
+      with:
+        token: ${{ secrets.CURSEFORGE_TOKEN }}
+        project_id: 510930
+        game_endpoint: minecraft
+        file_path: build/libs/Voodoo-${{ matrix.version }}-${{ env.mod_version }}.jar
+        changelog: ${{ env.CHANGELOG }}
+        game_versions: Java:Java ${{ matrix.jdk }},Minecraft ${{ env.branch }}:${{ env.version }},Modloader:Forge # minecraft-1-12:1.12.2,4458,2:Java 7,Minecraft 1.12:1-12,1.12.1,Forge
+        release_type: release
+        relations: patchouli:optionalDependency
