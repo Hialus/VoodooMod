@@ -95,6 +95,6 @@ jobs:
         game_endpoint: minecraft
         file_path: build/libs/Voodoo-${{ matrix.version }}-${{ env.mod_version }}.jar
         changelog: ${{ env.CHANGELOG }}
-        game_versions: Java:Java ${{ matrix.jdk }},Minecraft ${{ env.branch }}:${{ env.version }},Modloader:Forge
+        game_versions: Java:Java ${{ matrix.jdk }},Minecraft ${{ matrix.branch }}:${{ matrix.version }},Modloader:Forge
         release_type: release
         relations: patchouli:optionalDependency
