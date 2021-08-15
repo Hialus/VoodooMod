@@ -96,19 +96,13 @@ public class PoppetItem extends Item {
         return false;
     }
 
-    @Nullable
     @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
-        final CompoundNBT tag = stack.getOrCreateTag();
-        if ((poppetType == VOODOO_PROTECTION || poppetType == REFLECTOR) && !tag.contains("Enchantments")) {
-            stack.enchant(Enchantments.ALL_DAMAGE_PROTECTION, 10);
-            tag.putInt("HideFlags", 1);
-        }
-        return null;
+    public boolean isFoil(ItemStack stack) {
+        return poppetType == VOODOO_PROTECTION || poppetType == REFLECTOR;
     }
 
     @Override
     public Rarity getRarity(ItemStack stack) {
-        return poppetType == DEATH_PROTECTION ? Rarity.UNCOMMON : super.getRarity(stack);
+        return isFoil(stack) ? Rarity.RARE : poppetType == DEATH_PROTECTION ? Rarity.UNCOMMON : super.getRarity(stack);
     }
 }
