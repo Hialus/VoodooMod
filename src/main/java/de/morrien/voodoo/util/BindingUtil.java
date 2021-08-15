@@ -41,7 +41,7 @@ public class BindingUtil {
      * @param itemStack The ItemStack that should be unbound
      */
     public static void unbind(ItemStack itemStack) {
-        final CompoundNBT tag = itemStack.getOrCreateTag();
+        final CompoundTag tag = itemStack.getOrCreateTag();
         tag.remove(BOUND_UUID);
         tag.remove(BOUND_NAME);
     }

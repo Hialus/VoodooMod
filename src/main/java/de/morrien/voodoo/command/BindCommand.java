@@ -9,52 +9,52 @@ import de.morrien.voodoo.Poppet;
 import de.morrien.voodoo.item.ItemRegistry;
 import de.morrien.voodoo.item.PoppetItem;
 import de.morrien.voodoo.util.BindingUtil;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.Commands;
-import net.minecraft.command.arguments.EntityArgument;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 
 public class BindCommand {
-    public static ArgumentBuilder<CommandSource, ?> register(CommandDispatcher<CommandSource> dispatcher) {
+    public static ArgumentBuilder<CommandSourceStack, ?> register(CommandDispatcher<CommandSourceStack> dispatcher) {
         return Commands
                 .literal("bind")
                 .then(Commands
                         .argument("player", EntityArgument.player())
                         .requires(cs -> cs.hasPermission(3))
                         .executes(context -> {
-                            final ServerPlayerEntity player = EntityArgument.getPlayer(context, "player");
+                            final ServerPlayer player = EntityArgument.getPlayer(context, "player");
                             return bind(context, player);
                         })
                 )
                 .requires(cs -> cs.hasPermission(3))
                 .executes(context -> {
-                    final ServerPlayerEntity player = context.getSource().getPlayerOrException();
+                    final ServerPlayer player = context.getSource().getPlayerOrException();
                     return bind(context, player);
                 });
     }
 
-    private static int bind(CommandContext<CommandSource> context, ServerPlayerEntity target) throws CommandSyntaxException {
-        CommandSource source = context.getSource();
-        final ServerPlayerEntity player = source.getPlayerOrException();
+    private static int bind(CommandContext<CommandSourceStack> context, ServerPlayer target) throws CommandSyntaxException {
+        CommandSourceStack source = context.getSource();
+        final ServerPlayer player = source.getPlayerOrException();
         final ItemStack itemStack = player.getMainHandItem();
         boolean isPoppet = itemStack.getItem() instanceof PoppetItem;
         boolean isBlankPoppet = itemStack.getItem() == ItemRegistry.poppetMap.get(Poppet.PoppetType.BLANK).get();
         boolean isTaglockKit = itemStack.getItem() == ItemRegistry.taglockKit.get();
         if (!(isPoppet || isTaglockKit) || isBlankPoppet) {
-            final TranslationTextComponent text = new TranslationTextComponent("commands.voodoo.bind.noitem");
+            final TranslatableComponent text = new TranslatableComponent("commands.voodoo.bind.noitem");
             throw new CommandSyntaxException(new SimpleCommandExceptionType(text), text);
         }
         BindingUtil.bind(itemStack, target);
-        final TranslationTextComponent text = new TranslationTextComponent(
+        final TranslatableComponent text = new TranslatableComponent(
                 "commands.voodoo.bind.success",
                 itemStack.getDisplayName(),
                 target.getDisplayName()
         );
-        text.setStyle(Style.EMPTY.withColor(TextFormatting.GREEN));
+        text.setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN));
         source.sendSuccess(text, true);
         return 0;
     }
