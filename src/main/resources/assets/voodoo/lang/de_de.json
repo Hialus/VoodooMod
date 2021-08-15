@@ -27,6 +27,12 @@
   "text.voodoo.poppet.used_up": "Deine %1$s wurde aufgebraucht",
   "screen.voodoo.poppet_shelf": "Puppenregal (%1$s)",
 
+  "text.voodoo.poppet.disabled": "Deaktiviert",
+  "text.voodoo.poppet.needle.disabled": "Nadeln deaktiviert",
+  "text.voodoo.poppet.push.disabled": "Schubsen deaktiviert",
+  "text.voodoo.poppet.fire.disabled": "Brennen deaktiviert",
+  "text.voodoo.poppet.drowning.disabled": "Ertrinken deaktiviert",
+
   "sound.poppet.voodoo_protection.used": "Voodoo Beschützer-Puppe wurde aktiviert",
   "sound.poppet.potion_protection.used": "Trank Beschützer-Puppe wurde aktiviert",
 

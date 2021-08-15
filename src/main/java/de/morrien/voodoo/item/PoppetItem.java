@@ -1,6 +1,7 @@
 package de.morrien.voodoo.item;
 
 import de.morrien.voodoo.Poppet;
+import de.morrien.voodoo.VoodooConfig;
 import de.morrien.voodoo.VoodooGroup;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
@@ -51,6 +52,17 @@ public class PoppetItem extends Item {
         } else if (stack.getItem() != ItemRegistry.poppetMap.get(BLANK).get()) {
             final TranslationTextComponent text = new TranslationTextComponent("text.voodoo.poppet.not_bound");
             text.setStyle(Style.EMPTY.withColor(TextFormatting.GRAY));
+            tooltip.add(text);
+        }
+        this.appendDisabledHoverText(stack, world, tooltip, flag);
+    }
+
+    protected void appendDisabledHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
+        final VoodooConfig.Common.PoppetBase config = poppetType.getConfig();
+        if (config == null) return;
+        if (!config.enabled.get()) {
+            final TranslationTextComponent text = new TranslationTextComponent("text.voodoo.poppet.disabled");
+            text.setStyle(Style.EMPTY.withColor(TextFormatting.RED));
             tooltip.add(text);
         }
     }

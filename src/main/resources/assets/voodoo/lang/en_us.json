@@ -27,6 +27,12 @@
   "text.voodoo.poppet.used_up": "Your %1$s was used up",
   "screen.voodoo.poppet_shelf": "Poppet Shelf (%1$s)",
 
+  "text.voodoo.poppet.disabled": "Disabled",
+  "text.voodoo.poppet.needle.disabled": "Needles disabled",
+  "text.voodoo.poppet.push.disabled": "Pushing disabled",
+  "text.voodoo.poppet.fire.disabled": "Burning disabled",
+  "text.voodoo.poppet.drowning.disabled": "Drowning disabled",
+
   "sound.poppet.voodoo_protection.used": "Voodoo Protection Poppet activated",
   "sound.poppet.potion_protection.used": "Potion Protection Poppet activated",
 
