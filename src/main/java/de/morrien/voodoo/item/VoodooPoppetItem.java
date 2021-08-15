@@ -1,9 +1,11 @@
 package de.morrien.voodoo.item;
 
 import de.morrien.voodoo.Poppet;
+import de.morrien.voodoo.VoodooConfig;
 import de.morrien.voodoo.VoodooDamageSource;
 import de.morrien.voodoo.entity.PoppetItemEntity;
 import de.morrien.voodoo.util.PoppetUtil;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
@@ -14,9 +16,15 @@ import net.minecraft.item.UseAction;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+
+import java.util.List;
 
 import static de.morrien.voodoo.Poppet.PoppetType.VOODOO;
 import static de.morrien.voodoo.VoodooConfig.COMMON;
@@ -28,6 +36,30 @@ import static de.morrien.voodoo.util.BindingUtil.getBoundPlayer;
 public class VoodooPoppetItem extends PoppetItem {
     public VoodooPoppetItem() {
         super(VOODOO);
+    }
+
+    @Override
+    protected void appendDisabledHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
+        if (!COMMON.voodoo.enableNeedle.get()) {
+            final TranslationTextComponent text = new TranslationTextComponent("text.voodoo.poppet.needle.disabled");
+            text.setStyle(new Style().setColor(TextFormatting.RED));
+            tooltip.add(text);
+        }
+        if (!COMMON.voodoo.enablePush.get()) {
+            final TranslationTextComponent text = new TranslationTextComponent("text.voodoo.poppet.push.disabled");
+            text.setStyle(new Style().setColor(TextFormatting.RED));
+            tooltip.add(text);
+        }
+        if (!COMMON.voodoo.enableFire.get()) {
+            final TranslationTextComponent text = new TranslationTextComponent("text.voodoo.poppet.fire.disabled");
+            text.setStyle(new Style().setColor(TextFormatting.RED));
+            tooltip.add(text);
+        }
+        if (!COMMON.voodoo.enableDrowning.get()) {
+            final TranslationTextComponent text = new TranslationTextComponent("text.voodoo.poppet.drowning.disabled");
+            text.setStyle(new Style().setColor(TextFormatting.RED));
+            tooltip.add(text);
+        }
     }
 
     @Override

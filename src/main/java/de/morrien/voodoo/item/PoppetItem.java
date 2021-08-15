@@ -1,6 +1,7 @@
 package de.morrien.voodoo.item;
 
 import de.morrien.voodoo.Poppet;
+import de.morrien.voodoo.VoodooConfig;
 import de.morrien.voodoo.VoodooGroup;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
@@ -53,6 +54,17 @@ public class PoppetItem extends Item {
             text.setStyle(new Style().setColor(TextFormatting.GRAY));
             tooltip.add(text);
         }
+        this.appendDisabledHoverText(stack, world, tooltip, flag);
+    }
+
+    protected void appendDisabledHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
+        final VoodooConfig.Common.PoppetBase config = poppetType.getConfig();
+        if (config == null) return;
+        if (!config.enabled.get()) {
+            final TranslationTextComponent text = new TranslationTextComponent("text.voodoo.poppet.disabled");
+            text.setStyle(Style.EMPTY.withColor(TextFormatting.RED));
+            tooltip.add(text);
+        }
     }
 
     @Override
@@ -84,19 +96,13 @@ public class PoppetItem extends Item {
         return false;
     }
 
-    @Nullable
     @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
-        final CompoundNBT tag = stack.getOrCreateTag();
-        if ((poppetType == VOODOO_PROTECTION || poppetType == REFLECTOR) && !tag.contains("Enchantments")) {
-            stack.enchant(Enchantments.ALL_DAMAGE_PROTECTION, 10);
-            tag.putInt("HideFlags", 1);
-        }
-        return null;
+    public boolean isFoil(ItemStack stack) {
+        return poppetType == VOODOO_PROTECTION || poppetType == REFLECTOR;
     }
 
     @Override
     public Rarity getRarity(ItemStack stack) {
-        return poppetType == DEATH_PROTECTION ? Rarity.UNCOMMON : super.getRarity(stack);
+        return isFoil(stack) ? Rarity.RARE : poppetType == DEATH_PROTECTION ? Rarity.UNCOMMON : super.getRarity(stack);
     }
 }

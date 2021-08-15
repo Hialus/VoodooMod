@@ -50,14 +50,13 @@ public class ListPoppetsCommand {
             final ItemStack stack = poppet.getStack();
             final Optional<PoppetShelfTileEntity> poppetShelf = poppet.getPoppetShelf();
             message.append("\n");
-            final TranslationTextComponent poppetText = new TranslationTextComponent(stack.getItem().getDescriptionId());
             if (poppetShelf.isPresent()) {
                 final PoppetShelfTileEntity tileEntity = poppetShelf.get();
                 final World world = tileEntity.getLevel();
                 TranslationTextComponent text = new TranslationTextComponent(
                         "commands.voodoo.list.poppets.line.shelf",
                         counter,
-                        poppetText,
+                        stack.getDisplayName(),
                         world.dimension.getType().getRegistryName().getPath(),
                         tileEntity.getBlockPos().getX(),
                         tileEntity.getBlockPos().getY(),
@@ -78,7 +77,7 @@ public class ListPoppetsCommand {
                 message.append(new TranslationTextComponent(
                         "commands.voodoo.list.poppets.line.inventory",
                         counter,
-                        poppetText
+                        stack.getDisplayName()
                 ));
             }
             counter++;
