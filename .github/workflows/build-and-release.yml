@@ -19,6 +19,9 @@ jobs:
           - version: 1.17.1
             branch: 1.17
             jdk: 16
+          - version: 1.18.1
+            branch: 1.18
+            jdk: 17
 
     steps:
     - name: Checkout repository
