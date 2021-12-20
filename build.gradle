@@ -9,13 +9,12 @@ buildscript {
 }
 
 apply plugin: 'net.minecraftforge.gradle'
-apply from: 'https://raw.githubusercontent.com/SizableShrimp/Forge-Class-Remapper/main/classremapper.gradle'
 
 version = "${minecraft_version}-${mod_version}"
 group = 'de.morrien.voodoo'
 archivesBaseName = "Voodoo"
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(16)
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 minecraft {
     mappings channel: 'official', version: minecraft_version
@@ -78,8 +77,8 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    //compileOnly fg.deobf("vazkii.patchouli:Patchouli:1.16.4-53.1:api")
-    //runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:1.16.4-53.1")
+    compileOnly fg.deobf("vazkii.patchouli:Patchouli:1.18.1-61:api")
+    runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:1.18.1-61")
 }
 
 task replaceResources(type: Copy) {

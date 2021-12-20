@@ -6,7 +6,7 @@ import de.morrien.voodoo.VoodooGroup;
 import de.morrien.voodoo.block.BlockRegistry;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
