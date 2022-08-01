@@ -4,7 +4,7 @@ modLoader="javafml" #mandatory
 loaderVersion="[${loader_version},)" #mandatory This is typically bumped every Minecraft version by Forge. See our download page for lists of versions.
 # The license for you mod. This is mandatory metadata and allows for easier comprehension of your redistributive properties.
 # Review your options at https://choosealicense.com/. All rights reserved is the default copyright stance, and is thus the default here.
-license="GNU Lesser General Public License v3.0"
+license="GNU Lesser General Public License v3.0 (Code) & All Rights Reserved (Assets)"
 # A URL to refer people to when problems occur with this mod
 issueTrackerURL="https://github.com/Hialus/VoodooMod/issues" #optional
 # A list of mods - how many allowed here is determined by the individual mod loader
