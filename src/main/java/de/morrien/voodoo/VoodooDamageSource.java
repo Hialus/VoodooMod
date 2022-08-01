@@ -1,7 +1,6 @@
 package de.morrien.voodoo;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,7 +25,7 @@ public class VoodooDamageSource extends DamageSource {
 
     @Override
     public Component getLocalizedDeathMessage(LivingEntity livingEntity) {
-        return new TextComponent(livingEntity.getName().getContents() + " was killed by voodoo-magic."); // TODO: Translation
+        return Component.literal(livingEntity.getName().getContents() + " was killed by voodoo-magic."); // TODO: Translation
     }
 
     @Override

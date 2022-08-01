@@ -5,8 +5,6 @@ import de.morrien.voodoo.blockentity.PoppetShelfBlockEntity;
 import de.morrien.voodoo.container.PoppetShelfContainer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
@@ -63,14 +61,14 @@ public class PoppetShelfBlock extends BaseEntityBlock {
                         final PoppetShelfBlockEntity poppetShelf = (PoppetShelfBlockEntity) blockEntity;
                         Component component;
                         if (poppetShelf.getOwnerName() == null) {
-                            component = new TranslatableComponent("text.voodoo.poppet.not_bound");
+                            component = Component.translatable("text.voodoo.poppet.not_bound");
                         } else {
                             final Player player = world.getPlayerByUUID(poppetShelf.getOwnerUuid());
                             if (player != null && !poppetShelf.getOwnerName().equals(player.getName().getString()))
                                 poppetShelf.setOwnerName(player.getName().getString());
-                            component = new TextComponent(poppetShelf.getOwnerName());
+                            component = Component.literal(poppetShelf.getOwnerName());
                         }
-                        return new TranslatableComponent("screen.voodoo.poppet_shelf", component);
+                        return Component.translatable("screen.voodoo.poppet_shelf", component);
                     }
 
                     @Override
@@ -78,7 +76,7 @@ public class PoppetShelfBlock extends BaseEntityBlock {
                         return new PoppetShelfContainer(i, world, pos, playerventory, playerEntity);
                     }
                 };
-                NetworkHooks.openGui((ServerPlayer) player, containerProvider, blockEntity.getBlockPos());
+                NetworkHooks.openScreen((ServerPlayer) player, containerProvider, blockEntity.getBlockPos());
             }
         }
         return InteractionResult.SUCCESS;

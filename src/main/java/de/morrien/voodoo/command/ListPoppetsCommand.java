@@ -34,8 +34,8 @@ public class ListPoppetsCommand {
     }
 
     private static int list(CommandContext<CommandSourceStack> context, ServerPlayer player) {
-        BaseComponent message = new TextComponent("");
-        message.append(new TranslatableComponent(
+        var message = Component.literal("");
+        message.append(Component.translatable(
                 "commands.voodoo.list.poppets.header",
                 player.getDisplayName())
                 .setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN).withBold(true))
@@ -52,7 +52,7 @@ public class ListPoppetsCommand {
             if (poppetShelf.isPresent()) {
                 final PoppetShelfBlockEntity blockEntity = poppetShelf.get();
                 final Level world = blockEntity.getLevel();
-                TranslatableComponent text = new TranslatableComponent(
+                var text = Component.translatable(
                         "commands.voodoo.list.poppets.line.shelf",
                         counter,
                         stack.getDisplayName(),
@@ -68,12 +68,12 @@ public class ListPoppetsCommand {
                         ))
                         .withHoverEvent(new HoverEvent(
                                 HoverEvent.Action.SHOW_TEXT,
-                                new TranslatableComponent("commands.voodoo.list.teleport")
+                                Component.translatable("commands.voodoo.list.teleport")
                         ));
                 text.setStyle(style);
                 message.append(text);
             } else {
-                message.append(new TranslatableComponent(
+                message.append(Component.translatable(
                         "commands.voodoo.list.poppets.line.inventory",
                         counter,
                         stack.getDisplayName()
@@ -82,7 +82,7 @@ public class ListPoppetsCommand {
             counter++;
         }
         if (counter == 1) {
-            message = new TranslatableComponent("commands.voodoo.list.poppets.none");
+            message = Component.translatable("commands.voodoo.list.poppets.none");
             message.setStyle(Style.EMPTY.withColor(ChatFormatting.RED));
         }
         source.sendSuccess(message, false);

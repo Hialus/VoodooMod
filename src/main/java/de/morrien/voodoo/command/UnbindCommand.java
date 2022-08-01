@@ -13,8 +13,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 
@@ -33,11 +33,11 @@ public class UnbindCommand {
         boolean isBlankPoppet = itemStack.getItem() == ItemRegistry.poppetMap.get(Poppet.PoppetType.BLANK).get();
         boolean isTaglockKit = itemStack.getItem() == ItemRegistry.taglockKit.get();
         if (!(isPoppet || isTaglockKit) || isBlankPoppet) {
-            final TranslatableComponent text = new TranslatableComponent("commands.voodoo.unbind.noitem");
+            final var text = Component.translatable("commands.voodoo.unbind.noitem");
             throw new CommandSyntaxException(new SimpleCommandExceptionType(text), text);
         }
         BindingUtil.unbind(itemStack);
-        final TranslatableComponent text = new TranslatableComponent(
+        final var text = Component.translatable(
                 "commands.voodoo.unbind.success",
                 itemStack.getDisplayName()
         );

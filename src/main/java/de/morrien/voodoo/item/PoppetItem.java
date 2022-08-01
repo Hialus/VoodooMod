@@ -7,7 +7,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -32,7 +31,7 @@ public class PoppetItem extends Item {
     public PoppetItem(Poppet.PoppetType poppetType) {
         super(new Properties()
                 .tab(VoodooGroup.INSTANCE)
-                .durability(poppetType.getDurability())
+                .durability(1)
                 .setNoRepair()
         );
         this.poppetType = poppetType;
@@ -43,14 +42,14 @@ public class PoppetItem extends Item {
         super.appendHoverText(stack, world, tooltip, flag);
         if (isBound(stack)) {
             checkForNameUpdate(stack, world);
-            final TranslatableComponent text = new TranslatableComponent(
+            final var text = Component.translatable(
                     "text.voodoo.poppet.bound",
                     getBoundName(stack)
             );
             text.setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY));
             tooltip.add(text);
         } else if (stack.getItem() != ItemRegistry.poppetMap.get(BLANK).get()) {
-            final TranslatableComponent text = new TranslatableComponent("text.voodoo.poppet.not_bound");
+            final var text = Component.translatable("text.voodoo.poppet.not_bound");
             text.setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY));
             tooltip.add(text);
         }
@@ -61,7 +60,7 @@ public class PoppetItem extends Item {
         final VoodooConfig.Common.PoppetBase config = poppetType.getConfig();
         if (config == null) return;
         if (!config.enabled.get()) {
-            final TranslatableComponent text = new TranslatableComponent("text.voodoo.poppet.disabled");
+            final var text = Component.translatable("text.voodoo.poppet.disabled");
             text.setStyle(Style.EMPTY.withColor(ChatFormatting.RED));
             tooltip.add(text);
         }

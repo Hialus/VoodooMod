@@ -3,7 +3,7 @@ package de.morrien.voodoo;
 import de.morrien.voodoo.blockentity.PoppetShelfBlockEntity;
 import de.morrien.voodoo.VoodooConfig.Common.PoppetBase;
 import de.morrien.voodoo.item.PoppetItem;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.ForgeConfigSpec.IntValue;
@@ -66,7 +66,7 @@ public class Poppet {
 
     private void shrink() {
         stack.shrink(1);
-        final TranslatableComponent text = new TranslatableComponent("text.voodoo.poppet.used_up", new TranslatableComponent(item.getDescriptionId()));
+        var text = Component.translatable("text.voodoo.poppet.used_up", Component.translatable(item.getDescriptionId()));
         player.displayClientMessage(text, false);
     }
 

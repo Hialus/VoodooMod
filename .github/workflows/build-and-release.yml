@@ -19,6 +19,12 @@ jobs:
           - version: 1.17.1
             branch: 1.17
             jdk: 16
+          - version: 1.18.1
+            branch: 1.18
+            jdk: 16
+          - version: 1.19.1
+            branch: 1.19-forge
+            jdk: 17
 
     steps:
     - name: Checkout repository
@@ -83,7 +89,7 @@ jobs:
     - name: Upload Release Asset
       uses: AButler/upload-release-assets@v2.0
       with:
-        files: 'LICENSE;build/libs/*.jar'
+        files: 'LICENSE_CODE;LICENSE_ASSETS;build/libs/*.jar'
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         release-tag: ${{ matrix.version }}-${{ env.mod_version }}
         

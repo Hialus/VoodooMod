@@ -4,7 +4,7 @@ import de.morrien.voodoo.Poppet;
 import de.morrien.voodoo.blockentity.PoppetShelfBlockEntity;
 import de.morrien.voodoo.item.PoppetItem;
 import de.morrien.voodoo.sound.SoundRegistry;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -39,7 +39,7 @@ public class PoppetUtil {
     public static void useVoodooProtectionPuppet(ItemStack voodooPoppet, Entity source) {
         if (source instanceof Player) {
             final Player fromPlayer = (Player) source;
-            fromPlayer.displayClientMessage(new TranslatableComponent("text.voodoo.voodoo_protection.had", BindingUtil.getBoundName(voodooPoppet)), true);
+            fromPlayer.displayClientMessage(Component.translatable("text.voodoo.voodoo_protection.had", BindingUtil.getBoundName(voodooPoppet)), true);
             voodooPoppet.hurtAndBreak(Integer.MAX_VALUE, fromPlayer, playerEntity -> {
                 playerEntity.broadcastBreakEvent(playerEntity.getUsedItemHand());
                 playerEntity.level.playSound(null, playerEntity, SoundRegistry.voodooProtectionPoppetUsed.get(), SoundSource.PLAYERS, 1, 1);

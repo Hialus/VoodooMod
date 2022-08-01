@@ -7,7 +7,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -43,14 +42,14 @@ public class TaglockKitItem extends Item {
         super.appendHoverText(stack, world, tooltip, flag);
         if (isBound(stack)) {
             checkForNameUpdate(stack, world);
-            final TranslatableComponent text = new TranslatableComponent(
+            final var text = Component.translatable(
                     "text.voodoo.taglock_kit.bound",
                     getBoundName(stack)
             );
             text.setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY));
             tooltip.add(text);
         } else {
-            final TranslatableComponent text = new TranslatableComponent("text.voodoo.taglock_kit.not_bound");
+            final var text = Component.translatable("text.voodoo.taglock_kit.not_bound");
             text.setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY));
             tooltip.add(text);
         }

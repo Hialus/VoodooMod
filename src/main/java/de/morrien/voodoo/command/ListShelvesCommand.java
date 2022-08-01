@@ -31,8 +31,8 @@ public class ListShelvesCommand {
     }
 
     private static int list(CommandContext<CommandSourceStack> context, ServerPlayer player) {
-        BaseComponent message = new TextComponent("");
-        message.append(new TranslatableComponent(
+        var message = Component.literal("");
+        message.append(Component.translatable(
                 "commands.voodoo.list.shelves.header",
                 player.getDisplayName())
                 .setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN).withBold(true))
@@ -44,7 +44,7 @@ public class ListShelvesCommand {
                 if (blockEntity instanceof PoppetShelfBlockEntity) {
                     if (player.getUUID().equals(((PoppetShelfBlockEntity) blockEntity).getOwnerUuid())) {
                         message.append("\n");
-                        final TranslatableComponent text = new TranslatableComponent(
+                        final var text = Component.translatable(
                                 "commands.voodoo.list.shelves.line",
                                 counter,
                                 blockEntity.getBlockPos().getX(),
@@ -59,7 +59,7 @@ public class ListShelvesCommand {
                                 ))
                                 .withHoverEvent(new HoverEvent(
                                         HoverEvent.Action.SHOW_TEXT,
-                                        new TranslatableComponent("commands.voodoo.list.teleport")
+                                        Component.translatable("commands.voodoo.list.teleport")
                                 ));
                         text.setStyle(style);
                         message.append(text);
@@ -69,7 +69,7 @@ public class ListShelvesCommand {
             }
         }
         if (counter == 1) {
-            message = new TranslatableComponent("commands.voodoo.list.shelves.none");
+            message = Component.translatable("commands.voodoo.list.shelves.none");
             message.setStyle(Style.EMPTY.withColor(ChatFormatting.RED));
         }
         source.sendSuccess(message, false);

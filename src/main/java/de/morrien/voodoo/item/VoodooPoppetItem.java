@@ -1,14 +1,12 @@
 package de.morrien.voodoo.item;
 
 import de.morrien.voodoo.Poppet;
-import de.morrien.voodoo.VoodooConfig;
 import de.morrien.voodoo.VoodooDamageSource;
 import de.morrien.voodoo.entity.PoppetItemEntity;
 import de.morrien.voodoo.util.PoppetUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -41,22 +39,22 @@ public class VoodooPoppetItem extends PoppetItem {
     @Override
     protected void appendDisabledHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag flag) {
         if (!COMMON.voodoo.enableNeedle.get()) {
-            final TranslatableComponent text = new TranslatableComponent("text.voodoo.poppet.needle.disabled");
+            final var text = Component.translatable("text.voodoo.poppet.needle.disabled");
             text.setStyle(Style.EMPTY.withColor(ChatFormatting.RED));
             tooltip.add(text);
         }
         if (!COMMON.voodoo.enablePush.get()) {
-            final TranslatableComponent text = new TranslatableComponent("text.voodoo.poppet.push.disabled");
+            final var text = Component.translatable("text.voodoo.poppet.push.disabled");
             text.setStyle(Style.EMPTY.withColor(ChatFormatting.RED));
             tooltip.add(text);
         }
         if (!COMMON.voodoo.enableFire.get()) {
-            final TranslatableComponent text = new TranslatableComponent("text.voodoo.poppet.fire.disabled");
+            final var text = Component.translatable("text.voodoo.poppet.fire.disabled");
             text.setStyle(Style.EMPTY.withColor(ChatFormatting.RED));
             tooltip.add(text);
         }
         if (!COMMON.voodoo.enableDrowning.get()) {
-            final TranslatableComponent text = new TranslatableComponent("text.voodoo.poppet.drowning.disabled");
+            final var text = Component.translatable("text.voodoo.poppet.drowning.disabled");
             text.setStyle(Style.EMPTY.withColor(ChatFormatting.RED));
             tooltip.add(text);
         }
