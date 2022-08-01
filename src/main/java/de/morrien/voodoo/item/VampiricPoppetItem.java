@@ -1,7 +1,6 @@
 package de.morrien.voodoo.item;
 
 import de.morrien.voodoo.VoodooDamageSource;
-import net.minecraft.ChatFormatting;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -20,7 +19,8 @@ import static de.morrien.voodoo.util.BindingUtil.getBoundPlayer;
  * Created by Timor Morrien
  */
 public class VampiricPoppetItem extends PoppetItem {
-    private final Rarity rarity = Rarity.create("vampiric", ChatFormatting.RED);
+    // TODO: Find Fabric workaround for this
+    //  private final Rarity rarity = Rarity.create("vampiric", ChatFormatting.RED);
 
     public VampiricPoppetItem() {
         super(VAMPIRIC);
@@ -65,6 +65,6 @@ public class VampiricPoppetItem extends PoppetItem {
 
     @Override
     public Rarity getRarity(ItemStack stack) {
-        return rarity;
+        return Rarity.EPIC;
     }
 }

@@ -5,31 +5,25 @@ import de.morrien.voodoo.VoodooDamageSource;
 import de.morrien.voodoo.util.BindingUtil;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectUtil;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+
+import java.util.UUID;
 
 /**
  * Created by Timor Morrien
  */
 public class PoppetItemEntity extends ItemEntity {
-    public PoppetItemEntity(Level world) {
-        this(EntityType.ITEM, world);
-    }
-
-    public PoppetItemEntity(EntityType<? extends ItemEntity> entityType, Level world) {
-        super(entityType, world);
-    }
-
-    public PoppetItemEntity(Level world, ItemEntity base, ItemStack stack) {
-        super(world, base.getX(), base.getY(), base.getZ(), stack);
+    public PoppetItemEntity(Level world, double x, double y, double z, Vec3 deltaMovement, float yRot, ItemStack stack, UUID thrower) {
+        super(world, x, y, z, stack);
         this.setPickUpDelay(40);
-        this.setThrower(base.getThrower());
-        this.setDeltaMovement(base.getDeltaMovement());
-        this.setYRot(base.getYRot());
+        this.setThrower(thrower);
+        this.setDeltaMovement(deltaMovement);
+        this.setYRot(yRot);
     }
 
     private int lastFireTick = -20;

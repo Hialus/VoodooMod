@@ -1,12 +1,14 @@
 package de.morrien.voodoo.event;
 
+import com.mojang.brigadier.CommandDispatcher;
 import de.morrien.voodoo.Poppet;
-import de.morrien.voodoo.Voodoo;
 import de.morrien.voodoo.VoodooDamageSource;
 import de.morrien.voodoo.command.VoodooCommand;
-import de.morrien.voodoo.item.ItemRegistry;
-import de.morrien.voodoo.util.BindingUtil;
+import de.morrien.voodoo.event.wrapper.LivingAttackEvent;
+import de.morrien.voodoo.event.wrapper.LivingDeathEvent;
+import de.morrien.voodoo.event.wrapper.PlayerTickEvent;
 import de.morrien.voodoo.util.PoppetUtil;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -20,42 +22,26 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.ThrownPotion;
-import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.common.Mod;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import static de.morrien.voodoo.Poppet.PoppetType.*;
 import static de.morrien.voodoo.VoodooConfig.COMMON;
 import static net.minecraft.world.damagesource.DamageSource.*;
 
-@Mod.EventBusSubscriber(modid = Voodoo.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class VoodooEvents {
-    @SubscribeEvent
-    public static void onRegisterCommands(RegisterCommandsEvent event) {
-        VoodooCommand.register(event.getDispatcher());
+    public static void onRegisterCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
+        VoodooCommand.register(dispatcher);
     }
 
-    @SubscribeEvent
-    public static void onTickPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.side == LogicalSide.CLIENT) return;
-        if (event.phase == TickEvent.Phase.START) return;
+    public static void onTickPlayerTick(PlayerTickEvent event) {
         checkPotionEffects((ServerPlayer) event.player);
         if (event.player.tickCount % 20 != 0) return;
         checkFoodStatus((ServerPlayer) event.player);
     }
 
-   private static void checkPotionEffects(ServerPlayer player) {
+    private static void checkPotionEffects(ServerPlayer player) {
         final ArrayList<MobEffectInstance> effects = new ArrayList<>(player.getActiveEffects());
         for (MobEffectInstance potionEffect : effects) {
             if (potionEffect.getEffect().getCategory() != MobEffectCategory.HARMFUL) continue;
@@ -106,18 +92,6 @@ public class VoodooEvents {
         usePoppet(hungerPoppet, 1);
     }
 
-    @SubscribeEvent
-    public static void onPlayerInteract(PlayerInteractEvent.EntityInteract event) {
-        if (event.getLevel().isClientSide) return;
-        if (event.getItemStack().getItem() != ItemRegistry.taglockKit.get()) return;
-        if (event.getTarget() instanceof Player player) {
-            ItemStack stack = event.getItemStack();
-            if (BindingUtil.isBound(stack)) return;
-            BindingUtil.bind(stack, player);
-        }
-    }
-
-    @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
         if (event.getEntity().level.isClientSide) return;
         if (event.getSource() == OUT_OF_WORLD) return;
@@ -137,7 +111,6 @@ public class VoodooEvents {
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.LOW)
     public static void onLivingAttack(LivingAttackEvent event) {
         if (!(event.getEntity() instanceof final ServerPlayer player)) return;
         if (event.isCanceled() ||

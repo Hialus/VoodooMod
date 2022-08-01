@@ -1,7 +1,6 @@
 package de.morrien.voodoo.item;
 
 import de.morrien.voodoo.VoodooGroup;
-import de.morrien.voodoo.util.BindingUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -12,6 +11,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -90,12 +90,23 @@ public class TaglockKitItem extends Item {
                 if (!stack.hasTag()) {
                     stack.setTag(new CompoundTag());
                 }
-                if (!BindingUtil.isBound(stack)) {
-                    BindingUtil.bind(stack, player);
+                if (!isBound(stack)) {
+                    bind(stack, player);
                     return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
                 }
             }
         }
         return super.use(world, player, hand);
+    }
+
+    @Override
+    public InteractionResult interactLivingEntity(ItemStack stack, Player user, LivingEntity entity, InteractionHand hand) {
+        if (user.getLevel().isClientSide()) return InteractionResult.PASS;
+        if (entity instanceof Player player) {
+            if (isBound(stack)) return InteractionResult.PASS;
+            bind(stack, player);
+            return InteractionResult.SUCCESS;
+        }
+        return super.interactLivingEntity(stack, user, entity, hand);
     }
 }

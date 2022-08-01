@@ -10,7 +10,10 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -36,8 +39,8 @@ public class ListPoppetsCommand {
     private static int list(CommandContext<CommandSourceStack> context, ServerPlayer player) {
         var message = Component.literal("");
         message.append(Component.translatable(
-                "commands.voodoo.list.poppets.header",
-                player.getDisplayName())
+                        "commands.voodoo.list.poppets.header",
+                        player.getDisplayName())
                 .setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN).withBold(true))
         );
         CommandSourceStack source = context.getSource();

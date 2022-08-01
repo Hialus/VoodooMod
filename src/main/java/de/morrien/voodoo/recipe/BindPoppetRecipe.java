@@ -37,15 +37,15 @@ public class BindPoppetRecipe extends CustomRecipe {
         if (itemStacks.size() != 2) return false;
         ItemStack itemStack1 = itemStacks.get(0);
         ItemStack itemStack2 = itemStacks.get(1);
-        if (itemStack2.getItem() == ItemRegistry.taglockKit.get()) {
+        if (itemStack2.getItem() == ItemRegistry.taglockKit) {
             final ItemStack tmp = itemStack1;
             itemStack1 = itemStack2;
             itemStack2 = tmp;
         }
-        return itemStack1.getItem() == ItemRegistry.taglockKit.get() &&
+        return itemStack1.getItem() == ItemRegistry.taglockKit &&
                 BindingUtil.isBound(itemStack1) &&
                 itemStack2.getItem() instanceof PoppetItem &&
-                !itemStack2.getItem().equals(ItemRegistry.poppetMap.get(BLANK).get()) &&
+                !itemStack2.getItem().equals(ItemRegistry.poppetMap.get(BLANK)) &&
                 !BindingUtil.isBound(itemStack2);
     }
 
@@ -54,7 +54,7 @@ public class BindPoppetRecipe extends CustomRecipe {
         List<ItemStack> itemStacks = getItems(inv);
         ItemStack itemStack1 = itemStacks.get(0);
         ItemStack itemStack2 = itemStacks.get(1);
-        if (itemStack2.getItem() == ItemRegistry.taglockKit.get()) {
+        if (itemStack2.getItem() == ItemRegistry.taglockKit) {
             final ItemStack tmp = itemStack1;
             itemStack1 = itemStack2;
             itemStack2 = tmp;
@@ -71,7 +71,7 @@ public class BindPoppetRecipe extends CustomRecipe {
 
     @Override
     public RecipeSerializer<BindPoppetRecipe> getSerializer() {
-        return RecipeRegistry.bindPoppetRecipe.get();
+        return RecipeRegistry.bindPoppetRecipe;
     }
 
 }

@@ -12,9 +12,9 @@ import static de.morrien.voodoo.VoodooDamageSource.VoodooDamageType.FIRE;
  * Created by Timor Morrien
  */
 public class VoodooDamageSource extends DamageSource {
-    private VoodooDamageType damageType;
-    private ItemStack voodooPoppet;
-    private Entity fromEntity;
+    private final VoodooDamageType damageType;
+    private final ItemStack voodooPoppet;
+    private final Entity fromEntity;
 
     public VoodooDamageSource(VoodooDamageType damageType, ItemStack voodooPoppet, Entity fromEntity) {
         super("voodoo_" + damageType.toString());

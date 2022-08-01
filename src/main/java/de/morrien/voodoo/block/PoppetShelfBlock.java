@@ -5,7 +5,6 @@ import de.morrien.voodoo.blockentity.PoppetShelfBlockEntity;
 import de.morrien.voodoo.container.PoppetShelfContainer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -30,7 +29,6 @@ import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
@@ -73,10 +71,10 @@ public class PoppetShelfBlock extends BaseEntityBlock {
 
                     @Override
                     public AbstractContainerMenu createMenu(int i, Inventory playerventory, Player playerEntity) {
-                        return new PoppetShelfContainer(i, world, pos, playerventory, playerEntity);
+                        return new PoppetShelfContainer(i, playerventory, ((PoppetShelfBlockEntity) blockEntity));
                     }
                 };
-                NetworkHooks.openScreen((ServerPlayer) player, containerProvider, blockEntity.getBlockPos());
+                player.openMenu(containerProvider);
             }
         }
         return InteractionResult.SUCCESS;
@@ -117,7 +115,7 @@ public class PoppetShelfBlock extends BaseEntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
-        return createTickerHelper(blockEntityType, BlockEntityTypeRegistry.poppetShelfBlockEntity.get(), PoppetShelfBlockEntity::tick);
+        return createTickerHelper(blockEntityType, BlockEntityTypeRegistry.poppetShelfBlockEntity, PoppetShelfBlockEntity::tick);
     }
 
     @Nullable

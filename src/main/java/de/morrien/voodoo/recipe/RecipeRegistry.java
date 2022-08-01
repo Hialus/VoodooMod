@@ -1,13 +1,14 @@
 package de.morrien.voodoo.recipe;
 
 import de.morrien.voodoo.Voodoo;
-import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
-import net.minecraftforge.registries.RegistryObject;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class RecipeRegistry {
-    public static final DeferredRegister<RecipeSerializer<?>> RECIPES = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, Voodoo.MOD_ID);
-    public static final RegistryObject<SimpleRecipeSerializer<BindPoppetRecipe>> bindPoppetRecipe = RECIPES.register("bind_poppet", () -> new SimpleRecipeSerializer<>(BindPoppetRecipe::new));
+    public static final SimpleRecipeSerializer<BindPoppetRecipe> bindPoppetRecipe = new SimpleRecipeSerializer<>(BindPoppetRecipe::new);
+
+    public static void register() {
+        Registry.register(Registry.RECIPE_SERIALIZER, new ResourceLocation(Voodoo.MOD_ID, "bind_poppet"), bindPoppetRecipe);
+    }
 }

@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
 public class PoppetShelfScreen extends AbstractContainerScreen<PoppetShelfContainer> {
-    private ResourceLocation GUI = new ResourceLocation(Voodoo.MOD_ID, "textures/gui/poppet_shelf.png");
+    private final ResourceLocation GUI = new ResourceLocation(Voodoo.MOD_ID, "textures/gui/poppet_shelf.png");
 
     public PoppetShelfScreen(PoppetShelfContainer container, Inventory inv, Component name) {
         super(container, inv, name);
@@ -22,18 +22,6 @@ public class PoppetShelfScreen extends AbstractContainerScreen<PoppetShelfContai
         super.render(matrixStack, mouseX, mouseY, partialTicks);
         this.renderTooltip(matrixStack, mouseX, mouseY);
     }
-
-    //@Override
-    //protected void renderLabels(MatrixStack matrixStack, int mouseX, int mouseY) {
-    //    String title;
-    //    if (menu.poppetShelf.ownerName != null) {
-    //        title = "";
-    //    } else {
-    //        title = I18n.get(BlockRegistry.poppetShelf.get().getDescriptionId());
-    //    }
-    //    drawString(matrixStack, Minecraft.getInstance().font, title, 8, 6, 0xffffff);
-    //    drawString(matrixStack, Minecraft.getInstance().font, inventory.getDisplayName(), 8, imageHeight - 94, 0xffffff);
-    //}
 
     @Override
     protected void renderBg(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY) {

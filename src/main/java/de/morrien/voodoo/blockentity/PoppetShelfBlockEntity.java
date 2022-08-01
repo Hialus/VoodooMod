@@ -1,65 +1,66 @@
 package de.morrien.voodoo.blockentity;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
-import de.morrien.voodoo.item.PoppetItem;
-import de.morrien.voodoo.network.PoppetShelfSyncUpdate;
-import de.morrien.voodoo.network.VoodooNetwork;
+import de.morrien.voodoo.Voodoo;
+import de.morrien.voodoo.container.ImplementedInventory;
 import de.morrien.voodoo.util.PoppetUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import io.netty.buffer.Unpooled;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.Connection;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.Nameable;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.List;
+import java.util.Collection;
 import java.util.UUID;
 
 /**
  * Created by Timor Morrien
  */
-public class PoppetShelfBlockEntity extends BlockEntity {
+public class PoppetShelfBlockEntity extends BlockEntity implements Nameable, ImplementedInventory {
     private UUID ownerUuid;
     private String ownerName;
     private boolean inventoryTouched;
-    private PoppetShelfItemStackHandler itemHandler;
-    private LazyOptional<IItemHandler> handler;
+    private NonNullList<ItemStack> inventory = NonNullList.withSize(9, ItemStack.EMPTY);
+    public boolean firstTick;
 
-    public PoppetShelfBlockEntity(BlockPos blockPos, BlockState blockState) {
-        super(BlockEntityTypeRegistry.poppetShelfBlockEntity.get(), blockPos, blockState);
-        this.itemHandler = new PoppetShelfItemStackHandler();
-        this.handler = LazyOptional.of(() -> itemHandler);
+    public PoppetShelfBlockEntity(BlockPos pos, BlockState state) {
+        super(BlockEntityTypeRegistry.poppetShelfBlockEntity, pos, state);
+        firstTick = true;
     }
 
-    public static void tick(Level level, BlockPos blockPos, BlockState blockState, PoppetShelfBlockEntity poppetShelf) {
-        if (!level.isClientSide && poppetShelf.inventoryTouched) {
-            poppetShelf.inventoryTouched = false;
-            poppetShelf.setChanged();
-
-            if (level instanceof ServerLevel) {
-                VoodooNetwork.getInstance().sendToClientsAround(new PoppetShelfSyncUpdate(poppetShelf.itemHandler.serializeNBT(), blockPos), level, blockPos);
+    public static void tick(Level world, BlockPos pos, BlockState state, PoppetShelfBlockEntity entity) {
+        if (world.isClientSide()) return;
+        if (entity.inventoryTouched) {
+            entity.setChanged();
+            Collection<ServerPlayer> viewers = PlayerLookup.tracking(entity);
+            FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+            buf.writeBlockPos(pos);
+            for (ItemStack stack : entity.getInventory()) {
+                buf.writeItem(stack);
             }
+            entity.inventoryTouched = false;
+            viewers.forEach(player -> ServerPlayNetworking.send(player, new ResourceLocation(Voodoo.MOD_ID, "update"), buf));
         }
+        if (entity.firstTick && entity.isPlayerNearby(world, pos)) {
+            entity.inventoryTouched = true;
+            entity.firstTick = false;
+        }
+    }
+
+    private boolean isPlayerNearby(Level world, BlockPos pos) {
+        return world.hasNearbyAlivePlayer((double) pos.getX() + 0.5, (double) pos.getY() + 0.5, (double) pos.getZ() + 0.5, 16.0);
     }
 
     public void inventoryTouched() {
@@ -67,88 +68,34 @@ public class PoppetShelfBlockEntity extends BlockEntity {
         PoppetUtil.invalidateShelfCache(PoppetShelfBlockEntity.this);
     }
 
+    public void setInventory(NonNullList<ItemStack> list) {
+        this.inventory = list;
+        this.inventoryTouched = true;
+    }
+
+    @Override
     public NonNullList<ItemStack> getInventory() {
-        return itemHandler.getInventory();
-    }
-
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
-            return handler.cast();
-        else
-            return super.getCapability(cap, side);
+        this.inventoryTouched();
+        return inventory;
     }
 
     @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        handler.invalidate();
-    }
-
-    @Nullable
-    @Override
-    public ClientboundBlockEntityDataPacket getUpdatePacket() {
-        return ClientboundBlockEntityDataPacket.create(this);
-    }
-
-    @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        handleUpdateTag(pkt.getTag());
-    }
-
-    @Override
-    public CompoundTag getUpdateTag() {
-        final CompoundTag compound = super.getUpdateTag();
-        this.saveToTag(compound);
-        return compound;
-    }
-
-    @Override
-    public void handleUpdateTag(CompoundTag compound) {
-        super.handleUpdateTag(compound);
-        this.readFromTag(compound);
-    }
-
-    @Override
-    protected void saveAdditional(CompoundTag compound) {
-        super.saveAdditional(compound);
-        this.saveToTag(compound);
-    }
-
-    @Override
-    public void load(CompoundTag compound) {
-        super.load(compound);
-        this.readFromTag(compound);
-    }
-
-    private void saveToTag(CompoundTag compound) {
-        compound.put("inv", itemHandler.serializeNBT());
-        if (ownerUuid != null)
-            compound.putUUID("owner_uuid", ownerUuid);
-        if (ownerName != null)
-            compound.putString("owner_name", ownerName);
-    }
-
-    private void readFromTag(CompoundTag compound) {
-        itemHandler.deserializeNBT(compound.getCompound("inv"));
-        PoppetUtil.removePoppetShelf(this.ownerUuid, this);
-        if (compound.hasUUID("owner_uuid"))
-            this.ownerUuid = compound.getUUID("owner_uuid");
-        if (compound.contains("owner_name"))
-            this.ownerName = compound.getString("owner_name");
-        PoppetUtil.addPoppetShelf(this.ownerUuid, this);
+    public Component getName() {
+        MutableComponent component;
+        if (this.getOwnerName() == null) {
+            component = Component.translatable("text.voodoo.poppet.not_bound");
+        } else {
+            final Player player = level.getPlayerByUUID(this.getOwnerUuid());
+            if (player != null && !this.getOwnerName().equals(player.getName().getString()))
+                this.setOwnerName(player.getName().getString());
+            component = Component.literal(this.getOwnerName());
+        }
+        return Component.translatable("screen.voodoo.poppet_shelf", component);
     }
 
     @Override
     public void setRemoved() {
         super.setRemoved();
-        PoppetUtil.removePoppetShelf(this.ownerUuid, this);
-    }
-
-    @Override
-    public void onChunkUnloaded() {
-        super.onChunkUnloaded();
         PoppetUtil.removePoppetShelf(this.ownerUuid, this);
     }
 
@@ -174,55 +121,33 @@ public class PoppetShelfBlockEntity extends BlockEntity {
         this.setChanged();
     }
 
-    public void updateInventory(CompoundTag inventoryTag) {
-        itemHandler.deserializeNBT(inventoryTag);
+    @Override
+    public void load(CompoundTag compoundTag) {
+        super.load(compoundTag);
+        this.readFromTag(compoundTag);
     }
 
-    @OnlyIn(Dist.CLIENT)
-    public static class PoppetShelfRenderer implements BlockEntityRenderer<PoppetShelfBlockEntity> {
-        public PoppetShelfRenderer(BlockEntityRendererProvider.Context context) {
-        }
-
-        @Override
-        public void render(PoppetShelfBlockEntity blockEntity, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLight, int combinedOverlay) {
-            for (int i = 0; i < 9; i++) {
-                ItemStack stack = blockEntity.itemHandler.getStackInSlot(i);
-                if (!stack.isEmpty()) {
-                    matrixStack.pushPose();
-                    double offset = Math.sin((blockEntity.getLevel().getGameTime() + partialTicks) / 8) / 32;
-                    //noinspection IntegerDivisionInFloatingPointContext
-                    matrixStack.translate((i % 3) / 5D + 0.3, 0.9 + offset, (i / 3) / 5D + 0.3);
-                    matrixStack.mulPose(Vector3f.YP.rotationDegrees(blockEntity.getLevel().getGameTime() + partialTicks * 2));
-
-                    matrixStack.scale(0.4f, 0.4f, 0.4f);
-                    Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemTransforms.TransformType.GROUND, combinedLight, combinedOverlay, matrixStack, buffer, 0);
-
-                    matrixStack.popPose();
-                }
-            }
-        }
+    @Override
+    protected void saveAdditional(CompoundTag compoundTag) {
+        super.saveAdditional(compoundTag);
+        this.saveToTag(compoundTag);
     }
 
-    public class PoppetShelfItemStackHandler extends ItemStackHandler {
-        public PoppetShelfItemStackHandler() {
-            super(9);
-        }
+    private void saveToTag(CompoundTag compound) {
+        compound.put("inv", ContainerHelper.saveAllItems(new CompoundTag(), inventory));
+        if (ownerUuid != null)
+            compound.putUUID("owner_uuid", ownerUuid);
+        if (ownerName != null)
+            compound.putString("owner_name", ownerName);
+    }
 
-        @Override
-        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            return stack.getItem() instanceof PoppetItem;
-        }
-
-        @Override
-        protected void onContentsChanged(int slot) {
-            super.onContentsChanged(slot);
-            PoppetShelfBlockEntity.this.inventoryTouched();
-        }
-
-        private NonNullList<ItemStack> getInventory() {
-            final NonNullList<ItemStack> inventory = NonNullList.create();
-            inventory.addAll(stacks);
-            return inventory;
-        }
+    private void readFromTag(CompoundTag compound) {
+        ContainerHelper.loadAllItems(compound.getCompound("inv"), inventory);
+        PoppetUtil.removePoppetShelf(this.ownerUuid, this);
+        if (compound.hasUUID("owner_uuid"))
+            this.ownerUuid = compound.getUUID("owner_uuid");
+        if (compound.contains("owner_name"))
+            this.ownerName = compound.getString("owner_name");
+        PoppetUtil.addPoppetShelf(this.ownerUuid, this);
     }
 }

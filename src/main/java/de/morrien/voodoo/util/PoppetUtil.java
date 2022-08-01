@@ -42,10 +42,10 @@ public class PoppetUtil {
             fromPlayer.displayClientMessage(Component.translatable("text.voodoo.voodoo_protection.had", BindingUtil.getBoundName(voodooPoppet)), true);
             voodooPoppet.hurtAndBreak(Integer.MAX_VALUE, fromPlayer, playerEntity -> {
                 playerEntity.broadcastBreakEvent(playerEntity.getUsedItemHand());
-                playerEntity.level.playSound(null, playerEntity, SoundRegistry.voodooProtectionPoppetUsed.get(), SoundSource.PLAYERS, 1, 1);
+                playerEntity.level.playSound(null, playerEntity, SoundRegistry.voodooProtectionPoppetUsed, SoundSource.PLAYERS, 1, 1);
             });
         } else {
-            source.level.playSound(null, source, SoundRegistry.voodooProtectionPoppetUsed.get(), SoundSource.PLAYERS, 1, 1);
+            source.level.playSound(null, source, SoundRegistry.voodooProtectionPoppetUsed, SoundSource.PLAYERS, 1, 1);
             voodooPoppet.shrink(1);
         }
     }

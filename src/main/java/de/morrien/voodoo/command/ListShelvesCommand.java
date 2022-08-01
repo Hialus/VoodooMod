@@ -9,7 +9,10 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -33,8 +36,8 @@ public class ListShelvesCommand {
     private static int list(CommandContext<CommandSourceStack> context, ServerPlayer player) {
         var message = Component.literal("");
         message.append(Component.translatable(
-                "commands.voodoo.list.shelves.header",
-                player.getDisplayName())
+                        "commands.voodoo.list.shelves.header",
+                        player.getDisplayName())
                 .setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN).withBold(true))
         );
         CommandSourceStack source = context.getSource();

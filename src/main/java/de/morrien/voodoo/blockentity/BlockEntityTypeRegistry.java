@@ -2,12 +2,15 @@ package de.morrien.voodoo.blockentity;
 
 import de.morrien.voodoo.Voodoo;
 import de.morrien.voodoo.block.BlockRegistry;
+import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.registries.RegistryObject;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class BlockEntityTypeRegistry {
-    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, Voodoo.MOD_ID);
-    public static final RegistryObject<BlockEntityType<PoppetShelfBlockEntity>> poppetShelfBlockEntity = BLOCK_ENTITIES.register("poppet_shelf_block_entity", () -> BlockEntityType.Builder.of(PoppetShelfBlockEntity::new, BlockRegistry.poppetShelf.get()).build(null));
+    public static final BlockEntityType<PoppetShelfBlockEntity> poppetShelfBlockEntity = FabricBlockEntityTypeBuilder.create(PoppetShelfBlockEntity::new, BlockRegistry.poppetShelf).build(null);
+
+    public static void register() {
+        Registry.register(Registry.BLOCK_ENTITY_TYPE, new ResourceLocation(Voodoo.MOD_ID, "poppet_shelf_block_entity"), poppetShelfBlockEntity);
+    }
 }

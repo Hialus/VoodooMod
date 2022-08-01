@@ -1,7 +1,7 @@
 package de.morrien.voodoo;
 
-import de.morrien.voodoo.blockentity.PoppetShelfBlockEntity;
 import de.morrien.voodoo.VoodooConfig.Common.PoppetBase;
+import de.morrien.voodoo.blockentity.PoppetShelfBlockEntity;
 import de.morrien.voodoo.item.PoppetItem;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;

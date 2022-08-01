@@ -42,8 +42,8 @@ public class BindCommand {
         final ServerPlayer player = source.getPlayerOrException();
         final ItemStack itemStack = player.getMainHandItem();
         boolean isPoppet = itemStack.getItem() instanceof PoppetItem;
-        boolean isBlankPoppet = itemStack.getItem() == ItemRegistry.poppetMap.get(Poppet.PoppetType.BLANK).get();
-        boolean isTaglockKit = itemStack.getItem() == ItemRegistry.taglockKit.get();
+        boolean isBlankPoppet = itemStack.getItem() == ItemRegistry.poppetMap.get(Poppet.PoppetType.BLANK);
+        boolean isTaglockKit = itemStack.getItem() == ItemRegistry.taglockKit;
         if (!(isPoppet || isTaglockKit) || isBlankPoppet) {
             final var text = Component.translatable("commands.voodoo.bind.noitem");
             throw new CommandSyntaxException(new SimpleCommandExceptionType(text), text);
