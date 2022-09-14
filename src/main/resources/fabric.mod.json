@@ -38,5 +38,6 @@
   },
   "suggests": {
     "patchouli": "*"
-  }
+  },
+  "accessWidener": "voodoo.accesswidener"
 }
