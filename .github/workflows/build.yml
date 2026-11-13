@@ -1,0 +1,43 @@
+name: Build
+
+on:
+  push:
+    branches: [ "1.21.*", "26.*" ]
+  pull_request:
+    branches: [ "1.21.*", "26.*" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        lfs: true
+
+    - name: Extract Java version
+      run: echo "JAVA_VERSION=$(sed -n 's/^java_version=//p' gradle.properties | tr -d '\r')" >> $GITHUB_ENV
+
+    - name: Set up JDK ${{ env.JAVA_VERSION }}
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ env.JAVA_VERSION }}
+        distribution: 'temurin'
+
+    - name: Set up Gradle
+      uses: gradle/actions/setup-gradle@v4
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    - name: Build with Gradle
+      run: ./gradlew build
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: voodoo-jars
+        path: |
+          */build/libs/*.jar
+        if-no-files-found: error

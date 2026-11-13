@@ -1,106 +1,253 @@
 name: Build and Release
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Only release this branch (leave empty to release all branches in the matrix)'
+        required: false
+        default: ''
+      changelog:
+        description: 'Custom changelog (leave empty to generate it from commits). \n for line breaks.'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+env:
+  CURSEFORGE_ID: 510930
+  MODRINTH_ID: 2u9JONvp
 
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
-    
+
     strategy:
+      fail-fast: false
       matrix:
         include:
-          - version: 1.15.2
-            branch: 1.15
-            jdk: 8
-          - version: 1.16.5
-            branch: 1.16
-            jdk: 8
-          - version: 1.17.1
-            branch: 1.17
-            jdk: 16
-          - version: 1.18.1
-            branch: 1.18
-            jdk: 16
-          - version: 1.19.1
-            branch: 1.19-forge
-            jdk: 17
+          - branch: 1.21.4
+            game_versions: ''
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      if: inputs.branch == '' || inputs.branch == matrix.branch
+      uses: actions/checkout@v4
       with:
         ref: ${{ matrix.branch }}
         lfs: true
         fetch-depth: 0
-    
-    - name: Extract version
-      run: sed -n '/^mod_version=/p' gradle.properties >> $GITHUB_ENV
-      
-    - name: Print version
-      run: echo "Mod Version=${{ env.mod_version }}"
+
+    - name: Read versions
+      if: inputs.branch == '' || inputs.branch == matrix.branch
+      uses: actions/github-script@v7
+      env:
+        MATRIX_GAME_VERSIONS: ${{ matrix.game_versions }}
+      with:
+        script: |
+          const fs = require('fs');
+
+          const properties = Object.fromEntries(
+            fs.readFileSync('gradle.properties', 'utf8')
+              .split(/\r?\n/)
+              .filter(line => line.includes('=') && !line.trimStart().startsWith('#'))
+              .map(line => {
+                const index = line.indexOf('=');
+                return [line.slice(0, index).trim(), line.slice(index + 1).trim()];
+              })
+          );
+
+          const mcVersion = properties['minecraft_version'];
+          const modVersion = properties['version'];
+
+          core.exportVariable('MC_VERSION', mcVersion);
+          core.exportVariable('MOD_VERSION', modVersion);
+          core.exportVariable('JAVA_VERSION', properties['java_version']);
+          core.exportVariable('RELEASE_TAG', `${mcVersion}-${modVersion}`);
+          core.exportVariable('GAME_VERSIONS', process.env.MATRIX_GAME_VERSIONS || mcVersion);
+
+          core.info(`Branch ${{ matrix.branch }}: Minecraft ${mcVersion}, Mod ${modVersion}, Java ${properties['java_version']}`);
+
+    - name: Check for existing releases
+      id: check
+      if: inputs.branch == '' || inputs.branch == matrix.branch
+      uses: actions/github-script@v7
+      env:
+        MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+      with:
+        script: |
+          const tag = process.env.RELEASE_TAG;
+
+          try {
+            await github.rest.git.getRef({ ...context.repo, ref: `tags/${tag}` });
+            core.warning(`Release ${tag} already exists. Bump 'version' in gradle.properties to release again.`, { title: '${{ matrix.branch }} skipped' });
+            core.setOutput('release', 'false');
+            return;
+          } catch (error) {
+            if (error.status !== 404) throw error;
+          }
+          core.setOutput('release', 'true');
+
+          const response = await fetch(`https://api.modrinth.com/v2/project/${process.env.MODRINTH_ID}/version`, {
+            headers: { Authorization: process.env.MODRINTH_TOKEN },
+          });
+          if (!response.ok) {
+            throw new Error(`Could not read Modrinth versions: ${response.status} ${response.statusText}`);
+          }
+          const existing = (await response.json()).map(version => version.version_number.toLowerCase());
+
+          for (const loader of ['neoforge', 'fabric']) {
+            const versionNumber = `${tag}-${loader}`;
+            const exists = existing.includes(versionNumber);
+            if (exists) core.notice(`${versionNumber} already exists on Modrinth, skipping that upload.`);
+            core.setOutput(`modrinth_${loader}`, String(!exists));
+          }
 
     - name: Generate changelog
-      run: |
-        echo 'CHANGELOG<<EOF' >> $GITHUB_ENV
-        git log $(git describe --tags --abbrev=0 --always)..HEAD --no-merges --pretty="- %s" | grep -vE 'Revert|Update|\[NC\]' >> $GITHUB_ENV
-        echo 'EOF' >> $GITHUB_ENV
-      continue-on-error: true
-      
-    - name: Set up JDK ${{ matrix.jdk }}
-      uses: actions/setup-java@v2
-      with:
-        java-version: ${{ matrix.jdk }}
-        distribution: 'adopt'
-        
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-      
-    - name: Cache Gradle packages
-      uses: actions/cache@v2
-      with:
-        path: ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ matrix.version }}-${{ hashFiles('**/*.gradle') }}
-        restore-keys: ${{ runner.os }}-gradle-${{ matrix.version }}
-    
-    - name: Run datagen
-      run: ./gradlew runData
-      continue-on-error: true
-      
-    - name: Remove .cache folder
-      run: rm -rf src/generated/resources/.cache
-    
-    - name: Build with Gradle
-      run: ./gradlew build
-    
-    - name: Create GitHub Release
-      id: create_release
-      uses: actions/create-release@v1
+      if: steps.check.outputs.release == 'true'
+      uses: actions/github-script@v7
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+        CUSTOM_CHANGELOG: ${{ inputs.changelog }}
       with:
-        tag_name: ${{ matrix.version }}-${{ env.mod_version }}
-        release_name: VoodooMod ${{ matrix.version }}-${{ env.mod_version }}
+        script: |
+          let changelog = process.env.CUSTOM_CHANGELOG.trim().replaceAll('\\n', '\n');
+
+          if (!changelog) {
+            const mcVersion = process.env.MC_VERSION;
+            const { stdout: previousTag } = await exec.getExecOutput(
+              'git', ['describe', '--tags', '--abbrev=0', '--match', `${mcVersion}-*`],
+              { ignoreReturnCode: true, silent: true }
+            );
+
+            if (previousTag.trim()) {
+              const { stdout: log } = await exec.getExecOutput(
+                'git', ['log', `${previousTag.trim()}..HEAD`, '--no-merges', '--pretty=- %s'],
+                { silent: true }
+              );
+              changelog = log.split('\n')
+                .filter(line => line && !/Revert|Update|\[NC\]/.test(line))
+                .join('\n');
+            } else {
+              changelog = `Release for Minecraft ${mcVersion}`;
+            }
+          }
+
+          core.info(changelog);
+          core.exportVariable('CHANGELOG', changelog);
+
+    - name: Set up JDK ${{ env.JAVA_VERSION }}
+      if: steps.check.outputs.release == 'true'
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ env.JAVA_VERSION }}
+        distribution: 'temurin'
+
+    - name: Set up Gradle
+      if: steps.check.outputs.release == 'true'
+      uses: gradle/actions/setup-gradle@v4
+
+    - name: Grant execute permission for gradlew
+      if: steps.check.outputs.release == 'true'
+      run: chmod +x gradlew
+
+    - name: Run datagen
+      if: steps.check.outputs.release == 'true'
+      run: ./gradlew :neoforge:runData
+      continue-on-error: true
+
+    - name: Remove .cache folder
+      if: steps.check.outputs.release == 'true'
+      run: rm -rf common/src/generated/resources/.cache
+
+    - name: Build with Gradle
+      if: steps.check.outputs.release == 'true'
+      run: ./gradlew build
+
+    - name: Publish NeoForge to Modrinth
+      if: steps.check.outputs.modrinth_neoforge == 'true' && hashFiles(format('neoforge/build/libs/voodoo-neoforge-{0}.jar', env.RELEASE_TAG)) != ''
+      uses: Kir-Antipov/mc-publish@v3.3
+      with:
+        modrinth-id: ${{ env.MODRINTH_ID }}
+        modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+        files: neoforge/build/libs/voodoo-neoforge-${{ env.RELEASE_TAG }}.jar
+        name: Voodoo ${{ env.MOD_VERSION }} (NeoForge ${{ env.MC_VERSION }})
+        version: ${{ env.RELEASE_TAG }}-neoforge
+        version-type: release
+        changelog: ${{ env.CHANGELOG }}
+        loaders: neoforge
+        game-versions: ${{ env.GAME_VERSIONS }}
+        java: ${{ env.JAVA_VERSION }}
+        dependencies: |
+          patchouli(optional)
+
+    - name: Publish Fabric to Modrinth
+      if: steps.check.outputs.modrinth_fabric == 'true' && hashFiles(format('fabric/build/libs/voodoo-fabric-{0}.jar', env.RELEASE_TAG)) != ''
+      uses: Kir-Antipov/mc-publish@v3.3
+      with:
+        modrinth-id: ${{ env.MODRINTH_ID }}
+        modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+        files: fabric/build/libs/voodoo-fabric-${{ env.RELEASE_TAG }}.jar
+        name: Voodoo ${{ env.MOD_VERSION }} (Fabric ${{ env.MC_VERSION }})
+        version: ${{ env.RELEASE_TAG }}-fabric
+        version-type: release
+        changelog: ${{ env.CHANGELOG }}
+        loaders: fabric
+        game-versions: ${{ env.GAME_VERSIONS }}
+        java: ${{ env.JAVA_VERSION }}
+        dependencies: |
+          fabric-api(required){modrinth:fabric-api}
+          forgeconfigapiport(required){modrinth:forge-config-api-port}
+          patchouli(optional)
+
+    - name: Publish NeoForge to CurseForge
+      if: steps.check.outputs.release == 'true' && hashFiles(format('neoforge/build/libs/voodoo-neoforge-{0}.jar', env.RELEASE_TAG)) != ''
+      uses: Kir-Antipov/mc-publish@v3.3
+      with:
+        curseforge-id: ${{ env.CURSEFORGE_ID }}
+        curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+        files: neoforge/build/libs/voodoo-neoforge-${{ env.RELEASE_TAG }}.jar
+        name: Voodoo ${{ env.MOD_VERSION }} (NeoForge ${{ env.MC_VERSION }})
+        version: ${{ env.RELEASE_TAG }}-neoforge
+        version-type: release
+        changelog: ${{ env.CHANGELOG }}
+        loaders: neoforge
+        game-versions: ${{ env.GAME_VERSIONS }}
+        java: ${{ env.JAVA_VERSION }}
+        dependencies: |
+          patchouli(optional)
+
+    - name: Publish Fabric to CurseForge
+      if: steps.check.outputs.release == 'true' && hashFiles(format('fabric/build/libs/voodoo-fabric-{0}.jar', env.RELEASE_TAG)) != ''
+      uses: Kir-Antipov/mc-publish@v3.3
+      with:
+        curseforge-id: ${{ env.CURSEFORGE_ID }}
+        curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+        files: fabric/build/libs/voodoo-fabric-${{ env.RELEASE_TAG }}.jar
+        name: Voodoo ${{ env.MOD_VERSION }} (Fabric ${{ env.MC_VERSION }})
+        version: ${{ env.RELEASE_TAG }}-fabric
+        version-type: release
+        changelog: ${{ env.CHANGELOG }}
+        loaders: fabric
+        game-versions: ${{ env.GAME_VERSIONS }}
+        java: ${{ env.JAVA_VERSION }}
+        dependencies: |
+          fabric-api(required){curseforge:fabric-api}
+          forgeconfigapiport(required){curseforge:forge-config-api-port-fabric}
+          patchouli(optional)
+
+    - name: Create GitHub Release
+      if: steps.check.outputs.release == 'true'
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ env.RELEASE_TAG }}
+        name: VoodooMod ${{ env.RELEASE_TAG }}
         body: ${{ env.CHANGELOG }}
-        commitish: ${{ matrix.branch }}
+        target_commitish: ${{ matrix.branch }}
         draft: false
         prerelease: false
-        
-    - name: Upload Release Asset
-      uses: AButler/upload-release-assets@v2.0
-      with:
-        files: 'LICENSE_CODE;LICENSE_ASSETS;build/libs/*.jar'
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
-        release-tag: ${{ matrix.version }}-${{ env.mod_version }}
-        
-    - name: Upload to CurseForge
-      uses: itsmeow/curseforge-upload@master
-      with:
-        token: ${{ secrets.CURSEFORGE_TOKEN }}
-        project_id: 510930
-        game_endpoint: minecraft
-        file_path: build/libs/Voodoo-${{ matrix.version }}-${{ env.mod_version }}.jar
-        changelog: ${{ env.CHANGELOG }}
-        game_versions: Java:Java ${{ matrix.jdk }},Minecraft ${{ env.branch }}:${{ env.version }},Modloader:Forge
-        release_type: release
-        relations: patchouli:optionalDependency
+        fail_on_unmatched_files: true
+        files: |
+          LICENSE_CODE
+          LICENSE_ASSETS
+          */build/libs/voodoo-*-${{ env.RELEASE_TAG }}.jar
