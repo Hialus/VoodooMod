@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "F": "minecraft:rabbit_foot",
+    "G": "minecraft:golden_apple",
+    "N": "voodoo:needle",
+    "P": "voodoo:blank_poppet",
+    "R": "minecraft:rabbit_hide",
+    "T": "minecraft:totem_of_undying"
+  },
+  "pattern": [
+    "FTF",
+    "GPG",
+    "RNR"
+  ],
+  "result": {
+    "count": 1,
+    "id": "voodoo:death_protection_poppet"
+  }
+}

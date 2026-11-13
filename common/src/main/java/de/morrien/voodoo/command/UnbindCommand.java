@@ -42,7 +42,7 @@ public class UnbindCommand {
                 itemStack.getDisplayName()
         );
         text.setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN));
-        source.sendSuccess(text, true);
+        source.sendSuccess(() -> text, true);
         return 0;
     }
 }

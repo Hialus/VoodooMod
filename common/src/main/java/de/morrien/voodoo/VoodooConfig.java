@@ -1,25 +1,31 @@
 package de.morrien.voodoo;
 
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
-import net.minecraftforge.common.ForgeConfigSpec.Builder;
-import net.minecraftforge.common.ForgeConfigSpec.IntValue;
+import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec.BooleanValue;
+import net.neoforged.neoforge.common.ModConfigSpec.Builder;
+import net.neoforged.neoforge.common.ModConfigSpec.IntValue;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class VoodooConfig {
     public static final Client CLIENT;
     public static final Common COMMON;
-    static final ForgeConfigSpec clientSpec;
-    static final ForgeConfigSpec commonSpec;
+    public static final Durability DURABILITY;
+    public static final ModConfigSpec clientSpec;
+    public static final ModConfigSpec commonSpec;
+    public static final ModConfigSpec durabilitySpec;
 
     static {
-        final Pair<Client, ForgeConfigSpec> clientSpecPair = new Builder().configure(VoodooConfig.Client::new);
+        final Pair<Client, ModConfigSpec> clientSpecPair = new Builder().configure(VoodooConfig.Client::new);
         clientSpec = clientSpecPair.getRight();
         CLIENT = clientSpecPair.getLeft();
 
-        final Pair<Common, ForgeConfigSpec> commonSpecPair = new Builder().configure(Common::new);
+        final Pair<Common, ModConfigSpec> commonSpecPair = new Builder().configure(Common::new);
         commonSpec = commonSpecPair.getRight();
         COMMON = commonSpecPair.getLeft();
+
+        final Pair<Durability, ModConfigSpec> durabilitySpecPair = new Builder().configure(Durability::new);
+        durabilitySpec = durabilitySpecPair.getRight();
+        DURABILITY = durabilitySpecPair.getLeft();
     }
 
     public static class Client {
@@ -43,6 +49,7 @@ public class VoodooConfig {
         public HungerProtectionPoppet hungerProtection;
         public PotionProtectionPoppet potionProtection;
         public VoidProtectionPoppet voidProtection;
+        public PoppetShelf poppetShelf;
 
         Common(Builder builder) {
             builder.comment("Poppet configuration settings").push("poppets");
@@ -61,10 +68,10 @@ public class VoodooConfig {
             this.potionProtection = new PotionProtectionPoppet(builder);
             this.voidProtection = new VoidProtectionPoppet(builder);
             builder.pop();
+            this.poppetShelf = new PoppetShelf(builder);
         }
 
         public static class VoodooPoppet {
-            public IntValue durability;
             public IntValue pullDuration;
             public BooleanValue enableFire;
             public IntValue fireDurabilityCost;
@@ -79,9 +86,6 @@ public class VoodooConfig {
             public VoodooPoppet(Builder builder) {
                 builder.comment("Voodoo Poppet").push("voodoo_poppet");
 
-                this.durability = builder
-                        .comment("Durability of the poppet")
-                        .defineInRange("durability", 20, 0, Integer.MAX_VALUE);
                 this.pullDuration = builder
                         .comment("How many ticks the poppet has to be pulled before an action can be executed")
                         .defineInRange("pull_duration", 20, 0, 72000);
@@ -138,20 +142,16 @@ public class VoodooConfig {
 
         public static class PoppetBase {
             public final BooleanValue enabled;
-            public final IntValue durability;
 
-            public PoppetBase(Builder builder, String comment, String path, int defaultDurability) {
-                this(builder, comment, path, defaultDurability, true);
+            public PoppetBase(Builder builder, String comment, String path) {
+                this(builder, comment, path, true);
             }
 
-            public PoppetBase(Builder builder, String comment, String path, int defaultDurability, boolean pop) {
+            public PoppetBase(Builder builder, String comment, String path, boolean pop) {
                 builder.comment(comment).push(path);
                 this.enabled = builder
                         .comment("Set to false to disable this poppet")
                         .define("enabled", true);
-                this.durability = builder
-                        .comment("Durability of the poppet")
-                        .defineInRange("durability", defaultDurability, 0, Integer.MAX_VALUE);
                 if (pop)
                     builder.pop();
             }
@@ -166,7 +166,6 @@ public class VoodooConfig {
                 super(builder,
                         "Vampiric Poppet",
                         "vampiric_poppet",
-                        20,
                         false
                 );
                 this.healthLimit = builder
@@ -189,8 +188,7 @@ public class VoodooConfig {
             public ReflectorPoppet(Builder builder) {
                 super(builder,
                         "Reflector Poppet",
-                        "reflector_poppet",
-                        10
+                        "reflector_poppet"
                 );
             }
         }
@@ -199,8 +197,7 @@ public class VoodooConfig {
             public VoodooProtectionPoppet(Builder builder) {
                 super(builder,
                         "Voodoo Protection Poppet",
-                        "voodoo_protection_poppet",
-                        1
+                        "voodoo_protection_poppet"
                 );
             }
         }
@@ -209,8 +206,7 @@ public class VoodooConfig {
             public DeathProtectionPoppet(Builder builder) {
                 super(builder,
                         "Death Protection Poppet",
-                        "death_protection_poppet",
-                        2
+                        "death_protection_poppet"
                 );
             }
         }
@@ -219,8 +215,7 @@ public class VoodooConfig {
             public FireProtectionPoppet(Builder builder) {
                 super(builder,
                         "Fire Protection Poppet",
-                        "fire_protection_poppet",
-                        10
+                        "fire_protection_poppet"
                 );
             }
         }
@@ -229,8 +224,7 @@ public class VoodooConfig {
             public WaterProtectionPoppet(Builder builder) {
                 super(builder,
                         "Water Protection Poppet",
-                        "water_protection_poppet",
-                        5
+                        "water_protection_poppet"
                 );
             }
         }
@@ -239,8 +233,7 @@ public class VoodooConfig {
             public FallProtectionPoppet(Builder builder) {
                 super(builder,
                         "Fall Protection Poppet",
-                        "fall_protection_poppet",
-                        30
+                        "fall_protection_poppet"
                 );
             }
         }
@@ -249,8 +242,7 @@ public class VoodooConfig {
             public ExplosionProtectionPoppet(Builder builder) {
                 super(builder,
                         "Explosion Protection Poppet",
-                        "explosion_protection_poppet",
-                        4
+                        "explosion_protection_poppet"
                 );
             }
         }
@@ -259,8 +251,7 @@ public class VoodooConfig {
             public ProjectileProtectionPoppet(Builder builder) {
                 super(builder,
                         "Projectile Protection Poppet",
-                        "projectile_protection_poppet",
-                        10
+                        "projectile_protection_poppet"
                 );
             }
         }
@@ -269,8 +260,7 @@ public class VoodooConfig {
             public WitherProtectionPoppet(Builder builder) {
                 super(builder,
                         "Wither Protection Poppet",
-                        "wither_protection_poppet",
-                        10
+                        "wither_protection_poppet"
                 );
             }
         }
@@ -279,8 +269,7 @@ public class VoodooConfig {
             public HungerProtectionPoppet(Builder builder) {
                 super(builder,
                         "Hunger Protection Poppet",
-                        "hunger_protection_poppet",
-                        5
+                        "hunger_protection_poppet"
                 );
             }
         }
@@ -289,8 +278,7 @@ public class VoodooConfig {
             public PotionProtectionPoppet(Builder builder) {
                 super(builder,
                         "Potion Protection Poppet",
-                        "potion_protection_poppet",
-                        6
+                        "potion_protection_poppet"
                 );
             }
         }
@@ -299,10 +287,65 @@ public class VoodooConfig {
             public VoidProtectionPoppet(Builder builder) {
                 super(builder,
                         "Void Protection Poppet",
-                        "void_protection_poppet",
-                        0
+                        "void_protection_poppet"
                 );
             }
+        }
+
+        public static class PoppetShelf {
+            public final BooleanValue chunkLoading;
+
+            public PoppetShelf(Builder builder) {
+                builder.comment("Poppet shelf configuration settings").push("poppet_shelf");
+                this.chunkLoading = builder
+                        .comment("Keep the chunk of every poppet shelf that has an owner loaded")
+                        .define("chunk_loading", true);
+                builder.pop();
+            }
+        }
+    }
+    public static class Durability {
+        public final IntValue voodoo;
+        public final IntValue vampiric;
+        public final IntValue reflector;
+        public final IntValue voodooProtection;
+        public final IntValue deathProtection;
+        public final IntValue fireProtection;
+        public final IntValue waterProtection;
+        public final IntValue fallProtection;
+        public final IntValue explosionProtection;
+        public final IntValue projectileProtection;
+        public final IntValue witherProtection;
+        public final IntValue hungerProtection;
+        public final IntValue potionProtection;
+        public final IntValue voidProtection;
+
+        Durability(Builder builder) {
+            builder.comment("Poppet configuration settings").push("poppets");
+            this.voodoo = define(builder, "Voodoo Poppet", "voodoo_poppet", 20);
+            this.vampiric = define(builder, "Vampiric Poppet", "vampiric_poppet", 20);
+            this.reflector = define(builder, "Reflector Poppet", "reflector_poppet", 10);
+            this.voodooProtection = define(builder, "Voodoo Protection Poppet", "voodoo_protection_poppet", 1);
+            this.deathProtection = define(builder, "Death Protection Poppet", "death_protection_poppet", 2);
+            this.fireProtection = define(builder, "Fire Protection Poppet", "fire_protection_poppet", 10);
+            this.waterProtection = define(builder, "Water Protection Poppet", "water_protection_poppet", 5);
+            this.fallProtection = define(builder, "Fall Protection Poppet", "fall_protection_poppet", 30);
+            this.explosionProtection = define(builder, "Explosion Protection Poppet", "explosion_protection_poppet", 4);
+            this.projectileProtection = define(builder, "Projectile Protection Poppet", "projectile_protection_poppet", 10);
+            this.witherProtection = define(builder, "Wither Protection Poppet", "wither_protection_poppet", 10);
+            this.hungerProtection = define(builder, "Hunger Protection Poppet", "hunger_protection_poppet", 5);
+            this.potionProtection = define(builder, "Potion Protection Poppet", "potion_protection_poppet", 6);
+            this.voidProtection = define(builder, "Void Protection Poppet", "void_protection_poppet", 0);
+            builder.pop();
+        }
+
+        private static IntValue define(Builder builder, String comment, String path, int defaultDurability) {
+            builder.comment(comment).push(path);
+            final IntValue durability = builder
+                    .comment("Durability of the poppet")
+                    .defineInRange("durability", defaultDurability, 0, Integer.MAX_VALUE);
+            builder.pop();
+            return durability;
         }
     }
 }

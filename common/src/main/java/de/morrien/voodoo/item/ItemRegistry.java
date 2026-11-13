@@ -1,40 +1,39 @@
 package de.morrien.voodoo.item;
 
 import de.morrien.voodoo.Poppet;
-import de.morrien.voodoo.Voodoo;
-import de.morrien.voodoo.VoodooGroup;
 import de.morrien.voodoo.block.BlockRegistry;
+import de.morrien.voodoo.platform.RegistrationProvider;
+import de.morrien.voodoo.platform.Services;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.registries.RegistryObject;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static de.morrien.voodoo.Poppet.PoppetType.VAMPIRIC;
 import static de.morrien.voodoo.Poppet.PoppetType.VOODOO;
 
 public class ItemRegistry {
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Voodoo.MOD_ID);
-    public static final RegistryObject<Item> poppetShelf = ITEMS.register("poppet_shelf", () -> new BlockItem(BlockRegistry.poppetShelf.get(), new Item.Properties().tab(VoodooGroup.INSTANCE)));
-    public static final RegistryObject<Item> needle = ITEMS.register("needle", () -> new Item(new Item.Properties().tab(VoodooGroup.INSTANCE)));
-    public static final RegistryObject<Item> taglockKit = ITEMS.register("taglock_kit", TaglockKitItem::new);
-    public static final Map<Poppet.PoppetType, RegistryObject<PoppetItem>> poppetMap;
+    public static final RegistrationProvider<Item> ITEMS = RegistrationProvider.get(Registries.ITEM);
+    public static final Supplier<Item> poppetShelf = ITEMS.register("poppet_shelf", key -> new BlockItem(BlockRegistry.poppetShelf.get(), new Item.Properties().useBlockDescriptionPrefix().setId(key)));
+    public static final Supplier<Item> needle = ITEMS.register("needle", key -> new Item(new Item.Properties().setId(key)));
+    public static final Supplier<Item> taglockKit = ITEMS.register("taglock_kit", key -> new TaglockKitItem(new Item.Properties().setId(key)));
+    public static final Map<Poppet.PoppetType, Supplier<PoppetItem>> poppetMap;
 
     static {
         poppetMap = new HashMap<>();
         for (Poppet.PoppetType poppetType : Poppet.PoppetType.values()) {
-            Supplier<PoppetItem> poppetItemSupplier;
+            Function<Item.Properties, PoppetItem> poppetItemFactory;
             if (poppetType == VOODOO)
-                poppetItemSupplier = VoodooPoppetItem::new;
+                poppetItemFactory = Services.ITEMS::voodooPoppet;
             else if (poppetType == VAMPIRIC)
-                poppetItemSupplier = VampiricPoppetItem::new;
+                poppetItemFactory = Services.ITEMS::vampiricPoppet;
             else
-                poppetItemSupplier = () -> new PoppetItem(poppetType);
-            poppetMap.put(poppetType, ITEMS.register(poppetType.name().toLowerCase() + "_poppet", poppetItemSupplier));
+                poppetItemFactory = properties -> Services.ITEMS.poppet(poppetType, properties);
+            poppetMap.put(poppetType, ITEMS.register(poppetType.name().toLowerCase() + "_poppet", key -> poppetItemFactory.apply(new Item.Properties().setId(key))));
         }
     }
 }

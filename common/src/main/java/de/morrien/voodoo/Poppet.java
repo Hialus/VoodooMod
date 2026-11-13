@@ -6,7 +6,7 @@ import de.morrien.voodoo.item.PoppetItem;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.ForgeConfigSpec.IntValue;
+import net.neoforged.neoforge.common.ModConfigSpec.IntValue;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.Optional;
@@ -61,7 +61,7 @@ public class Poppet {
         } else {
             shrink();
         }
-        poppetShelf.ifPresent(PoppetShelfBlockEntity::inventoryTouched);
+        poppetShelf.ifPresent(PoppetShelfBlockEntity::setChanged);
     }
 
     private void shrink() {
@@ -72,20 +72,20 @@ public class Poppet {
 
     public enum PoppetType {
         BLANK(),
-        VOODOO(VoodooConfig.COMMON.voodoo.durability),
-        VAMPIRIC(VoodooConfig.COMMON.vampiric),
-        REFLECTOR(VoodooConfig.COMMON.reflector),
-        VOODOO_PROTECTION(VoodooConfig.COMMON.voodooProtection),
-        DEATH_PROTECTION(VoodooConfig.COMMON.deathProtection),
-        FIRE_PROTECTION(VoodooConfig.COMMON.fireProtection),
-        WATER_PROTECTION(VoodooConfig.COMMON.waterProtection),
-        FALL_PROTECTION(VoodooConfig.COMMON.fallProtection),
-        EXPLOSION_PROTECTION(VoodooConfig.COMMON.explosionProtection),
-        PROJECTILE_PROTECTION(VoodooConfig.COMMON.projectileProtection),
-        WITHER_PROTECTION(VoodooConfig.COMMON.witherProtection),
-        HUNGER_PROTECTION(VoodooConfig.COMMON.hungerProtection),
-        POTION_PROTECTION(VoodooConfig.COMMON.potionProtection),
-        VOID_PROTECTION(VoodooConfig.COMMON.voidProtection);
+        VOODOO(VoodooConfig.DURABILITY.voodoo),
+        VAMPIRIC(VoodooConfig.COMMON.vampiric, VoodooConfig.DURABILITY.vampiric),
+        REFLECTOR(VoodooConfig.COMMON.reflector, VoodooConfig.DURABILITY.reflector),
+        VOODOO_PROTECTION(VoodooConfig.COMMON.voodooProtection, VoodooConfig.DURABILITY.voodooProtection),
+        DEATH_PROTECTION(VoodooConfig.COMMON.deathProtection, VoodooConfig.DURABILITY.deathProtection),
+        FIRE_PROTECTION(VoodooConfig.COMMON.fireProtection, VoodooConfig.DURABILITY.fireProtection),
+        WATER_PROTECTION(VoodooConfig.COMMON.waterProtection, VoodooConfig.DURABILITY.waterProtection),
+        FALL_PROTECTION(VoodooConfig.COMMON.fallProtection, VoodooConfig.DURABILITY.fallProtection),
+        EXPLOSION_PROTECTION(VoodooConfig.COMMON.explosionProtection, VoodooConfig.DURABILITY.explosionProtection),
+        PROJECTILE_PROTECTION(VoodooConfig.COMMON.projectileProtection, VoodooConfig.DURABILITY.projectileProtection),
+        WITHER_PROTECTION(VoodooConfig.COMMON.witherProtection, VoodooConfig.DURABILITY.witherProtection),
+        HUNGER_PROTECTION(VoodooConfig.COMMON.hungerProtection, VoodooConfig.DURABILITY.hungerProtection),
+        POTION_PROTECTION(VoodooConfig.COMMON.potionProtection, VoodooConfig.DURABILITY.potionProtection),
+        VOID_PROTECTION(VoodooConfig.COMMON.voidProtection, VoodooConfig.DURABILITY.voidProtection);
 
         private final PoppetBase config;
         private final IntValue durability;
@@ -95,9 +95,9 @@ public class Poppet {
             this.durability = null;
         }
 
-        PoppetType(PoppetBase config) {
+        PoppetType(PoppetBase config, IntValue durability) {
             this.config = config;
-            this.durability = config.durability;
+            this.durability = durability;
         }
 
         PoppetType(IntValue durability) {
@@ -110,11 +110,12 @@ public class Poppet {
         }
 
         public boolean hasDurability() {
-            return durability != null && durability.get() > 0;
+            return getDurability() > 0;
         }
 
         public int getDurability() {
-            return durability == null ? 0 : durability.get();
+            if (durability == null) return 0;
+            return VoodooConfig.durabilitySpec.isLoaded() ? durability.get() : durability.getDefault();
         }
 
         @Override

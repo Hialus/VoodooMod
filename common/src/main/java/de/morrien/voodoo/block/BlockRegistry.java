@@ -1,12 +1,23 @@
 package de.morrien.voodoo.block;
 
-import de.morrien.voodoo.Voodoo;
+import de.morrien.voodoo.platform.RegistrationProvider;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.registries.RegistryObject;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+
+import java.util.function.Supplier;
 
 public class BlockRegistry {
-    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Voodoo.MOD_ID);
-    public static final RegistryObject<Block> poppetShelf = BLOCKS.register("poppet_shelf", PoppetShelfBlock::new);
+    public static final RegistrationProvider<Block> BLOCKS = RegistrationProvider.get(Registries.BLOCK);
+    public static final Supplier<Block> poppetShelf = BLOCKS.register("poppet_shelf", key -> new PoppetShelfBlock(BlockBehaviour.Properties
+            .of()
+            .mapColor(MapColor.NETHER)
+            .strength(6, 6)
+            .requiresCorrectToolForDrops()
+            .sound(SoundType.NETHER_BRICKS)
+            .noOcclusion()
+            .setId(key)
+    ));
 }

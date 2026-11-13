@@ -42,6 +42,15 @@ repositories {
         name = 'BlameJared'
         url = 'https://maven.blamejared.com'
     }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = 'Fuzs'
+                url = 'https://raw.githubusercontent.com/Fuzss/modresources/main/maven/'
+            }
+        }
+        filter { includeGroup('fuzs.forgeconfigapiport') }
+    }
 }
 
 // Declare capabilities on the outgoing configurations.
@@ -102,6 +111,7 @@ processResources {
             'neoforge_version_range'       : neoforge_version_range,
             'neoforge_loader_version_range': neoforge_loader_version_range,
             'forgeconfigapiport_version'   : forgeconfigapiport_version,
+            'forgeconfigapiport_version_range': forgeconfigapiport_version_range,
             'credits'                      : credits,
             'java_version'                 : java_version
     ]

@@ -1,14 +1,18 @@
 package de.morrien.voodoo.util;
 
+import de.morrien.voodoo.component.Binding;
+import de.morrien.voodoo.component.VoodooComponents;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 
 import java.util.UUID;
 
 public class BindingUtil {
-    // Constants used for NBT tags
+    // Constants used for NBT tags of items from older versions
     public static final String BOUND_UUID = "BoundUUID";
     public static final String BOUND_NAME = "BoundName";
 
@@ -30,9 +34,7 @@ public class BindingUtil {
      * @param name      The name to bind it to
      */
     public static void bind(ItemStack itemStack, UUID uuid, String name) {
-        final CompoundTag tag = itemStack.getOrCreateTag();
-        tag.putUUID(BOUND_UUID, uuid);
-        tag.putString(BOUND_NAME, name);
+        itemStack.set(VoodooComponents.binding.get(), new Binding(uuid, name));
     }
 
     /**
@@ -41,9 +43,7 @@ public class BindingUtil {
      * @param itemStack The ItemStack that should be unbound
      */
     public static void unbind(ItemStack itemStack) {
-        final CompoundTag tag = itemStack.getOrCreateTag();
-        tag.remove(BOUND_UUID);
-        tag.remove(BOUND_NAME);
+        itemStack.remove(VoodooComponents.binding.get());
     }
 
     /**
@@ -55,12 +55,30 @@ public class BindingUtil {
      */
     public static void transfer(ItemStack from, ItemStack to) {
         if (!isBound(from)) return;
-        bind(to, from.getTag().getUUID(BOUND_UUID), from.getTag().getString(BOUND_NAME));
+        to.set(VoodooComponents.binding.get(), from.get(VoodooComponents.binding.get()));
+    }
+
+    /**
+     * Converts the binding of an ItemStack from NBT tags of older versions.
+     *
+     * @param stack The ItemStack to convert
+     */
+    public static void migrate(ItemStack stack) {
+        final CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+        if (data == null || !data.contains(BOUND_UUID)) return;
+        final CompoundTag tag = data.copyTag();
+        if (!isBound(stack) && tag.hasUUID(BOUND_UUID)) {
+            bind(stack, tag.getUUID(BOUND_UUID), tag.getString(BOUND_NAME));
+        }
+        CustomData.update(DataComponents.CUSTOM_DATA, stack, customTag -> {
+            customTag.remove(BOUND_UUID);
+            customTag.remove(BOUND_NAME);
+        });
     }
 
     /**
      * This method checks if the name of the bound player has changed.
-     * If the bound player is online and his name has changed then the NBT tag will be updated.
+     * If the bound player is online and his name has changed then the binding will be updated.
      *
      * @param stack The bound ItemStack
      * @param world The world instance used to check
@@ -71,7 +89,7 @@ public class BindingUtil {
             if (player != null) {
                 final String playerName = player.getName().getString();
                 if (!playerName.equals(getBoundName(stack))) {
-                    stack.getTag().putString(BOUND_NAME, playerName);
+                    bind(stack, player.getUUID(), playerName);
                 }
             }
         }
@@ -99,7 +117,7 @@ public class BindingUtil {
      * @return true if the ItemStack is bound, else false
      */
     public static boolean isBound(ItemStack stack) {
-        return stack.hasTag() && stack.getTag().hasUUID(BOUND_UUID);
+        return stack.has(VoodooComponents.binding.get());
     }
 
     /**
@@ -110,10 +128,8 @@ public class BindingUtil {
      * @return The UUID of the bound player or null
      */
     public static UUID getBoundUUID(ItemStack stack) {
-        if (isBound(stack))
-            return stack.getTag().getUUID(BOUND_UUID);
-        else
-            return null;
+        final Binding binding = stack.get(VoodooComponents.binding.get());
+        return binding == null ? null : binding.uuid();
     }
 
     /**
@@ -124,9 +140,7 @@ public class BindingUtil {
      * @return The name of the bound player or null
      */
     public static String getBoundName(ItemStack stack) {
-        if (isBound(stack))
-            return stack.getTag().getString(BOUND_NAME);
-        else
-            return null;
+        final Binding binding = stack.get(VoodooComponents.binding.get());
+        return binding == null ? null : binding.name();
     }
 }

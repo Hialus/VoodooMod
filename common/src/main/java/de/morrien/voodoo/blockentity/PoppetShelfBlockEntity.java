@@ -1,65 +1,66 @@
 package de.morrien.voodoo.blockentity;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.serialization.Dynamic;
 import de.morrien.voodoo.item.PoppetItem;
-import de.morrien.voodoo.network.PoppetShelfSyncUpdate;
-import de.morrien.voodoo.network.VoodooNetwork;
+import de.morrien.voodoo.util.BindingUtil;
+import de.morrien.voodoo.util.PoppetShelfChunkLoader;
 import de.morrien.voodoo.util.PoppetUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.SharedConstants;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.Connection;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.datafix.DataFixers;
+import net.minecraft.util.datafix.fixes.References;
+import net.minecraft.world.Container;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
 import java.util.UUID;
+
+import static de.morrien.voodoo.VoodooConfig.COMMON;
 
 /**
  * Created by Timor Morrien
  */
-public class PoppetShelfBlockEntity extends BlockEntity {
+public class PoppetShelfBlockEntity extends BlockEntity implements Container {
+    // Data version of Minecraft 1.19.1 for converting inventories of poppet shelves from older version to new ones
+    private static final int LEGACY_DATA_VERSION = 3117;
     private UUID ownerUuid;
     private String ownerName;
     private boolean inventoryTouched;
-    private PoppetShelfItemStackHandler itemHandler;
-    private LazyOptional<IItemHandler> handler;
+    private final NonNullList<ItemStack> items = NonNullList.withSize(9, ItemStack.EMPTY);
 
     public PoppetShelfBlockEntity(BlockPos blockPos, BlockState blockState) {
         super(BlockEntityTypeRegistry.poppetShelfBlockEntity.get(), blockPos, blockState);
-        this.itemHandler = new PoppetShelfItemStackHandler();
-        this.handler = LazyOptional.of(() -> itemHandler);
     }
 
     public static void tick(Level level, BlockPos blockPos, BlockState blockState, PoppetShelfBlockEntity poppetShelf) {
         if (!level.isClientSide && poppetShelf.inventoryTouched) {
             poppetShelf.inventoryTouched = false;
-            poppetShelf.setChanged();
-
-            if (level instanceof ServerLevel) {
-                VoodooNetwork.getInstance().sendToClientsAround(new PoppetShelfSyncUpdate(poppetShelf.itemHandler.serializeNBT(), blockPos), level, blockPos);
-            }
+            setChanged(level, blockPos, blockState);
+            level.sendBlockUpdated(blockPos, blockState, blockState, Block.UPDATE_CLIENTS);
         }
+    }
+
+    /**
+     * Called when the poppet shelf was added in a level, whether by placing it or loading the chunk it is in.
+     * Adds the chunk loading ticket for poppet shelves that do not have one yet, e.g. from older versions or after a config change.
+     */
+    public void onLoad() {
+        if (this.level instanceof ServerLevel serverLevel && !this.isRemoved() && this.ownerUuid != null && COMMON.poppetShelf.chunkLoading.get())
+            PoppetShelfChunkLoader.setShelfLoaded(serverLevel, this.worldPosition, true);
     }
 
     public void inventoryTouched() {
@@ -68,22 +69,64 @@ public class PoppetShelfBlockEntity extends BlockEntity {
     }
 
     public NonNullList<ItemStack> getInventory() {
-        return itemHandler.getInventory();
-    }
-
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
-            return handler.cast();
-        else
-            return super.getCapability(cap, side);
+        return items;
     }
 
     @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        handler.invalidate();
+    public int getContainerSize() {
+        return items.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return items.stream().allMatch(ItemStack::isEmpty);
+    }
+
+    @Override
+    public ItemStack getItem(int slot) {
+        return items.get(slot);
+    }
+
+    @Override
+    public ItemStack removeItem(int slot, int amount) {
+        final ItemStack stack = ContainerHelper.removeItem(items, slot, amount);
+        if (!stack.isEmpty())
+            this.setChanged();
+        return stack;
+    }
+
+    @Override
+    public ItemStack removeItemNoUpdate(int slot) {
+        return ContainerHelper.takeItem(items, slot);
+    }
+
+    @Override
+    public void setItem(int slot, ItemStack stack) {
+        items.set(slot, stack);
+        stack.limitSize(this.getMaxStackSize(stack));
+        this.setChanged();
+    }
+
+    @Override
+    public boolean canPlaceItem(int slot, ItemStack stack) {
+        return stack.getItem() instanceof PoppetItem;
+    }
+
+    @Override
+    public boolean stillValid(Player player) {
+        return Container.stillValidBlockEntity(this, player);
+    }
+
+    @Override
+    public void clearContent() {
+        items.clear();
+        this.setChanged();
+    }
+
+    @Override
+    public void setChanged() {
+        super.setChanged();
+        this.inventoryTouched();
     }
 
     @Nullable
@@ -93,62 +136,66 @@ public class PoppetShelfBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        handleUpdateTag(pkt.getTag());
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return this.saveWithoutMetadata(registries);
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        final CompoundTag compound = super.getUpdateTag();
-        this.saveToTag(compound);
-        return compound;
-    }
-
-    @Override
-    public void handleUpdateTag(CompoundTag compound) {
-        super.handleUpdateTag(compound);
-        this.readFromTag(compound);
-    }
-
-    @Override
-    protected void saveAdditional(CompoundTag compound) {
-        super.saveAdditional(compound);
-        this.saveToTag(compound);
-    }
-
-    @Override
-    public void load(CompoundTag compound) {
-        super.load(compound);
-        this.readFromTag(compound);
-    }
-
-    private void saveToTag(CompoundTag compound) {
-        compound.put("inv", itemHandler.serializeNBT());
+    protected void saveAdditional(CompoundTag compound, HolderLookup.Provider registries) {
+        super.saveAdditional(compound, registries);
+        ContainerHelper.saveAllItems(compound, items, registries);
         if (ownerUuid != null)
             compound.putUUID("owner_uuid", ownerUuid);
         if (ownerName != null)
             compound.putString("owner_name", ownerName);
     }
 
-    private void readFromTag(CompoundTag compound) {
-        itemHandler.deserializeNBT(compound.getCompound("inv"));
+    @Override
+    protected void loadAdditional(CompoundTag compound, HolderLookup.Provider registries) {
+        super.loadAdditional(compound, registries);
+        items.clear();
+        if (compound.contains("inv"))
+            this.loadLegacyItems(compound.getCompound("inv"), registries);
+        else
+            ContainerHelper.loadAllItems(compound, items, registries);
         PoppetUtil.removePoppetShelf(this.ownerUuid, this);
         if (compound.hasUUID("owner_uuid"))
             this.ownerUuid = compound.getUUID("owner_uuid");
         if (compound.contains("owner_name"))
             this.ownerName = compound.getString("owner_name");
         PoppetUtil.addPoppetShelf(this.ownerUuid, this);
+        PoppetUtil.invalidateShelfCache(this);
+    }
+
+    /**
+     * Reads the inventory of a poppet shelf from older versions, which was stored in an ItemStackHandler.
+     * The item stacks are run through a data fixer, as Minecraft cannot convert them otherwise.
+     *
+     * @param inventory  The old inventory tag
+     * @param registries The registry lookup
+     */
+    private void loadLegacyItems(CompoundTag inventory, HolderLookup.Provider registries) {
+        final ListTag list = inventory.getList("Items", Tag.TAG_COMPOUND);
+        for (int i = 0; i < list.size(); i++) {
+            final CompoundTag itemTag = list.getCompound(i);
+            final int slot = itemTag.getInt("Slot");
+            if (slot < 0 || slot >= items.size()) continue;
+            final Tag updated = DataFixers.getDataFixer().update(
+                    References.ITEM_STACK,
+                    new Dynamic<>(NbtOps.INSTANCE, itemTag),
+                    LEGACY_DATA_VERSION,
+                    SharedConstants.getCurrentVersion().getDataVersion().getVersion()
+            ).getValue();
+            ItemStack.parse(registries, updated).ifPresent(stack -> {
+                BindingUtil.migrate(stack);
+                items.set(slot, stack);
+            });
+        }
     }
 
     @Override
     public void setRemoved() {
         super.setRemoved();
-        PoppetUtil.removePoppetShelf(this.ownerUuid, this);
-    }
-
-    @Override
-    public void onChunkUnloaded() {
-        super.onChunkUnloaded();
         PoppetUtil.removePoppetShelf(this.ownerUuid, this);
     }
 
@@ -172,57 +219,5 @@ public class PoppetShelfBlockEntity extends BlockEntity {
     public void setOwnerName(String ownerName) {
         this.ownerName = ownerName;
         this.setChanged();
-    }
-
-    public void updateInventory(CompoundTag inventoryTag) {
-        itemHandler.deserializeNBT(inventoryTag);
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public static class PoppetShelfRenderer implements BlockEntityRenderer<PoppetShelfBlockEntity> {
-        public PoppetShelfRenderer(BlockEntityRendererProvider.Context context) {
-        }
-
-        @Override
-        public void render(PoppetShelfBlockEntity blockEntity, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLight, int combinedOverlay) {
-            for (int i = 0; i < 9; i++) {
-                ItemStack stack = blockEntity.itemHandler.getStackInSlot(i);
-                if (!stack.isEmpty()) {
-                    matrixStack.pushPose();
-                    double offset = Math.sin((blockEntity.getLevel().getGameTime() + partialTicks) / 8) / 32;
-                    //noinspection IntegerDivisionInFloatingPointContext
-                    matrixStack.translate((i % 3) / 5D + 0.3, 0.9 + offset, (i / 3) / 5D + 0.3);
-                    matrixStack.mulPose(Vector3f.YP.rotationDegrees(blockEntity.getLevel().getGameTime() + partialTicks * 2));
-
-                    matrixStack.scale(0.4f, 0.4f, 0.4f);
-                    Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemTransforms.TransformType.GROUND, combinedLight, combinedOverlay, matrixStack, buffer, 0);
-
-                    matrixStack.popPose();
-                }
-            }
-        }
-    }
-
-    public class PoppetShelfItemStackHandler extends ItemStackHandler {
-        public PoppetShelfItemStackHandler() {
-            super(9);
-        }
-
-        @Override
-        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            return stack.getItem() instanceof PoppetItem;
-        }
-
-        @Override
-        protected void onContentsChanged(int slot) {
-            super.onContentsChanged(slot);
-            PoppetShelfBlockEntity.this.inventoryTouched();
-        }
-
-        private NonNullList<ItemStack> getInventory() {
-            final NonNullList<ItemStack> inventory = NonNullList.create();
-            inventory.addAll(stacks);
-            return inventory;
-        }
     }
 }

@@ -1,7 +1,8 @@
 {
 	"__comment": "Designed by Hialus with Cubik Studio - https://cubik.studio",
 	"textures": {
-		"texture": "voodoo:item/needle"
+		"texture": "voodoo:item/needle",
+		"particle": "voodoo:item/needle"
 	},
 	"elements": [ 	 
 		{

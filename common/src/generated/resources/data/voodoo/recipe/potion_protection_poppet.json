@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": "minecraft:golden_carrot",
+    "G": "minecraft:glistering_melon_slice",
+    "H": "minecraft:golden_apple",
+    "M": "minecraft:milk_bucket",
+    "N": "voodoo:needle",
+    "P": "voodoo:blank_poppet",
+    "R": "minecraft:rabbit_hide"
+  },
+  "pattern": [
+    "GCG",
+    "MPH",
+    "RNR"
+  ],
+  "result": {
+    "count": 1,
+    "id": "voodoo:potion_protection_poppet"
+  }
+}

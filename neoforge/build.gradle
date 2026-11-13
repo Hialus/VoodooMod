@@ -24,6 +24,7 @@ neoForge {
         }
         data {
             clientData()
+            programArguments.addAll('--mod', mod_id, '--all', '--output', rootProject.file('common/src/generated/resources').absolutePath, '--existing', rootProject.file('common/src/main/resources').absolutePath)
         }
         server {
             server()
@@ -36,4 +37,4 @@ neoForge {
     }
 }
 
-sourceSets.main.resources { srcDir 'src/generated/resources' }
+sourceSets.main.resources { srcDir project(':common').file('src/generated/resources') }

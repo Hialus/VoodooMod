@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "E": [
+      "minecraft:coal",
+      "minecraft:charcoal"
+    ],
+    "N": "voodoo:needle",
+    "R": "minecraft:rabbit_hide",
+    "S": "minecraft:string",
+    "W": "minecraft:brown_wool"
+  },
+  "pattern": [
+    "EWE",
+    "SWS",
+    "RNR"
+  ],
+  "result": {
+    "count": 1,
+    "id": "voodoo:blank_poppet"
+  }
+}

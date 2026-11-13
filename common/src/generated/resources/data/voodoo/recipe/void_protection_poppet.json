@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "E": "minecraft:ender_pearl",
+    "M": "minecraft:phantom_membrane",
+    "N": "voodoo:needle",
+    "O": "minecraft:crying_obsidian",
+    "P": "voodoo:blank_poppet",
+    "R": "minecraft:rabbit_hide"
+  },
+  "pattern": [
+    "EOE",
+    "MPM",
+    "RNR"
+  ],
+  "result": {
+    "count": 1,
+    "id": "voodoo:void_protection_poppet"
+  }
+}

@@ -1,61 +1,26 @@
 package de.morrien.voodoo;
 
-import net.minecraft.network.chat.Component;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-
-import static de.morrien.voodoo.VoodooDamageSource.VoodooDamageType.FIRE;
+import net.minecraft.world.level.Level;
 
 /**
  * Created by Timor Morrien
  */
 public class VoodooDamageSource extends DamageSource {
-    private VoodooDamageType damageType;
+    public static final TagKey<DamageType> VOODOO = TagKey.create(Registries.DAMAGE_TYPE, Voodoo.id("voodoo"));
     private ItemStack voodooPoppet;
     private Entity fromEntity;
 
-    public VoodooDamageSource(VoodooDamageType damageType, ItemStack voodooPoppet, Entity fromEntity) {
-        super("voodoo_" + damageType.toString());
-        this.damageType = damageType;
+    public VoodooDamageSource(Level level, VoodooDamageType damageType, ItemStack voodooPoppet, Entity fromEntity) {
+        super(level.registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(damageType.key));
         this.voodooPoppet = voodooPoppet;
         this.fromEntity = fromEntity;
-    }
-
-    @Override
-    public Component getLocalizedDeathMessage(LivingEntity livingEntity) {
-        return Component.literal(livingEntity.getName().getContents() + " was killed by voodoo-magic."); // TODO: Translation
-    }
-
-    @Override
-    public boolean isFire() {
-        return damageType == FIRE;
-    }
-
-    @Override
-    public boolean isBypassArmor() {
-        return true;
-    }
-
-    @Override
-    public boolean isBypassMagic() {
-        return true;
-    }
-
-    @Override
-    public boolean isMagic() {
-        return true;
-    }
-
-    @Override
-    public boolean scalesWithDifficulty() {
-        return false;
-    }
-
-    @Override
-    public boolean isBypassInvul() {
-        return false;
     }
 
     public ItemStack getVoodooPoppet() {
@@ -70,6 +35,8 @@ public class VoodooDamageSource extends DamageSource {
         NEEDLE,
         FIRE,
         WATER,
-        VAMPIRIC
+        VAMPIRIC;
+
+        private final ResourceKey<DamageType> key = ResourceKey.create(Registries.DAMAGE_TYPE, Voodoo.id(name().toLowerCase()));
     }
 }

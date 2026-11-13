@@ -1,57 +1,54 @@
 package de.morrien.voodoo.container;
 
-import de.morrien.voodoo.blockentity.PoppetShelfBlockEntity;
-import net.minecraft.core.BlockPos;
+import de.morrien.voodoo.item.PoppetItem;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
-import net.minecraftforge.items.wrapper.InvWrapper;
 
 /**
  * Created by Timor Morrien
  */
 public class PoppetShelfContainer extends AbstractContainerMenu {
-    protected PoppetShelfBlockEntity poppetShelf;
+    protected Container poppetShelf;
     protected Player playerEntity;
-    protected IItemHandler playerInventory;
+    protected Inventory playerInventory;
 
-    public PoppetShelfContainer(int windowId, Level world, BlockPos pos, Inventory playerInventory, Player player) {
+    public PoppetShelfContainer(int windowId, Inventory playerInventory) {
+        this(windowId, playerInventory, new SimpleContainer(9));
+    }
+
+    public PoppetShelfContainer(int windowId, Inventory playerInventory, Container poppetShelf) {
         super(ContainerRegistry.poppetShelf.get(), windowId);
-        poppetShelf = (PoppetShelfBlockEntity) world.getBlockEntity(pos);
-        this.playerEntity = player;
-        this.playerInventory = new InvWrapper(playerInventory);
+        checkContainerSize(poppetShelf, 9);
+        this.poppetShelf = poppetShelf;
+        this.playerEntity = playerInventory.player;
+        this.playerInventory = playerInventory;
 
-        if (poppetShelf != null) {
-            poppetShelf.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(itemHandler -> {
-                for (int i = 0; i < 9; i++) {
-                    addSlot(new SlotItemHandler(itemHandler, i, 62 + (i % 3) * 18, 17 + (i / 3) * 18) {
-                        @Override
-                        public void setChanged() {
-                            poppetShelf.setChanged();
-                        }
-                    });
+        for (int i = 0; i < 9; i++) {
+            addSlot(new Slot(poppetShelf, i, 62 + (i % 3) * 18, 17 + (i / 3) * 18) {
+                @Override
+                public boolean mayPlace(ItemStack stack) {
+                    return stack.getItem() instanceof PoppetItem;
                 }
             });
         }
         layoutPlayerInventorySlots(8, 84);
     }
 
-    private int addSlotRange(IItemHandler handler, int index, int x, int y, int amount, int dx) {
+    private int addSlotRange(Container handler, int index, int x, int y, int amount, int dx) {
         for (int i = 0; i < amount; i++) {
-            addSlot(new SlotItemHandler(handler, index, x, y));
+            addSlot(new Slot(handler, index, x, y));
             x += dx;
             index++;
         }
         return index;
     }
 
-    private int addSlotBox(IItemHandler handler, int index, int x, int y, int horAmount, int dx, int verAmount, int dy) {
+    private int addSlotBox(Container handler, int index, int x, int y, int horAmount, int dx, int verAmount, int dy) {
         for (int j = 0; j < verAmount; j++) {
             index = addSlotRange(handler, index, x, y, horAmount, dx);
             y += dy;
@@ -70,7 +67,7 @@ public class PoppetShelfContainer extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player player) {
-        return true;
+        return poppetShelf.stillValid(player);
     }
 
     @Override

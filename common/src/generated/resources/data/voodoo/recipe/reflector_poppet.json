@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": "minecraft:cactus",
+    "E": "minecraft:end_crystal",
+    "F": [
+      "minecraft:pufferfish",
+      "minecraft:pufferfish_bucket"
+    ],
+    "N": "voodoo:needle",
+    "P": "voodoo:blank_poppet",
+    "R": "minecraft:rabbit_hide"
+  },
+  "pattern": [
+    "FEF",
+    "CPC",
+    "RNR"
+  ],
+  "result": {
+    "count": 1,
+    "id": "voodoo:reflector_poppet"
+  }
+}

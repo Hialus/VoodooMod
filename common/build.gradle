@@ -16,6 +16,10 @@ neoForge {
     }
 }
 
+dependencies {
+    compileOnly "fuzs.forgeconfigapiport:forgeconfigapiport-common-neoforgeapi:${forgeconfigapiport_version}"
+}
+
 configurations {
     commonJava {
         canBeResolved = false

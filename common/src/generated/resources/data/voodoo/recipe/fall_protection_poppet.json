@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "F": "minecraft:feather",
+    "N": "voodoo:needle",
+    "P": "voodoo:blank_poppet",
+    "R": "minecraft:rabbit_hide",
+    "S": "minecraft:string",
+    "W": "minecraft:white_wool"
+  },
+  "pattern": [
+    "SWS",
+    "FPF",
+    "RNR"
+  ],
+  "result": {
+    "count": 1,
+    "id": "voodoo:fall_protection_poppet"
+  }
+}

@@ -1,7 +1,7 @@
 {
 	"parent": "voodoo:item/taglock_kit",
 	"textures": {
-		"particle": "minecraft:item/potion_bottle_drinkable",
+		"particle": "minecraft:item/potion",
 		"texture": "minecraft:block/glass",
 		"inside": "voodoo:item/taglock_kit_fill",
 		"brown": "minecraft:block/brown_terracotta",

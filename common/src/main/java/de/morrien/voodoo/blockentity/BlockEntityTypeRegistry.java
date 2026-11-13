@@ -1,13 +1,14 @@
 package de.morrien.voodoo.blockentity;
 
-import de.morrien.voodoo.Voodoo;
 import de.morrien.voodoo.block.BlockRegistry;
+import de.morrien.voodoo.platform.RegistrationProvider;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.registries.RegistryObject;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
+
+import java.util.Set;
+import java.util.function.Supplier;
 
 public class BlockEntityTypeRegistry {
-    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, Voodoo.MOD_ID);
-    public static final RegistryObject<BlockEntityType<PoppetShelfBlockEntity>> poppetShelfBlockEntity = BLOCK_ENTITIES.register("poppet_shelf_block_entity", () -> BlockEntityType.Builder.of(PoppetShelfBlockEntity::new, BlockRegistry.poppetShelf.get()).build(null));
+    public static final RegistrationProvider<BlockEntityType<?>> BLOCK_ENTITIES = RegistrationProvider.get(Registries.BLOCK_ENTITY_TYPE);
+    public static final Supplier<BlockEntityType<PoppetShelfBlockEntity>> poppetShelfBlockEntity = BLOCK_ENTITIES.register("poppet_shelf_block_entity", key -> new BlockEntityType<>(PoppetShelfBlockEntity::new, Set.of(BlockRegistry.poppetShelf.get())));
 }

@@ -1,13 +1,14 @@
 package de.morrien.voodoo.block;
 
+import com.mojang.serialization.MapCodec;
 import de.morrien.voodoo.blockentity.BlockEntityTypeRegistry;
 import de.morrien.voodoo.blockentity.PoppetShelfBlockEntity;
 import de.morrien.voodoo.container.PoppetShelfContainer;
+import de.morrien.voodoo.util.PoppetShelfChunkLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Containers;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.LivingEntity;
@@ -19,39 +20,36 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
+
+import static de.morrien.voodoo.VoodooConfig.COMMON;
 
 /**
  * Created by Timor Morrien
  */
 public class PoppetShelfBlock extends BaseEntityBlock {
+    public static final MapCodec<PoppetShelfBlock> CODEC = simpleCodec(PoppetShelfBlock::new);
     protected static final VoxelShape voxelShape = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 12.0D, 16.0D);
 
-    public PoppetShelfBlock() {
-        super(Properties
-                .of(Material.STONE, MaterialColor.NETHER)
-                .strength(6, 6)
-                .requiresCorrectToolForDrops()
-                .sound(SoundType.NETHER_BRICKS)
-                .noOcclusion()
-        );
+    public PoppetShelfBlock(Properties properties) {
+        super(properties);
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    protected MapCodec<PoppetShelfBlock> codec() {
+        return CODEC;
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
         if (!world.isClientSide) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof PoppetShelfBlockEntity) {
@@ -73,18 +71,13 @@ public class PoppetShelfBlock extends BaseEntityBlock {
 
                     @Override
                     public AbstractContainerMenu createMenu(int i, Inventory playerventory, Player playerEntity) {
-                        return new PoppetShelfContainer(i, world, pos, playerventory, playerEntity);
+                        return new PoppetShelfContainer(i, playerventory, (PoppetShelfBlockEntity) blockEntity);
                     }
                 };
-                NetworkHooks.openScreen((ServerPlayer) player, containerProvider, blockEntity.getBlockPos());
+                player.openMenu(containerProvider);
             }
         }
         return InteractionResult.SUCCESS;
-    }
-
-    @Override
-    public RenderShape getRenderShape(BlockState state) {
-        return RenderShape.MODEL;
     }
 
     @Override
@@ -92,9 +85,11 @@ public class PoppetShelfBlock extends BaseEntityBlock {
         if (!state.is(newState.getBlock())) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof PoppetShelfBlockEntity) {
-                Containers.dropContents(world, pos, ((PoppetShelfBlockEntity) blockEntity).getInventory());
+                Containers.dropContents(world, pos, (PoppetShelfBlockEntity) blockEntity);
                 world.updateNeighbourForOutputSignal(pos, this);
             }
+            if (world instanceof ServerLevel serverLevel)
+                PoppetShelfChunkLoader.setShelfLoaded(serverLevel, pos, false);
             super.onRemove(state, world, pos, newState, isMoving);
         }
     }
@@ -106,6 +101,8 @@ public class PoppetShelfBlock extends BaseEntityBlock {
         if (blockEntity instanceof PoppetShelfBlockEntity && placer != null) {
             ((PoppetShelfBlockEntity) blockEntity).setOwnerName(placer.getName().getString());
             ((PoppetShelfBlockEntity) blockEntity).setOwnerUuid(placer.getUUID());
+            if (world instanceof ServerLevel serverLevel && COMMON.poppetShelf.chunkLoading.get())
+                PoppetShelfChunkLoader.setShelfLoaded(serverLevel, pos, true);
         }
     }
 

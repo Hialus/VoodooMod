@@ -1,0 +1,12 @@
+{
+  "sources": [
+    {
+      "type": "single",
+      "resource": "minecraft:entity/equipment/humanoid/iron"
+    },
+    {
+      "type": "single",
+      "resource": "minecraft:misc/underwater"
+    }
+  ]
+}

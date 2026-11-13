@@ -85,7 +85,8 @@ public class ListPoppetsCommand {
             message = Component.translatable("commands.voodoo.list.poppets.none");
             message.setStyle(Style.EMPTY.withColor(ChatFormatting.RED));
         }
-        source.sendSuccess(message, false);
+        final var result = message;
+        source.sendSuccess(() -> result, false);
         return 0;
     }
 }

@@ -14,6 +14,15 @@
     },
     "license": "${license}",
     "environment": "*",
+    "entrypoints": {
+        "main": [
+            "de.morrien.voodoo.fabric.VoodooFabric"
+        ],
+        "client": [
+            "de.morrien.voodoo.fabric.VoodooFabricClient"
+        ]
+    },
+    "accessWidener": "${mod_id}.accesswidener",
     "mixins": [
         "${mod_id}.fabric.mixins.json"
     ],
@@ -21,7 +30,11 @@
         "fabricloader": "${fabric_loader_version_range}",
         "fabric-api": "${fabric_version_range}",
         "minecraft": "${fabric_minecraft_version_range}",
-        "java": ">=${java_version}"
+        "java": ">=${java_version}",
+        "forgeconfigapiport": "${forgeconfigapiport_version_range}"
+    },
+    "suggests": {
+        "patchouli": "*"
     }
 }
   

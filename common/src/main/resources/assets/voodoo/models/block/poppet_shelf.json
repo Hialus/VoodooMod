@@ -1,6 +1,6 @@
 {
 	"__comment": "Designed by Hialus with Cubik Studio - https://cubik.studio",
-	"parent": "block/cube_all",
+	"parent": "block/block",
 	"textures": {
 		"particle": "block/red_nether_bricks",
 		"poppet_shelf": "voodoo:block/poppet_shelf"

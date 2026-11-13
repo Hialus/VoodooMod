@@ -5,10 +5,11 @@ import de.morrien.voodoo.blockentity.PoppetShelfBlockEntity;
 import de.morrien.voodoo.item.PoppetItem;
 import de.morrien.voodoo.sound.SoundRegistry;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -16,7 +17,6 @@ import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public class PoppetUtil {
     private static final Map<UUID, List<WeakReference<PoppetShelfBlockEntity>>> poppetShelvesCache;
@@ -40,12 +40,12 @@ public class PoppetUtil {
         if (source instanceof Player) {
             final Player fromPlayer = (Player) source;
             fromPlayer.displayClientMessage(Component.translatable("text.voodoo.voodoo_protection.had", BindingUtil.getBoundName(voodooPoppet)), true);
-            voodooPoppet.hurtAndBreak(Integer.MAX_VALUE, fromPlayer, playerEntity -> {
-                playerEntity.broadcastBreakEvent(playerEntity.getUsedItemHand());
-                playerEntity.level.playSound(null, playerEntity, SoundRegistry.voodooProtectionPoppetUsed.get(), SoundSource.PLAYERS, 1, 1);
+            voodooPoppet.hurtAndBreak(voodooPoppet.getMaxDamage() - voodooPoppet.getDamageValue(),(ServerLevel) fromPlayer.level(), (ServerPlayer) fromPlayer, item -> {
+                fromPlayer.onEquippedItemBroken(item, LivingEntity.getSlotForHand(fromPlayer.getUsedItemHand()));
+                fromPlayer.level().playSound(null, fromPlayer, SoundRegistry.voodooProtectionPoppetUsed.get(), SoundSource.PLAYERS, 1, 1);
             });
         } else {
-            source.level.playSound(null, source, SoundRegistry.voodooProtectionPoppetUsed.get(), SoundSource.PLAYERS, 1, 1);
+            source.level().playSound(null, source, SoundRegistry.voodooProtectionPoppetUsed.get(), SoundSource.PLAYERS, 1, 1);
             voodooPoppet.shrink(1);
         }
     }
@@ -69,23 +69,15 @@ public class PoppetUtil {
 
     /**
      * Retrieve all poppets of a player that are in his poppet shelves.
-     * This method utilises a cache, so that it does not have to iterate through all loaded TileEntities on each call.
+     * Loaded poppet shelves register themselves in a cache, so that it does not have to iterate through all loaded BlockEntities on each call.
      *
      * @param player The player
      * @return The found poppets
      */
     public static List<Poppet> getPoppetsInShelves(ServerPlayer player) {
-        List<WeakReference<PoppetShelfBlockEntity>> cachedShelves = poppetShelvesCache.get(player.getUUID());
-        if (cachedShelves == null) {
-            cachedShelves = StreamSupport
-                    .stream(player.server.getAllLevels().spliterator(), false)
-                    .flatMap(world -> getPoppetShelvesStream(player.server))
-                    .filter(poppetShelf -> player.getUUID().equals(poppetShelf.getOwnerUuid()))
-                    .map(WeakReference::new)
-                    .collect(Collectors.toList());
-            poppetShelvesCache.put(player.getUUID(), cachedShelves);
-        }
         final List<Poppet> poppets = new ArrayList<>();
+        final List<WeakReference<PoppetShelfBlockEntity>> cachedShelves = poppetShelvesCache.get(player.getUUID());
+        if (cachedShelves == null) return poppets;
         for (Iterator<WeakReference<PoppetShelfBlockEntity>> iterator = cachedShelves.iterator(); iterator.hasNext(); ) {
             WeakReference<PoppetShelfBlockEntity> cachedShelf = iterator.next();
             final PoppetShelfBlockEntity poppetShelf = cachedShelf.get();
@@ -168,16 +160,15 @@ public class PoppetUtil {
 
     }
 
-    public static Stream<PoppetShelfBlockEntity> getPoppetShelvesStream(MinecraftServer server) {
-        return poppetShelvesCache.values().stream()
-                .flatMap(Collection::stream)
+    /**
+     * Retrieve all loaded poppet shelves of a player.
+     *
+     * @param ownerUUID The UUID of the owner
+     * @return The loaded poppet shelves
+     */
+    public static Stream<PoppetShelfBlockEntity> getPoppetShelvesStream(UUID ownerUUID) {
+        return poppetShelvesCache.getOrDefault(ownerUUID, Collections.emptyList()).stream()
                 .map(WeakReference::get)
                 .filter(Objects::nonNull);
-        //return StreamSupport.stream(server.getAllLevels().spliterator(), false)
-        //        .map(level -> level.getChunkAt(null))
-        //        .flatMap(chunk -> chunk.getBlockEntities().values().stream())
-        //        .filter(blockEntity -> blockEntity instanceof PoppetShelfBlockEntity)
-        //        .map(blockEntity -> ((PoppetShelfBlockEntity) blockEntity))
-        //        .collect(Collectors.toList());
     }
 }

@@ -19,6 +19,9 @@
   "item.voodoo.void_protection_poppet": "Void Beschützer-Puppe",
   "itemGroup.voodoo_group": "Voodoo",
 
+  "death.attack.voodoo": "%1$s wurde zu Tode verflucht",
+  "death.attack.voodoo.player": "%1$s wurde von %2$s zu Tode verflucht",
+
   "text.voodoo.taglock_kit.bound": "Von: %1$s",
   "text.voodoo.taglock_kit.not_bound": "Leer",
   "text.voodoo.poppet.bound": "Gebunden an: %1$s",

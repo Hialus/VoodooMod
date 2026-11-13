@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "minecraft:bone_block",
+    "C": [
+      "minecraft:coal",
+      "minecraft:charcoal"
+    ],
+    "H": "minecraft:golden_apple",
+    "M": "minecraft:milk_bucket",
+    "N": "voodoo:needle",
+    "P": "voodoo:blank_poppet",
+    "R": "minecraft:rabbit_hide"
+  },
+  "pattern": [
+    "CBC",
+    "MPH",
+    "RNR"
+  ],
+  "result": {
+    "count": 1,
+    "id": "voodoo:wither_protection_poppet"
+  }
+}

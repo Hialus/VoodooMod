@@ -19,6 +19,9 @@
   "item.voodoo.void_protection_poppet": "Void Protection Poppet",
   "itemGroup.voodoo_group": "Voodoo",
 
+  "death.attack.voodoo": "%1$s was cursed to death",
+  "death.attack.voodoo.player": "%1$s was cursed to death by %2$s",
+
   "text.voodoo.taglock_kit.bound": "From: %1$s",
   "text.voodoo.taglock_kit.not_bound": "Empty",
   "text.voodoo.poppet.bound": "Bound to: %1$s",

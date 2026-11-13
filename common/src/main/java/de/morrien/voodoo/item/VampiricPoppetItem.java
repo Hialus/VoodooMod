@@ -2,14 +2,15 @@ package de.morrien.voodoo.item;
 
 import de.morrien.voodoo.VoodooDamageSource;
 import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.level.Level;
 
 import static de.morrien.voodoo.Poppet.PoppetType.VAMPIRIC;
@@ -20,28 +21,26 @@ import static de.morrien.voodoo.util.BindingUtil.getBoundPlayer;
  * Created by Timor Morrien
  */
 public class VampiricPoppetItem extends PoppetItem {
-    private final Rarity rarity = Rarity.create("vampiric", ChatFormatting.RED);
-
-    public VampiricPoppetItem() {
-        super(VAMPIRIC);
+    public VampiricPoppetItem(Properties properties) {
+        super(VAMPIRIC, properties);
     }
 
     @Override
-    public int getUseDuration(ItemStack stack) {
+    public int getUseDuration(ItemStack stack, LivingEntity entity) {
         return 72000;
     }
 
     @Override
-    public UseAnim getUseAnimation(ItemStack stack) {
-        return UseAnim.DRINK;
+    public ItemUseAnimation getUseAnimation(ItemStack stack) {
+        return ItemUseAnimation.DRINK;
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
+    public InteractionResult use(Level world, Player player, InteractionHand hand) {
         if (!COMMON.vampiric.enabled.get())
-            return InteractionResultHolder.pass(player.getItemInHand(hand));
+            return InteractionResult.PASS;
         player.startUsingItem(hand);
-        return InteractionResultHolder.success(player.getItemInHand(hand));
+        return InteractionResult.CONSUME;
     }
 
     @Override
@@ -57,14 +56,15 @@ public class VampiricPoppetItem extends PoppetItem {
         final float boundDifference = boundPlayer.getHealth() - COMMON.vampiric.healthLimit.get();
         if (boundDifference <= 0) return;
         final float healthToTake = Math.min(Math.min(playerDifference, boundDifference), COMMON.vampiric.healthPerDrain.get());
-        if (boundPlayer.hurt(new VoodooDamageSource(VoodooDamageSource.VoodooDamageType.VAMPIRIC, stack, player), healthToTake)) {
+        if (boundPlayer.hurtServer((ServerLevel) world, new VoodooDamageSource(world, VoodooDamageSource.VoodooDamageType.VAMPIRIC, stack, player), healthToTake)) {
             player.heal(healthToTake);
-            stack.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(player.getUsedItemHand()));
+            if (poppetType.hasDurability())
+                stack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(player.getUsedItemHand()));
         }
     }
 
     @Override
-    public Rarity getRarity(ItemStack stack) {
-        return rarity;
+    public Component getName(ItemStack stack) {
+        return super.getName(stack).copy().withStyle(ChatFormatting.RED);
     }
 }

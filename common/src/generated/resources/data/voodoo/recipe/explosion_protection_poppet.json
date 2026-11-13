@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": "minecraft:iron_block",
+    "N": "voodoo:needle",
+    "O": "minecraft:obsidian",
+    "P": "voodoo:blank_poppet",
+    "R": "minecraft:rabbit_hide",
+    "W": "minecraft:water_bucket"
+  },
+  "pattern": [
+    "OIO",
+    "WPW",
+    "RNR"
+  ],
+  "result": {
+    "count": 1,
+    "id": "voodoo:explosion_protection_poppet"
+  }
+}
