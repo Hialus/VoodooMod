@@ -1,8 +1,8 @@
 {
   "pack": {
     "description": "Voodoo resources",
-    "pack_format": 61,
-    "supported_formats": [46, 61],
+    "pack_format": 48,
+    "supported_formats": [34, 48],
     "_comment": ""
   }
 }

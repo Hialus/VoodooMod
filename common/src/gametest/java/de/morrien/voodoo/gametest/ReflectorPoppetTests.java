@@ -25,7 +25,7 @@ public class ReflectorPoppetTests {
         final ItemStack poppet = boundPoppet(REFLECTOR, player);
         player.getInventory().setItem(9, poppet);
         final Zombie zombie = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, new BlockPos(3, 1, 3));
-        zombie.doHurtTarget(helper.getLevel(), player);
+        zombie.doHurtTarget(player);
         assertFullHealth(helper, player);
         helper.assertTrue(zombie.getHealth() < zombie.getMaxHealth(), "Zombie should take the damage");
         assertPoppetUsed(helper, poppet, REFLECTOR, 1);

@@ -14,7 +14,7 @@ public class NeoVampiricPoppetItem extends VampiricPoppetItem {
     }
 
     @Override
-    public boolean isCombineRepairable(ItemStack stack) {
+    public boolean isRepairable(ItemStack stack) {
         return false;
     }
 }

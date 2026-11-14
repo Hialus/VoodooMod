@@ -4,13 +4,39 @@
 	"textures": {
 		"1": "voodoo:item/projectile_protection_poppet",
 		"2": "voodoo:item/poppet_shield",
-		"4": "minecraft:entity/equipment/humanoid/iron",
+		"4": "minecraft:models/armor/iron_layer_1",
 		"arrow1": "voodoo:item/empty",
 		"arrow2": "voodoo:item/empty",
 		"arrow3": "voodoo:item/empty",
 		"arrow4": "voodoo:item/empty",
 		"particle": "voodoo:item/projectile_protection_poppet"
 	},
+	"overrides": [
+		{
+			"predicate": {
+				"voodoo:percentage_used": 0.001
+			},
+			"model": "voodoo:item/projectile_protection_poppet_arrow1"
+		},
+		{
+			"predicate": {
+				"voodoo:percentage_used": 0.3
+			},
+			"model": "voodoo:item/projectile_protection_poppet_arrow2"
+		},
+		{
+			"predicate": {
+				"voodoo:percentage_used": 0.6
+			},
+			"model": "voodoo:item/projectile_protection_poppet_arrow3"
+		},
+		{
+			"predicate": {
+				"voodoo:percentage_used": 0.8
+			},
+			"model": "voodoo:item/projectile_protection_poppet_arrow4"
+		}
+	],
 	"elements": [
 		{
 			"name": "Head",

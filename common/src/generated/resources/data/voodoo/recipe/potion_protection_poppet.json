@@ -2,13 +2,27 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "C": "minecraft:golden_carrot",
-    "G": "minecraft:glistering_melon_slice",
-    "H": "minecraft:golden_apple",
-    "M": "minecraft:milk_bucket",
-    "N": "voodoo:needle",
-    "P": "voodoo:blank_poppet",
-    "R": "minecraft:rabbit_hide"
+    "C": {
+      "item": "minecraft:golden_carrot"
+    },
+    "G": {
+      "item": "minecraft:glistering_melon_slice"
+    },
+    "H": {
+      "item": "minecraft:golden_apple"
+    },
+    "M": {
+      "item": "minecraft:milk_bucket"
+    },
+    "N": {
+      "item": "voodoo:needle"
+    },
+    "P": {
+      "item": "voodoo:blank_poppet"
+    },
+    "R": {
+      "item": "minecraft:rabbit_hide"
+    }
   },
   "pattern": [
     "GCG",

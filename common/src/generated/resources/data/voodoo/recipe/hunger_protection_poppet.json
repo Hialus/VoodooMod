@@ -2,11 +2,21 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "C": "minecraft:cookie",
-    "K": "minecraft:cake",
-    "N": "voodoo:needle",
-    "P": "voodoo:blank_poppet",
-    "R": "minecraft:rabbit_hide"
+    "C": {
+      "item": "minecraft:cookie"
+    },
+    "K": {
+      "item": "minecraft:cake"
+    },
+    "N": {
+      "item": "voodoo:needle"
+    },
+    "P": {
+      "item": "voodoo:blank_poppet"
+    },
+    "R": {
+      "item": "minecraft:rabbit_hide"
+    }
   },
   "pattern": [
     "CKC",

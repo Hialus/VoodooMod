@@ -18,9 +18,9 @@ import static de.morrien.voodoo.Poppet.PoppetType.VOODOO;
 
 public class ItemRegistry {
     public static final RegistrationProvider<Item> ITEMS = RegistrationProvider.get(Registries.ITEM);
-    public static final Supplier<Item> poppetShelf = ITEMS.register("poppet_shelf", key -> new BlockItem(BlockRegistry.poppetShelf.get(), new Item.Properties().useBlockDescriptionPrefix().setId(key)));
-    public static final Supplier<Item> needle = ITEMS.register("needle", key -> new Item(new Item.Properties().setId(key)));
-    public static final Supplier<Item> taglockKit = ITEMS.register("taglock_kit", key -> new TaglockKitItem(new Item.Properties().setId(key)));
+    public static final Supplier<Item> poppetShelf = ITEMS.register("poppet_shelf", key -> new BlockItem(BlockRegistry.poppetShelf.get(), new Item.Properties()));
+    public static final Supplier<Item> needle = ITEMS.register("needle", key -> new Item(new Item.Properties()));
+    public static final Supplier<Item> taglockKit = ITEMS.register("taglock_kit", key -> new TaglockKitItem(new Item.Properties()));
     public static final Map<Poppet.PoppetType, Supplier<PoppetItem>> poppetMap;
 
     static {
@@ -33,7 +33,7 @@ public class ItemRegistry {
                 poppetItemFactory = Services.ITEMS::vampiricPoppet;
             else
                 poppetItemFactory = properties -> Services.ITEMS.poppet(poppetType, properties);
-            poppetMap.put(poppetType, ITEMS.register(poppetType.name().toLowerCase() + "_poppet", key -> poppetItemFactory.apply(new Item.Properties().setId(key))));
+            poppetMap.put(poppetType, ITEMS.register(poppetType.name().toLowerCase() + "_poppet", key -> poppetItemFactory.apply(new Item.Properties())));
         }
     }
 }

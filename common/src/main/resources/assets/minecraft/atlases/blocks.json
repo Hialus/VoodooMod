@@ -2,7 +2,7 @@
   "sources": [
     {
       "type": "single",
-      "resource": "minecraft:entity/equipment/humanoid/iron"
+      "resource": "minecraft:models/armor/iron_layer_1"
     },
     {
       "type": "single",

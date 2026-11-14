@@ -3,13 +3,25 @@
   "category": "misc",
   "key": {
     "E": [
-      "minecraft:coal",
-      "minecraft:charcoal"
+      {
+        "item": "minecraft:coal"
+      },
+      {
+        "item": "minecraft:charcoal"
+      }
     ],
-    "N": "voodoo:needle",
-    "R": "minecraft:rabbit_hide",
-    "S": "minecraft:string",
-    "W": "minecraft:brown_wool"
+    "N": {
+      "item": "voodoo:needle"
+    },
+    "R": {
+      "item": "minecraft:rabbit_hide"
+    },
+    "S": {
+      "item": "minecraft:string"
+    },
+    "W": {
+      "item": "minecraft:brown_wool"
+    }
   },
   "pattern": [
     "EWE",

@@ -19,13 +19,13 @@ import static de.morrien.voodoo.Voodoo.MOD_ID;
 import static net.minecraft.world.item.Items.*;
 
 public class RecipeGen extends RecipeProvider {
-    public RecipeGen(HolderLookup.Provider registries, RecipeOutput output) {
-        super(registries, output);
+    public RecipeGen(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+        super(output, registries);
     }
 
     @Override
-    protected void buildRecipes() {
-        shaped(RecipeCategory.MISC, ItemRegistry.needle.get(), 4)
+    protected void buildRecipes(RecipeOutput output) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ItemRegistry.needle.get(), 4)
                 .pattern(" I ")
                 .pattern(" B ")
                 .pattern(" B ")
@@ -34,14 +34,14 @@ public class RecipeGen extends RecipeProvider {
                 .unlockedBy("has_iron", has(Tags.Items.INGOTS_IRON))
                 .save(output);
 
-        shapeless(RecipeCategory.MISC, ItemRegistry.taglockKit.get())
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ItemRegistry.taglockKit.get())
                 .requires(ItemRegistry.needle.get())
                 .requires(Tags.Items.STRINGS)
                 .requires(GLASS_BOTTLE)
                 .unlockedBy("has_iron", has(Tags.Items.INGOTS_IRON))
                 .save(output);
 
-        shaped(RecipeCategory.MISC, ItemRegistry.poppetShelf.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ItemRegistry.poppetShelf.get())
                 .pattern("ACA")
                 .pattern("NON")
                 .pattern("ACA")
@@ -52,7 +52,7 @@ public class RecipeGen extends RecipeProvider {
                 .unlockedBy("has_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
                 .save(output);
 
-        shaped(RecipeCategory.MISC, ItemRegistry.poppetMap.get(BLANK).get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ItemRegistry.poppetMap.get(BLANK).get())
                 .pattern("EWE")
                 .pattern("SWS")
                 .pattern("RNR")
@@ -64,7 +64,7 @@ public class RecipeGen extends RecipeProvider {
                 .unlockedBy("has_rabbit_hide", has(RABBIT_HIDE))
                 .save(output);
 
-        shaped(RecipeCategory.MISC, ItemRegistry.poppetMap.get(VOODOO).get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ItemRegistry.poppetMap.get(VOODOO).get())
                 .pattern("SES")
                 .pattern("LPL")
                 .pattern("RNR")
@@ -77,7 +77,7 @@ public class RecipeGen extends RecipeProvider {
                 .unlockedBy("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
                 .save(output);
 
-        shaped(RecipeCategory.MISC, ItemRegistry.poppetMap.get(VAMPIRIC).get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ItemRegistry.poppetMap.get(VAMPIRIC).get())
                 .pattern("GSG")
                 .pattern("CPW")
                 .pattern("RNR")
@@ -91,7 +91,7 @@ public class RecipeGen extends RecipeProvider {
                 .unlockedBy("has_voodoo_poppet", has(ItemRegistry.poppetMap.get(VOODOO).get()))
                 .save(output);
 
-        shaped(RecipeCategory.MISC, ItemRegistry.poppetMap.get(REFLECTOR).get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ItemRegistry.poppetMap.get(REFLECTOR).get())
                 .pattern("FEF")
                 .pattern("CPC")
                 .pattern("RNR")
@@ -104,7 +104,7 @@ public class RecipeGen extends RecipeProvider {
                 .unlockedBy("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
                 .save(output);
 
-        shaped(RecipeCategory.MISC, ItemRegistry.poppetMap.get(DEATH_PROTECTION).get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ItemRegistry.poppetMap.get(DEATH_PROTECTION).get())
                 .pattern("FTF")
                 .pattern("GPG")
                 .pattern("RNR")
@@ -118,7 +118,7 @@ public class RecipeGen extends RecipeProvider {
                 .unlockedBy("has_totem_of_undying", has(TOTEM_OF_UNDYING))
                 .save(output);
 
-        shaped(RecipeCategory.MISC, ItemRegistry.poppetMap.get(FIRE_PROTECTION).get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ItemRegistry.poppetMap.get(FIRE_PROTECTION).get())
                 .pattern("GFG")
                 .pattern("BPB")
                 .pattern("RNR")
@@ -132,7 +132,7 @@ public class RecipeGen extends RecipeProvider {
                 .unlockedBy("entered_nether", ChangeDimensionTrigger.TriggerInstance.changedDimensionTo(Level.NETHER))
                 .save(output);
 
-        shaped(RecipeCategory.MISC, ItemRegistry.poppetMap.get(FALL_PROTECTION).get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ItemRegistry.poppetMap.get(FALL_PROTECTION).get())
                 .pattern("SWS")
                 .pattern("FPF")
                 .pattern("RNR")
@@ -145,7 +145,7 @@ public class RecipeGen extends RecipeProvider {
                 .unlockedBy("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
                 .save(output);
 
-        shaped(RecipeCategory.MISC, ItemRegistry.poppetMap.get(WATER_PROTECTION).get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ItemRegistry.poppetMap.get(WATER_PROTECTION).get())
                 .pattern("SFS")
                 .pattern("KPK")
                 .pattern("RNR")
@@ -159,7 +159,7 @@ public class RecipeGen extends RecipeProvider {
                 .unlockedBy("entered_water", insideOf(Blocks.WATER))
                 .save(output);
 
-        shaped(RecipeCategory.MISC, ItemRegistry.poppetMap.get(WITHER_PROTECTION).get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ItemRegistry.poppetMap.get(WITHER_PROTECTION).get())
                 .pattern("CBC")
                 .pattern("MPH")
                 .pattern("RNR")
@@ -174,7 +174,7 @@ public class RecipeGen extends RecipeProvider {
                 .unlockedBy("entered_nether", ChangeDimensionTrigger.TriggerInstance.changedDimensionTo(Level.NETHER))
                 .save(output);
 
-        shaped(RecipeCategory.MISC, ItemRegistry.poppetMap.get(POTION_PROTECTION).get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ItemRegistry.poppetMap.get(POTION_PROTECTION).get())
                 .pattern("GCG")
                 .pattern("MPH")
                 .pattern("RNR")
@@ -189,7 +189,7 @@ public class RecipeGen extends RecipeProvider {
                 .unlockedBy("brewed_potion", BrewedPotionTrigger.TriggerInstance.brewedPotion())
                 .save(output);
 
-        shaped(RecipeCategory.MISC, ItemRegistry.poppetMap.get(VOID_PROTECTION).get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ItemRegistry.poppetMap.get(VOID_PROTECTION).get())
                 .pattern("EOE")
                 .pattern("MPM")
                 .pattern("RNR")
@@ -203,7 +203,7 @@ public class RecipeGen extends RecipeProvider {
                 .unlockedBy("has_phantom_membrane", has(PHANTOM_MEMBRANE))
                 .save(output);
 
-        shaped(RecipeCategory.MISC, ItemRegistry.poppetMap.get(HUNGER_PROTECTION).get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ItemRegistry.poppetMap.get(HUNGER_PROTECTION).get())
                 .pattern("CKC")
                 .pattern("CPC")
                 .pattern("RNR")
@@ -215,7 +215,7 @@ public class RecipeGen extends RecipeProvider {
                 .unlockedBy("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
                 .save(output);
 
-        shaped(RecipeCategory.MISC, ItemRegistry.poppetMap.get(EXPLOSION_PROTECTION).get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ItemRegistry.poppetMap.get(EXPLOSION_PROTECTION).get())
                 .pattern("OIO")
                 .pattern("WPW")
                 .pattern("RNR")
@@ -229,7 +229,7 @@ public class RecipeGen extends RecipeProvider {
                 .unlockedBy("has_obsidian", has(OBSIDIAN))
                 .save(output);
 
-        shaped(RecipeCategory.MISC, ItemRegistry.poppetMap.get(PROJECTILE_PROTECTION).get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ItemRegistry.poppetMap.get(PROJECTILE_PROTECTION).get())
                 .pattern("THT")
                 .pattern("SPS")
                 .pattern("RNR")
@@ -242,7 +242,7 @@ public class RecipeGen extends RecipeProvider {
                 .unlockedBy("has_blank_poppet", has(ItemRegistry.poppetMap.get(BLANK).get()))
                 .save(output);
 
-        shaped(RecipeCategory.MISC, ItemRegistry.poppetMap.get(VOODOO_PROTECTION).get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ItemRegistry.poppetMap.get(VOODOO_PROTECTION).get())
                 .pattern("MEM")
                 .pattern("TPT")
                 .pattern("RNR")
@@ -257,21 +257,5 @@ public class RecipeGen extends RecipeProvider {
 
         SpecialRecipeBuilder.special(BindPoppetRecipe::new)
                 .save(output, MOD_ID + ":bind_poppet");
-    }
-
-    public static class Runner extends RecipeProvider.Runner {
-        public Runner(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> registries) {
-            super(packOutput, registries);
-        }
-
-        @Override
-        protected RecipeProvider createRecipeProvider(HolderLookup.Provider registries, RecipeOutput output) {
-            return new RecipeGen(registries, output);
-        }
-
-        @Override
-        public String getName() {
-            return "Voodoo Recipes";
-        }
     }
 }

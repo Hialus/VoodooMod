@@ -18,6 +18,5 @@ public class BlockRegistry {
             .requiresCorrectToolForDrops()
             .sound(SoundType.NETHER_BRICKS)
             .noOcclusion()
-            .setId(key)
     ));
 }

@@ -3,16 +3,34 @@
   "category": "misc",
   "key": {
     "F": [
-      "minecraft:salmon_bucket",
-      "minecraft:cod_bucket",
-      "minecraft:pufferfish_bucket",
-      "minecraft:tropical_fish_bucket"
+      {
+        "item": "minecraft:salmon_bucket"
+      },
+      {
+        "item": "minecraft:cod_bucket"
+      },
+      {
+        "item": "minecraft:pufferfish_bucket"
+      },
+      {
+        "item": "minecraft:tropical_fish_bucket"
+      }
     ],
-    "K": "minecraft:kelp",
-    "N": "voodoo:needle",
-    "P": "voodoo:blank_poppet",
-    "R": "minecraft:rabbit_hide",
-    "S": "minecraft:sea_pickle"
+    "K": {
+      "item": "minecraft:kelp"
+    },
+    "N": {
+      "item": "voodoo:needle"
+    },
+    "P": {
+      "item": "voodoo:blank_poppet"
+    },
+    "R": {
+      "item": "minecraft:rabbit_hide"
+    },
+    "S": {
+      "item": "minecraft:sea_pickle"
+    }
   },
   "pattern": [
     "SFS",

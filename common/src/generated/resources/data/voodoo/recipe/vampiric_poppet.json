@@ -2,13 +2,27 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "C": "minecraft:crimson_fungus",
-    "G": "minecraft:ghast_tear",
-    "N": "voodoo:needle",
-    "P": "voodoo:voodoo_poppet",
-    "R": "minecraft:rabbit_hide",
-    "S": "minecraft:soul_lantern",
-    "W": "minecraft:warped_fungus"
+    "C": {
+      "item": "minecraft:crimson_fungus"
+    },
+    "G": {
+      "item": "minecraft:ghast_tear"
+    },
+    "N": {
+      "item": "voodoo:needle"
+    },
+    "P": {
+      "item": "voodoo:voodoo_poppet"
+    },
+    "R": {
+      "item": "minecraft:rabbit_hide"
+    },
+    "S": {
+      "item": "minecraft:soul_lantern"
+    },
+    "W": {
+      "item": "minecraft:warped_fungus"
+    }
   },
   "pattern": [
     "GSG",

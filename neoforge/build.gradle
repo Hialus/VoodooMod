@@ -30,7 +30,7 @@ neoForge {
             client()
         }
         data {
-            clientData()
+            data()
             programArguments.addAll('--mod', mod_id, '--all', '--output', rootProject.file('common/src/generated/resources').absolutePath, '--existing', rootProject.file('common/src/main/resources').absolutePath)
         }
         server {
@@ -52,6 +52,11 @@ neoForge {
 sourceSets.main.resources { srcDir project(':common').file('src/generated/resources') }
 
 neoForge.addModdingDependenciesTo(sourceSets.gametest)
+
+dependencies {
+    runtimeOnly "vazkii.patchouli:Patchouli:${patchouli_version}-NEOFORGE"
+    gametestRuntimeOnly "vazkii.patchouli:Patchouli:${patchouli_version}-NEOFORGE"
+}
 
 configurations {
     commonGametestJava {

@@ -1,7 +1,6 @@
 package de.morrien.voodoo.fabric.mixin;
 
 import de.morrien.voodoo.entity.PoppetEntityHandler;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.item.ItemEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,8 +16,8 @@ public class ItemEntityMixin {
         PoppetEntityHandler.onTick((ItemEntity) (Object) this);
     }
 
-    @Inject(method = "hurtServer", at = @At("HEAD"), cancellable = true)
-    private void voodoo$hurtServer(ServerLevel level, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method = "hurt", at = @At("HEAD"), cancellable = true)
+    private void voodoo$hurt(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         if (PoppetEntityHandler.onFire((ItemEntity) (Object) this, source))
             cir.setReturnValue(false);
     }

@@ -151,7 +151,7 @@ public class ProtectionPoppetTests {
     private static void death(GameTestHelper helper) {
         final ServerPlayer player = makePlayer(helper);
         final ItemStack poppet = holdPoppet(player, DEATH_PROTECTION);
-        player.hurtServer(helper.getLevel(), helper.getLevel().damageSources().generic(), 100);
+        player.hurt(helper.getLevel().damageSources().generic(), 100);
         helper.assertFalse(player.isDeadOrDying(), "Player should survive");
         helper.assertValueEqual(player.getHealth(), player.getMaxHealth() / 2, "player health");
         helper.assertTrue(player.hasEffect(MobEffects.REGENERATION), "Player should get regeneration");
@@ -164,7 +164,7 @@ public class ProtectionPoppetTests {
         final ItemStack poppet = poppet(FALL_PROTECTION);
         BindingUtil.bind(poppet, UUID.randomUUID(), "other");
         player.getInventory().setItem(9, poppet);
-        player.hurtServer(helper.getLevel(), helper.getLevel().damageSources().fall(), 5);
+        player.hurt(helper.getLevel().damageSources().fall(), 5);
         helper.assertValueEqual(player.getHealth(), player.getMaxHealth() - 5, "player health");
         helper.assertValueEqual(poppet.getDamageValue(), 0, "poppet damage");
         helper.succeed();
@@ -176,7 +176,7 @@ public class ProtectionPoppetTests {
     private static ServerPlayer assertProtects(GameTestHelper helper, Poppet.PoppetType poppetType, Function<DamageSources, DamageSource> source, float amount, int durabilityCost) {
         final ServerPlayer player = makePlayer(helper);
         final ItemStack poppet = holdPoppet(player, poppetType);
-        player.hurtServer(helper.getLevel(), source.apply(helper.getLevel().damageSources()), amount);
+        player.hurt(source.apply(helper.getLevel().damageSources()), amount);
         assertFullHealth(helper, player);
         assertPoppetUsed(helper, poppet, poppetType, durabilityCost);
         return player;

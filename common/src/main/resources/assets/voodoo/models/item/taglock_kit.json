@@ -8,6 +8,14 @@
     "top": "minecraft:block/iron_block",
     "needle": "voodoo:item/needle"
   },
+  "overrides": [
+    {
+      "predicate": {
+        "voodoo:filled": 1
+      },
+      "model": "voodoo:item/taglock_kit_filled"
+    }
+  ],
   "elements": [
     {
       "__comment": "Bot",

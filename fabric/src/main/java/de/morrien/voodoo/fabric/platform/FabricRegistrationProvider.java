@@ -35,7 +35,7 @@ public class FabricRegistrationProvider<T> implements RegistrationProvider<T> {
     @Override
     @SuppressWarnings("unchecked")
     public void register() {
-        final Registry<T> registry = (Registry<T>) BuiltInRegistries.REGISTRY.getValue(registryKey.location());
+        final Registry<T> registry = (Registry<T>) BuiltInRegistries.REGISTRY.get(registryKey.location());
         for (Entry<T, ? extends T> entry : entries) {
             entry.register(registry);
         }

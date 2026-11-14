@@ -75,7 +75,7 @@ public class PoppetEntityHandler {
         decreaseAirSupply(entity, boundPlayer);
         if (boundPlayer.getAirSupply() > -40) return;
         boundPlayer.setAirSupply(0);
-        if (boundPlayer.hurtServer(level, new VoodooDamageSource(level, VoodooDamageSource.VoodooDamageType.WATER, stack, entity), 2.0F) && Poppet.PoppetType.VOODOO.hasDurability())
+        if (boundPlayer.hurt(new VoodooDamageSource(level, VoodooDamageSource.VoodooDamageType.WATER, stack, entity), 2.0F) && Poppet.PoppetType.VOODOO.hasDurability())
             stack.hurtAndBreak(VoodooConfig.COMMON.voodoo.drownDurabilityCost.get(), level, (ServerPlayer) boundPlayer, item -> {});
     }
 

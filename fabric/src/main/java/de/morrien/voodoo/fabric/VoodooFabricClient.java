@@ -4,6 +4,7 @@ import de.morrien.voodoo.Voodoo;
 import de.morrien.voodoo.blockentity.BlockEntityTypeRegistry;
 import de.morrien.voodoo.client.PoppetShelfRenderer;
 import de.morrien.voodoo.client.PoppetShelfScreen;
+import de.morrien.voodoo.client.VoodooItemProperties;
 import de.morrien.voodoo.container.ContainerRegistry;
 import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.client.ConfigScreenFactoryRegistry;
 import net.fabricmc.api.ClientModInitializer;
@@ -17,5 +18,6 @@ public class VoodooFabricClient implements ClientModInitializer {
         ConfigScreenFactoryRegistry.INSTANCE.register(Voodoo.MOD_ID, ConfigurationScreen::new);
         MenuScreens.register(ContainerRegistry.poppetShelf.get(), PoppetShelfScreen::new);
         BlockEntityRenderers.register(BlockEntityTypeRegistry.poppetShelfBlockEntity.get(), PoppetShelfRenderer::new);
+        VoodooItemProperties.register();
     }
 }

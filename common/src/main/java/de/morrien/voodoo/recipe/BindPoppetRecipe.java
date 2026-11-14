@@ -66,7 +66,12 @@ public class BindPoppetRecipe extends CustomRecipe {
     }
 
     @Override
-    public RecipeSerializer<BindPoppetRecipe> getSerializer() {
+    public boolean canCraftInDimensions(int width, int height) {
+        return width * height >= 2;
+    }
+
+    @Override
+    public RecipeSerializer<?> getSerializer() {
         return RecipeRegistry.bindPoppetRecipe.get();
     }
 

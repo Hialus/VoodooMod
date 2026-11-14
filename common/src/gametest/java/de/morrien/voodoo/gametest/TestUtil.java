@@ -84,6 +84,16 @@ public class TestUtil {
         return makePlayer(helper, pos, UUID.randomUUID());
     }
 
+    private static void clearSpawnInvulnerability(ServerPlayer player) {
+        try {
+            final java.lang.reflect.Field field = ServerPlayer.class.getDeclaredField("spawnInvulnerableTime");
+            field.setAccessible(true);
+            field.setInt(player, 0);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("Could not clear spawn invulnerability", e);
+        }
+    }
+
     public static ServerPlayer makePlayer(GameTestHelper helper, Vec3 pos, UUID uuid) {
         final ServerLevel level = helper.getLevel();
         final CommonListenerCookie cookie = CommonListenerCookie.createInitial(new GameProfile(uuid, "test-player-" + players.size()), false);
@@ -92,7 +102,7 @@ public class TestUtil {
         new EmbeddedChannel(connection);
         level.getServer().getPlayerList().placeNewPlayer(connection, player, cookie);
         player.setGameMode(GameType.SURVIVAL);
-        player.setClientLoaded(true);
+        clearSpawnInvulnerability(player);
         player.moveTo(helper.absoluteVec(pos));
         players.add(player);
         return player;
@@ -131,7 +141,7 @@ public class TestUtil {
 
     public static ItemStack craft(ServerLevel level, ItemStack... stacks) {
         final CraftingInput input = CraftingInput.of(stacks.length, 1, List.of(stacks));
-        return level.recipeAccess().getRecipeFor(RecipeType.CRAFTING, input, level)
+        return level.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, input, level)
                 .map(recipe -> recipe.value().assemble(input, level.registryAccess()))
                 .orElse(ItemStack.EMPTY);
     }

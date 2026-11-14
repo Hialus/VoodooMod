@@ -132,7 +132,7 @@ public class VoodooEvents {
     public static float onLivingAttack(LivingEntity entity, DamageSource damageSource, float amount) {
         if (!(entity instanceof final ServerPlayer player)) return amount;
         if (amount == 0 ||
-                player.isInvulnerableTo(player.serverLevel(), damageSource) ||
+                player.isInvulnerableTo(damageSource) ||
                 player.isCreative() ||
                 player.isDeadOrDying() ||
                 (damageSource.is(DamageTypeTags.IS_FIRE) && player.hasEffect(MobEffects.FIRE_RESISTANCE))
@@ -184,7 +184,7 @@ public class VoodooEvents {
         if (player == sourceEntity) return false;
         final Poppet reflectorPoppet = PoppetUtil.getPlayerPoppet(player, REFLECTOR);
         if (reflectorPoppet == null) return false;
-        sourceEntity.hurtServer(player.serverLevel(), damageSource, amount);
+        sourceEntity.hurt(damageSource, amount);
         reflectorPoppet.use();
         return true;
     }
@@ -259,8 +259,7 @@ public class VoodooEvents {
                     spawnPos.getZ(),
                     Set.of(),
                     player.getYRot(),
-                    player.getXRot(),
-                    true
+                    player.getXRot()
             );
         }
     }

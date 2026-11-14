@@ -10,5 +10,5 @@ import java.util.function.Supplier;
 
 public class BlockEntityTypeRegistry {
     public static final RegistrationProvider<BlockEntityType<?>> BLOCK_ENTITIES = RegistrationProvider.get(Registries.BLOCK_ENTITY_TYPE);
-    public static final Supplier<BlockEntityType<PoppetShelfBlockEntity>> poppetShelfBlockEntity = BLOCK_ENTITIES.register("poppet_shelf_block_entity", key -> new BlockEntityType<>(PoppetShelfBlockEntity::new, Set.of(BlockRegistry.poppetShelf.get())));
+    public static final Supplier<BlockEntityType<PoppetShelfBlockEntity>> poppetShelfBlockEntity = BLOCK_ENTITIES.register("poppet_shelf_block_entity", key -> new BlockEntityType<>(PoppetShelfBlockEntity::new, Set.of(BlockRegistry.poppetShelf.get()), null));
 }

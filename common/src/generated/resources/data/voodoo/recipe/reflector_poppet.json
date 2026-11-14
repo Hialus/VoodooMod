@@ -2,15 +2,29 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "C": "minecraft:cactus",
-    "E": "minecraft:end_crystal",
+    "C": {
+      "item": "minecraft:cactus"
+    },
+    "E": {
+      "item": "minecraft:end_crystal"
+    },
     "F": [
-      "minecraft:pufferfish",
-      "minecraft:pufferfish_bucket"
+      {
+        "item": "minecraft:pufferfish"
+      },
+      {
+        "item": "minecraft:pufferfish_bucket"
+      }
     ],
-    "N": "voodoo:needle",
-    "P": "voodoo:blank_poppet",
-    "R": "minecraft:rabbit_hide"
+    "N": {
+      "item": "voodoo:needle"
+    },
+    "P": {
+      "item": "voodoo:blank_poppet"
+    },
+    "R": {
+      "item": "minecraft:rabbit_hide"
+    }
   },
   "pattern": [
     "FEF",

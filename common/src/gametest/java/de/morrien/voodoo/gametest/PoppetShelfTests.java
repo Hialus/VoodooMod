@@ -30,7 +30,7 @@ public class PoppetShelfTests {
         final PoppetShelfBlockEntity shelf = placeShelf(helper, player, SHELF_POS);
         final ItemStack poppet = boundPoppet(FALL_PROTECTION, player);
         shelf.setItem(0, poppet);
-        player.hurtServer(helper.getLevel(), helper.getLevel().damageSources().fall(), 5);
+        player.hurt(helper.getLevel().damageSources().fall(), 5);
         assertFullHealth(helper, player);
         assertPoppetUsed(helper, poppet, FALL_PROTECTION, 5);
         helper.succeed();

@@ -2,16 +2,32 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": "minecraft:bone_block",
+    "B": {
+      "item": "minecraft:bone_block"
+    },
     "C": [
-      "minecraft:coal",
-      "minecraft:charcoal"
+      {
+        "item": "minecraft:coal"
+      },
+      {
+        "item": "minecraft:charcoal"
+      }
     ],
-    "H": "minecraft:golden_apple",
-    "M": "minecraft:milk_bucket",
-    "N": "voodoo:needle",
-    "P": "voodoo:blank_poppet",
-    "R": "minecraft:rabbit_hide"
+    "H": {
+      "item": "minecraft:golden_apple"
+    },
+    "M": {
+      "item": "minecraft:milk_bucket"
+    },
+    "N": {
+      "item": "voodoo:needle"
+    },
+    "P": {
+      "item": "voodoo:blank_poppet"
+    },
+    "R": {
+      "item": "minecraft:rabbit_hide"
+    }
   },
   "pattern": [
     "CBC",

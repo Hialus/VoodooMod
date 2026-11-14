@@ -2,12 +2,24 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "I": "minecraft:iron_block",
-    "N": "voodoo:needle",
-    "O": "minecraft:obsidian",
-    "P": "voodoo:blank_poppet",
-    "R": "minecraft:rabbit_hide",
-    "W": "minecraft:water_bucket"
+    "I": {
+      "item": "minecraft:iron_block"
+    },
+    "N": {
+      "item": "voodoo:needle"
+    },
+    "O": {
+      "item": "minecraft:obsidian"
+    },
+    "P": {
+      "item": "voodoo:blank_poppet"
+    },
+    "R": {
+      "item": "minecraft:rabbit_hide"
+    },
+    "W": {
+      "item": "minecraft:water_bucket"
+    }
   },
   "pattern": [
     "OIO",

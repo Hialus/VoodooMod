@@ -4,7 +4,6 @@ import de.morrien.voodoo.Voodoo;
 import de.morrien.voodoo.container.PoppetShelfContainer;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -38,6 +37,6 @@ public class PoppetShelfScreen extends AbstractContainerScreen<PoppetShelfContai
     protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
         int relX = (this.width - this.imageWidth) / 2;
         int relY = (this.height - this.imageHeight) / 2;
-        guiGraphics.blit(RenderType::guiTextured, GUI, relX, relY, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
+        guiGraphics.blit(GUI, relX, relY, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
     }
 }

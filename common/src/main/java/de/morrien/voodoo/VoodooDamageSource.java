@@ -18,7 +18,7 @@ public class VoodooDamageSource extends DamageSource {
     private Entity fromEntity;
 
     public VoodooDamageSource(Level level, VoodooDamageType damageType, ItemStack voodooPoppet, Entity fromEntity) {
-        super(level.registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(damageType.key));
+        super(level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(damageType.key));
         this.voodooPoppet = voodooPoppet;
         this.fromEntity = fromEntity;
     }

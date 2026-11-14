@@ -2,10 +2,18 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "A": "minecraft:amethyst_shard",
-    "C": "minecraft:green_carpet",
-    "N": "minecraft:red_nether_bricks",
-    "O": "#c:obsidians"
+    "A": {
+      "item": "minecraft:amethyst_shard"
+    },
+    "C": {
+      "item": "minecraft:green_carpet"
+    },
+    "N": {
+      "item": "minecraft:red_nether_bricks"
+    },
+    "O": {
+      "tag": "c:obsidians"
+    }
   },
   "pattern": [
     "ACA",

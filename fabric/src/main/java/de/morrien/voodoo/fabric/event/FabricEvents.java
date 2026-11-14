@@ -16,6 +16,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 
@@ -52,7 +53,7 @@ public class FabricEvents {
 
         ServerBlockEntityEvents.BLOCK_ENTITY_LOAD.register((blockEntity, level) -> {
             if (blockEntity instanceof PoppetShelfBlockEntity poppetShelf)
-                level.getServer().schedule(level.getServer().wrapRunnable(poppetShelf::onLoad));
+                level.getServer().tell(new TickTask(level.getServer().getTickCount(), poppetShelf::onLoad));
         });
     }
 }

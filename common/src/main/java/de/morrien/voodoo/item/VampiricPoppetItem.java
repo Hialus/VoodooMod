@@ -3,14 +3,13 @@ package de.morrien.voodoo.item;
 import de.morrien.voodoo.VoodooDamageSource;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemUseAnimation;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 
 import static de.morrien.voodoo.Poppet.PoppetType.VAMPIRIC;
@@ -31,16 +30,16 @@ public class VampiricPoppetItem extends PoppetItem {
     }
 
     @Override
-    public ItemUseAnimation getUseAnimation(ItemStack stack) {
-        return ItemUseAnimation.DRINK;
+    public UseAnim getUseAnimation(ItemStack stack) {
+        return UseAnim.DRINK;
     }
 
     @Override
-    public InteractionResult use(Level world, Player player, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
         if (!COMMON.vampiric.enabled.get())
-            return InteractionResult.PASS;
+            return InteractionResultHolder.pass(player.getItemInHand(hand));
         player.startUsingItem(hand);
-        return InteractionResult.CONSUME;
+        return InteractionResultHolder.consume(player.getItemInHand(hand));
     }
 
     @Override
@@ -56,7 +55,7 @@ public class VampiricPoppetItem extends PoppetItem {
         final float boundDifference = boundPlayer.getHealth() - COMMON.vampiric.healthLimit.get();
         if (boundDifference <= 0) return;
         final float healthToTake = Math.min(Math.min(playerDifference, boundDifference), COMMON.vampiric.healthPerDrain.get());
-        if (boundPlayer.hurtServer((ServerLevel) world, new VoodooDamageSource(world, VoodooDamageSource.VoodooDamageType.VAMPIRIC, stack, player), healthToTake)) {
+        if (boundPlayer.hurt(new VoodooDamageSource(world, VoodooDamageSource.VoodooDamageType.VAMPIRIC, stack, player), healthToTake)) {
             player.heal(healthToTake);
             if (poppetType.hasDurability())
                 stack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(player.getUsedItemHand()));
