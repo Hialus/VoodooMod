@@ -14,6 +14,13 @@ dependencies {
     compileOnly "com.google.code.findbugs:jsr305:3.0.2"
 }
 
+sourceSets {
+    gametest {
+        compileClasspath += sourceSets.main.compileClasspath + sourceSets.main.output
+        runtimeClasspath += sourceSets.main.runtimeClasspath + sourceSets.main.output
+    }
+}
+
 loom {
     def aw = project(':common').file("src/main/resources/${mod_id}.accesswidener")
     if (aw.exists()) {
@@ -32,7 +39,48 @@ loom {
             ideConfigGenerated(true)
             runDir('runs/server')
         }
+        gameTest {
+            server()
+            setConfigName('Fabric Game Test')
+            ideConfigGenerated(true)
+            runDir('runs/gametest')
+            source(sourceSets.gametest)
+            property('fabric-api.gametest')
+            property('fabric-api.gametest.report-file', project.layout.buildDirectory.file('gametest/report.xml').get().asFile.absolutePath)
+        }
+    }
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+        }
+        "${mod_id}_gametest" {
+            sourceSet sourceSets.gametest
+        }
     }
 }
 
 sourceSets.main.resources { srcDir project(':common').file('src/generated/resources') }
+
+configurations {
+    commonGametestJava {
+        canBeResolved = true
+    }
+    commonGametestResources {
+        canBeResolved = true
+    }
+}
+
+dependencies {
+    commonGametestJava project(path: ':common', configuration: 'commonGametestJava')
+    commonGametestResources project(path: ':common', configuration: 'commonGametestResources')
+}
+
+tasks.named('compileGametestJava', JavaCompile) {
+    dependsOn(configurations.commonGametestJava)
+    source(configurations.commonGametestJava)
+}
+
+tasks.named('processGametestResources', ProcessResources) {
+    dependsOn(configurations.commonGametestResources)
+    from(configurations.commonGametestResources)
+}

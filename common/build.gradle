@@ -16,8 +16,17 @@ neoForge {
     }
 }
 
+sourceSets {
+    gametest {
+        compileClasspath += sourceSets.main.output
+    }
+}
+
+neoForge.addModdingDependenciesTo(sourceSets.gametest)
+
 dependencies {
     compileOnly "fuzs.forgeconfigapiport:forgeconfigapiport-common-neoforgeapi:${forgeconfigapiport_version}"
+    gametestCompileOnly "fuzs.forgeconfigapiport:forgeconfigapiport-common-neoforgeapi:${forgeconfigapiport_version}"
 }
 
 configurations {
@@ -29,10 +38,20 @@ configurations {
         canBeResolved = false
         canBeConsumed = true
     }
+    commonGametestJava {
+        canBeResolved = false
+        canBeConsumed = true
+    }
+    commonGametestResources {
+        canBeResolved = false
+        canBeConsumed = true
+    }
 }
 
 artifacts {
     commonJava sourceSets.main.java.sourceDirectories.singleFile
     commonResources sourceSets.main.resources.sourceDirectories.singleFile
+    commonGametestJava sourceSets.gametest.java.sourceDirectories.singleFile
+    commonGametestResources sourceSets.gametest.resources.sourceDirectories.singleFile
 }
 

@@ -41,3 +41,11 @@ jobs:
         path: |
           */build/libs/*.jar
         if-no-files-found: error
+
+    - name: Run NeoForge game tests
+      id: neoforge-gametest
+      run: ./gradlew :neoforge:runGameTestServer
+
+    - name: Run Fabric game tests
+      if: ${{ !cancelled() && steps.neoforge-gametest.conclusion != 'skipped' }}
+      run: ./gradlew :fabric:runGameTest
