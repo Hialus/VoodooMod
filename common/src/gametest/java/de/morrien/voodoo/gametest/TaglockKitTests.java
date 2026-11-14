@@ -1,15 +1,18 @@
 package de.morrien.voodoo.gametest;
 
 import de.morrien.voodoo.item.ItemRegistry;
+import de.morrien.voodoo.util.BindingUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.network.protocol.game.ServerboundInteractPacket;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BedPart;
@@ -25,7 +28,8 @@ public class TaglockKitTests {
         return List.of(
                 test("taglock_kit.binds_self", TaglockKitTests::bindsSelf),
                 test("taglock_kit.binds_other_player", TaglockKitTests::bindsOtherPlayer),
-                test("taglock_kit.binds_bed_owner", TaglockKitTests::bindsBedOwner)
+                test("taglock_kit.binds_bed_owner", TaglockKitTests::bindsBedOwner),
+                test("taglock_kit.ignores_bed_in_other_dimension", TaglockKitTests::ignoresBedInOtherDimension)
         );
     }
 
@@ -50,19 +54,32 @@ public class TaglockKitTests {
     }
 
     private static void bindsBedOwner(GameTestHelper helper) {
-        final ServerPlayer player = makePlayer(helper);
         final ServerPlayer target = makePlayer(helper);
+        assertBoundTo(helper, useOnBed(helper, target, helper.getLevel().dimension()), target);
+        helper.succeed();
+    }
+
+    private static void ignoresBedInOtherDimension(GameTestHelper helper) {
+        final ServerPlayer target = makePlayer(helper);
+        helper.assertFalse(BindingUtil.isBound(useOnBed(helper, target, Level.NETHER)), "Taglock kit should not be bound");
+        helper.succeed();
+    }
+
+    /**
+     * Create a bed, set the players respawn point to it, and then use a taglock kit on it.
+     */
+    private static ItemStack useOnBed(GameTestHelper helper, ServerPlayer target, ResourceKey<Level> dimension) {
+        final ServerPlayer player = makePlayer(helper);
         final BlockPos head = new BlockPos(5, 1, 5);
         final BlockPos foot = head.relative(Direction.SOUTH);
         helper.setBlock(head, Blocks.RED_BED.defaultBlockState().setValue(BedBlock.FACING, Direction.NORTH).setValue(BedBlock.PART, BedPart.HEAD));
         helper.setBlock(foot, Blocks.RED_BED.defaultBlockState().setValue(BedBlock.FACING, Direction.NORTH).setValue(BedBlock.PART, BedPart.FOOT));
-        target.setRespawnPosition(helper.getLevel().dimension(), helper.absolutePos(head), 0, false, false);
+        target.setRespawnPosition(dimension, helper.absolutePos(head), 0, false, false);
         final ItemStack taglock = new ItemStack(ItemRegistry.taglockKit.get());
         player.setItemInHand(InteractionHand.MAIN_HAND, taglock);
         player.setShiftKeyDown(true);
         final BlockPos clicked = helper.absolutePos(foot);
         taglock.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, new BlockHitResult(Vec3.atCenterOf(clicked), Direction.UP, clicked, false)));
-        assertBoundTo(helper, taglock, target);
-        helper.succeed();
+        return taglock;
     }
 }

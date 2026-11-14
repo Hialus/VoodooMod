@@ -10,7 +10,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * Created by Timor Morrien
+ * Created by Phoebe Morrien
  */
 public class PoppetShelfContainer extends AbstractContainerMenu {
     protected Container poppetShelf;

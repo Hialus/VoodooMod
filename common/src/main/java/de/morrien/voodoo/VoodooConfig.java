@@ -298,7 +298,7 @@ public class VoodooConfig {
             public PoppetShelf(Builder builder) {
                 builder.comment("Poppet shelf configuration settings").push("poppet_shelf");
                 this.chunkLoading = builder
-                        .comment("Keep the chunk of every poppet shelf that has an owner loaded")
+                        .comment("Keep the chunk of every poppet shelf loaded while its owner is online")
                         .define("chunk_loading", true);
                 builder.pop();
             }

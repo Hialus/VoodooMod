@@ -10,7 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 /**
- * Created by Timor Morrien
+ * Created by Phoebe Morrien
  */
 public class VoodooDamageSource extends DamageSource {
     public static final TagKey<DamageType> VOODOO = TagKey.create(Registries.DAMAGE_TYPE, Voodoo.id("voodoo"));

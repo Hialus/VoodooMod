@@ -18,7 +18,7 @@ import static de.morrien.voodoo.VoodooConfig.COMMON;
 import static de.morrien.voodoo.util.BindingUtil.getBoundPlayer;
 
 /**
- * Created by Timor Morrien
+ * Created by Phoebe Morrien
  */
 public class VampiricPoppetItem extends PoppetItem {
     public VampiricPoppetItem(Properties properties) {

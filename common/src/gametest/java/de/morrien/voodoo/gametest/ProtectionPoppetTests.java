@@ -10,8 +10,10 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
@@ -33,6 +35,11 @@ public class ProtectionPoppetTests {
                 test("protection_poppet.void", ProtectionPoppetTests::fellOutOfWorld),
                 test("protection_poppet.wither", ProtectionPoppetTests::wither),
                 test("protection_poppet.potion", ProtectionPoppetTests::potion),
+                test("protection_poppet.splash_potion", ProtectionPoppetTests::splashPotion),
+                test("protection_poppet.lingering_potion", ProtectionPoppetTests::lingeringPotion),
+                test("protection_poppet.small_splash_potion_is_free", ProtectionPoppetTests::smallSplashPotionIsFree),
+                test("protection_poppet.small_fall_is_free", ProtectionPoppetTests::smallFallIsFree),
+                test("protection_poppet.starvation", ProtectionPoppetTests::starvation),
                 test("protection_poppet.hunger", ProtectionPoppetTests::hunger),
                 test("protection_poppet.death", ProtectionPoppetTests::death),
                 test("protection_poppet.ignores_other_players_poppet", ProtectionPoppetTests::ignoresOtherPlayersPoppet)
@@ -100,6 +107,34 @@ public class ProtectionPoppetTests {
             helper.assertFalse(player.hasEffect(MobEffects.POISON), "Poison should be removed");
             assertPoppetUsed(helper, poppet, POTION_PROTECTION, 2);
         });
+    }
+
+    private static void splashPotion(GameTestHelper helper) {
+        final ThrownPotion potion = helper.spawn(EntityType.POTION, new BlockPos(3, 1, 3));
+        assertProtects(helper, POTION_PROTECTION, sources -> sources.indirectMagic(potion, null), 6, 1);
+        helper.succeed();
+    }
+
+    private static void lingeringPotion(GameTestHelper helper) {
+        final AreaEffectCloud cloud = helper.spawn(EntityType.AREA_EFFECT_CLOUD, new BlockPos(3, 1, 3));
+        assertProtects(helper, POTION_PROTECTION, sources -> sources.indirectMagic(cloud, null), 6, 1);
+        helper.succeed();
+    }
+
+    private static void smallSplashPotionIsFree(GameTestHelper helper) {
+        final ThrownPotion potion = helper.spawn(EntityType.POTION, new BlockPos(3, 1, 3));
+        assertProtects(helper, POTION_PROTECTION, sources -> sources.indirectMagic(potion, null), 2, 0);
+        helper.succeed();
+    }
+
+    private static void smallFallIsFree(GameTestHelper helper) {
+        assertProtects(helper, FALL_PROTECTION, DamageSources::fall, 1, 0);
+        helper.succeed();
+    }
+
+    private static void starvation(GameTestHelper helper) {
+        assertProtects(helper, HUNGER_PROTECTION, DamageSources::starve, 1, 1);
+        helper.succeed();
     }
 
     private static void hunger(GameTestHelper helper) {

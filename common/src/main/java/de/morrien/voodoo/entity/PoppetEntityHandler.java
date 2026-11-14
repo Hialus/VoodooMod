@@ -18,7 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import java.util.WeakHashMap;
 
 /**
- * Created by Timor Morrien
+ * Created by Phoebe Morrien
  */
 public class PoppetEntityHandler {
     private static final WeakHashMap<ItemEntity, Integer> lastFireTicks = new WeakHashMap<>();
@@ -42,8 +42,7 @@ public class PoppetEntityHandler {
             Player boundPlayer = BindingUtil.getBoundPlayer(stack, level);
             if (boundPlayer != null) {
                 boundPlayer.igniteForSeconds(2);
-                boundPlayer.hurtServer(level, new VoodooDamageSource(level, VoodooDamageSource.VoodooDamageType.FIRE, stack, entity), 1);
-                if (Poppet.PoppetType.VOODOO.hasDurability())
+                if (boundPlayer.hurtServer(level, new VoodooDamageSource(level, VoodooDamageSource.VoodooDamageType.FIRE, stack, entity), 1) && Poppet.PoppetType.VOODOO.hasDurability())
                     stack.hurtAndBreak(VoodooConfig.COMMON.voodoo.fireDurabilityCost.get(), level, (ServerPlayer) boundPlayer, item -> entity.discard());
             }
         }

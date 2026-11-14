@@ -12,6 +12,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.network.Connection;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -27,15 +28,20 @@ import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
 public class TestUtil {
+    public static final String CONFIG_BATCH = Voodoo.MOD_ID + "_config";
     private static final String EMPTY_STRUCTURE = Voodoo.MOD_ID + ":empty";
     private static final List<ServerPlayer> players = new ArrayList<>();
+    private static final Map<ModConfigSpec.ConfigValue<?>, Object> changedConfigValues = new HashMap<>();
 
     public static TestFunction test(String name, Consumer<GameTestHelper> function) {
         return test(name, 100, function);
@@ -43,6 +49,27 @@ public class TestUtil {
 
     public static TestFunction test(String name, int timeoutTicks, Consumer<GameTestHelper> function) {
         return new TestFunction(Voodoo.MOD_ID, Voodoo.MOD_ID + "." + name, EMPTY_STRUCTURE, timeoutTicks, 0, true, function);
+    }
+
+    /**
+     * Creates a test that runs in its own batch, so it can change the config without affecting other tests.
+     */
+    public static TestFunction configTest(String name, Consumer<GameTestHelper> function) {
+        return new TestFunction(CONFIG_BATCH, Voodoo.MOD_ID + "." + name, EMPTY_STRUCTURE, 100, 0, true, function);
+    }
+
+    /**
+     * Changes a config value without saving it, until {@link #restoreConfig()} is called after the batch.
+     */
+    public static <T> void setConfig(ModConfigSpec.ConfigValue<T> configValue, T value) {
+        changedConfigValues.putIfAbsent(configValue, configValue.get());
+        configValue.set(value);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void restoreConfig() {
+        changedConfigValues.forEach((configValue, value) -> ((ModConfigSpec.ConfigValue<Object>) configValue).set(value));
+        changedConfigValues.clear();
     }
 
     public static ServerPlayer makePlayer(GameTestHelper helper) {
@@ -54,8 +81,12 @@ public class TestUtil {
      * Unlike {@link GameTestHelper#makeMockServerPlayerInLevel()} it does not always count as creative.
      */
     public static ServerPlayer makePlayer(GameTestHelper helper, Vec3 pos) {
+        return makePlayer(helper, pos, UUID.randomUUID());
+    }
+
+    public static ServerPlayer makePlayer(GameTestHelper helper, Vec3 pos, UUID uuid) {
         final ServerLevel level = helper.getLevel();
-        final CommonListenerCookie cookie = CommonListenerCookie.createInitial(new GameProfile(UUID.randomUUID(), "test-player-" + players.size()), false);
+        final CommonListenerCookie cookie = CommonListenerCookie.createInitial(new GameProfile(uuid, "test-player-" + players.size()), false);
         final ServerPlayer player = new ServerPlayer(level.getServer(), level, cookie.gameProfile(), cookie.clientInformation());
         final Connection connection = new Connection(PacketFlow.SERVERBOUND);
         new EmbeddedChannel(connection);
@@ -67,9 +98,17 @@ public class TestUtil {
         return player;
     }
 
-    public static void removePlayers(ServerLevel level) {
-        players.forEach(level.getServer().getPlayerList()::remove);
+    public static void removePlayers() {
+        players.forEach(TestUtil::disconnect);
         players.clear();
+    }
+
+    /**
+     * Disconnects a player the same way as kicking them.
+     */
+    public static void disconnect(ServerPlayer player) {
+        if (!player.hasDisconnected())
+            player.connection.disconnect(Component.literal("Test finished"));
     }
 
     public static ItemStack poppet(Poppet.PoppetType poppetType) {

@@ -25,7 +25,7 @@ import java.util.List;
 import static de.morrien.voodoo.util.BindingUtil.*;
 
 /**
- * Created by Timor Morrien
+ * Created by Phoebe Morrien
  */
 @SuppressWarnings({"ConstantConditions", "NullableProblems"})
 public class TaglockKitItem extends Item {
@@ -77,7 +77,7 @@ public class TaglockKitItem extends Item {
             BlockPos finalPos = pos;
             server.getPlayerList().getPlayers().stream()
                     .sorted(Comparator.comparing(ServerPlayer::getSleepTimer))
-                    .filter(p -> finalPos.equals(p.getRespawnPosition()))
+                    .filter(p -> finalPos.equals(p.getRespawnPosition()) && world.dimension().equals(p.getRespawnDimension()))
                     .findFirst()
                     .ifPresent(serverPlayerEntity -> bind(context.getItemInHand(), serverPlayerEntity));
             return InteractionResult.SUCCESS;

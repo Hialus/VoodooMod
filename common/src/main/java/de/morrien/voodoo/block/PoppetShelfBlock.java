@@ -30,10 +30,8 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
 
-import static de.morrien.voodoo.VoodooConfig.COMMON;
-
 /**
- * Created by Timor Morrien
+ * Created by Phoebe Morrien
  */
 public class PoppetShelfBlock extends BaseEntityBlock {
     public static final MapCodec<PoppetShelfBlock> CODEC = simpleCodec(PoppetShelfBlock::new);
@@ -89,7 +87,7 @@ public class PoppetShelfBlock extends BaseEntityBlock {
                 world.updateNeighbourForOutputSignal(pos, this);
             }
             if (world instanceof ServerLevel serverLevel)
-                PoppetShelfChunkLoader.setShelfLoaded(serverLevel, pos, false);
+                PoppetShelfChunkLoader.setShelfOwner(serverLevel, pos, null);
             super.onRemove(state, world, pos, newState, isMoving);
         }
     }
@@ -101,8 +99,8 @@ public class PoppetShelfBlock extends BaseEntityBlock {
         if (blockEntity instanceof PoppetShelfBlockEntity && placer != null) {
             ((PoppetShelfBlockEntity) blockEntity).setOwnerName(placer.getName().getString());
             ((PoppetShelfBlockEntity) blockEntity).setOwnerUuid(placer.getUUID());
-            if (world instanceof ServerLevel serverLevel && COMMON.poppetShelf.chunkLoading.get())
-                PoppetShelfChunkLoader.setShelfLoaded(serverLevel, pos, true);
+            if (world instanceof ServerLevel serverLevel)
+                PoppetShelfChunkLoader.setShelfOwner(serverLevel, pos, placer.getUUID());
         }
     }
 

@@ -7,7 +7,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "Having a lot of poppet takes up quite a lot of inventory space.$(br)This is were the poppet shelf comes into play. It allows you to store your poppets in a safe place while still being able to take advantage of their effects.$(br)The poppet shelf keeps the chunk it is in loaded, unless the server has turned that off."
+      "text": "Having a lot of poppet takes up quite a lot of inventory space.$(br)This is were the poppet shelf comes into play. It allows you to store your poppets in a safe place while still being able to take advantage of their effects.$(br)The poppet shelf keeps the chunk it is in loaded while you are online, unless the server has turned that off."
     },
     {
       "type": "patchouli:crafting",

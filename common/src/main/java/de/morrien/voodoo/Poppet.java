@@ -12,7 +12,7 @@ import org.apache.commons.lang3.text.WordUtils;
 import java.util.Optional;
 
 /**
- * Created by Timor Morrien
+ * Created by Phoebe Morrien
  */
 public class Poppet {
     private final Player player;

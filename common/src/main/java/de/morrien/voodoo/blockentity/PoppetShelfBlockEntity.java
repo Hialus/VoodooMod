@@ -29,10 +29,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-import static de.morrien.voodoo.VoodooConfig.COMMON;
-
 /**
- * Created by Timor Morrien
+ * Created by Phoebe Morrien
  */
 public class PoppetShelfBlockEntity extends BlockEntity implements Container {
     // Data version of Minecraft 1.19.1 for converting inventories of poppet shelves from older version to new ones
@@ -56,11 +54,11 @@ public class PoppetShelfBlockEntity extends BlockEntity implements Container {
 
     /**
      * Called when the poppet shelf was added in a level, whether by placing it or loading the chunk it is in.
-     * Adds the chunk loading ticket for poppet shelves that do not have one yet, e.g. from older versions or after a config change.
+     * Registers poppet shelves for chunk loading that are not registered yet, e.g. from older versions.
      */
     public void onLoad() {
-        if (this.level instanceof ServerLevel serverLevel && !this.isRemoved() && this.ownerUuid != null && COMMON.poppetShelf.chunkLoading.get())
-            PoppetShelfChunkLoader.setShelfLoaded(serverLevel, this.worldPosition, true);
+        if (this.level instanceof ServerLevel serverLevel && !this.isRemoved() && this.ownerUuid != null)
+            PoppetShelfChunkLoader.setShelfOwner(serverLevel, this.worldPosition, this.ownerUuid);
     }
 
     public void inventoryTouched() {

@@ -60,7 +60,7 @@ public class BindPoppetRecipe extends CustomRecipe {
             itemStack1 = itemStack2;
             itemStack2 = tmp;
         }
-        ItemStack boundPoppet = new ItemStack(itemStack2.getItem());
+        ItemStack boundPoppet = itemStack2.copyWithCount(1);
         BindingUtil.transfer(itemStack1, boundPoppet);
         return boundPoppet;
     }

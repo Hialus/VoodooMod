@@ -23,7 +23,7 @@ public class PoppetShelfRenderer implements BlockEntityRenderer<PoppetShelfBlock
                 double offset = Math.sin((blockEntity.getLevel().getGameTime() + partialTicks) / 8) / 32;
                 //noinspection IntegerDivisionInFloatingPointContext
                 matrixStack.translate((i % 3) / 5D + 0.3, 0.9 + offset, (i / 3) / 5D + 0.3);
-                matrixStack.mulPose(Axis.YP.rotationDegrees(blockEntity.getLevel().getGameTime() + partialTicks * 2));
+                matrixStack.mulPose(Axis.YP.rotationDegrees(blockEntity.getLevel().getGameTime() + partialTicks));
 
                 matrixStack.scale(0.4f, 0.4f, 0.4f);
                 Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemDisplayContext.GROUND, combinedLight, combinedOverlay, matrixStack, buffer, blockEntity.getLevel(), 0);

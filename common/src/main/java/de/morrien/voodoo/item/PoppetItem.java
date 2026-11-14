@@ -19,7 +19,7 @@ import static de.morrien.voodoo.Poppet.PoppetType.*;
 import static de.morrien.voodoo.util.BindingUtil.*;
 
 /**
- * Created by Timor Morrien
+ * Created by Phoebe Morrien
  */
 public class PoppetItem extends Item {
     protected final Poppet.PoppetType poppetType;

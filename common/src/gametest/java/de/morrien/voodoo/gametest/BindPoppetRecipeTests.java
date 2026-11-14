@@ -17,6 +17,7 @@ public class BindPoppetRecipeTests {
     public static List<TestFunction> tests() {
         return List.of(
                 test("bind_poppet_recipe.binds_poppet", BindPoppetRecipeTests::bindsPoppet),
+                test("bind_poppet_recipe.keeps_damage", BindPoppetRecipeTests::keepsDamage),
                 test("bind_poppet_recipe.rejects_blank_poppet", BindPoppetRecipeTests::rejectsBlankPoppet),
                 test("bind_poppet_recipe.rejects_bound_poppet", BindPoppetRecipeTests::rejectsBoundPoppet)
         );
@@ -27,6 +28,14 @@ public class BindPoppetRecipeTests {
         final ItemStack result = craft(helper.getLevel(), boundTaglock(player), poppet(VOODOO));
         helper.assertTrue(result.is(ItemRegistry.poppetMap.get(VOODOO).get()), "Result should be a voodoo poppet, is " + result);
         assertBoundTo(helper, result, player);
+        helper.succeed();
+    }
+
+    private static void keepsDamage(GameTestHelper helper) {
+        final ServerPlayer player = makePlayer(helper);
+        final ItemStack poppet = poppet(VOODOO);
+        poppet.setDamageValue(5);
+        helper.assertValueEqual(craft(helper.getLevel(), boundTaglock(player), poppet).getDamageValue(), 5, "poppet damage");
         helper.succeed();
     }
 

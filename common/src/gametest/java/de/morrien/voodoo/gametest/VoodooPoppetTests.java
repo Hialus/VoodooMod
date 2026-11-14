@@ -6,6 +6,8 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -25,6 +27,7 @@ public class VoodooPoppetTests {
                 test("voodoo_poppet.needle_hurts_bound_player", VoodooPoppetTests::needleHurtsBoundPlayer),
                 test("voodoo_poppet.push_moves_bound_player", VoodooPoppetTests::pushMovesBoundPlayer),
                 test("voodoo_poppet.fire_ignites_bound_player", VoodooPoppetTests::fireIgnitesBoundPlayer),
+                test("voodoo_poppet.fire_resistance_keeps_durability", VoodooPoppetTests::fireResistanceKeepsDurability),
                 test("voodoo_poppet.water_drowns_bound_player", 200, VoodooPoppetTests::waterDrownsBoundPlayer),
                 test("voodoo_poppet.protection_blocks_needle", VoodooPoppetTests::protectionBlocksNeedle),
                 test("voodoo_poppet.protection_blocks_push", VoodooPoppetTests::protectionBlocksPush)
@@ -61,6 +64,17 @@ public class VoodooPoppetTests {
             helper.assertTrue(target.isOnFire(), "Bound player should be on fire");
             helper.assertValueEqual(target.getHealth(), target.getMaxHealth() - 1, "bound player health");
             assertPoppetUsed(helper, entity.getItem(), VOODOO, COMMON.voodoo.fireDurabilityCost.get());
+        });
+    }
+
+    private static void fireResistanceKeepsDurability(GameTestHelper helper) {
+        final ServerPlayer target = makePlayer(helper);
+        target.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 200));
+        final ItemEntity entity = dropInto(helper, boundPoppet(VOODOO, target), Blocks.LAVA);
+        helper.succeedWhen(() -> {
+            helper.assertTrue(target.isOnFire(), "Bound player should be on fire");
+            assertFullHealth(helper, target);
+            helper.assertValueEqual(entity.getItem().getDamageValue(), 0, "poppet damage");
         });
     }
 

@@ -141,20 +141,24 @@ public class VoodooEvents {
         if (tryReflectorPoppet(player, damageSource, amount)) return 0;
 
         final List<Poppet.PoppetType> validPoppets = getProtectionPoppets(player, damageSource);
+        if (validPoppets.isEmpty()) return amount;
 
         final List<Poppet> poppetsInInventory = PoppetUtil.getPoppetsInInventory(player);
         poppetsInInventory.removeIf(poppet -> !validPoppets.contains(poppet.getItem().getPoppetType()));
 
         int originalDurabilityCost = getDurabilityCost(damageSource, amount);
+        if (originalDurabilityCost == 0) {
+            if (poppetsInInventory.isEmpty() && getPoppetsInShelves(player, validPoppets).isEmpty()) return amount;
+            doSpecialActions(player, damageSource);
+            return 0;
+        }
         int durabilityCost = originalDurabilityCost;
         for (int i = 0; i < poppetsInInventory.size() && durabilityCost > 0; i++) {
             Poppet poppet = poppetsInInventory.get(i);
             durabilityCost = usePoppet(poppet, durabilityCost);
         }
         if (durabilityCost > 0) {
-            final List<Poppet> poppetsInShelves = PoppetUtil.getPoppetsInShelves(player);
-            poppetsInShelves.removeIf(poppet -> !validPoppets.contains(poppet.getItem().getPoppetType()));
-
+            final List<Poppet> poppetsInShelves = getPoppetsInShelves(player, validPoppets);
             for (int i = 0; i < poppetsInShelves.size() && durabilityCost > 0; i++) {
                 Poppet poppet = poppetsInShelves.get(i);
                 durabilityCost = usePoppet(poppet, durabilityCost);
@@ -166,6 +170,12 @@ public class VoodooEvents {
             return amount * percentage;
         }
         return amount;
+    }
+
+    private static List<Poppet> getPoppetsInShelves(ServerPlayer player, List<Poppet.PoppetType> validPoppets) {
+        final List<Poppet> poppetsInShelves = PoppetUtil.getPoppetsInShelves(player);
+        poppetsInShelves.removeIf(poppet -> !validPoppets.contains(poppet.getItem().getPoppetType()));
+        return poppetsInShelves;
     }
 
     private static boolean tryReflectorPoppet(ServerPlayer player, DamageSource damageSource, float amount) {
@@ -196,9 +206,9 @@ public class VoodooEvents {
         if (damageSource.is(VoodooDamageSource.VOODOO) && COMMON.voodooProtection.enabled.get())
             return 1;
         if ((damageSource.getDirectEntity() instanceof ThrownPotion || damageSource.getDirectEntity() instanceof AreaEffectCloud) && COMMON.potionProtection.enabled.get())
-            return (int) (Math.log(amount / 6) / Math.log(2)) + 1;
+            return Math.max(0, (int) (Math.log(amount / 6) / Math.log(2)) + 1);
         if (damageSource.is(DamageTypes.FALL) && COMMON.fallProtection.enabled.get())
-            return (int) Math.min(amount, Math.ceil(Math.log(amount) * 3));
+            return (int) Math.max(0, Math.min(amount, Math.ceil(Math.log(amount) * 3)));
         if (damageSource.is(DamageTypeTags.IS_PROJECTILE) && COMMON.projectileProtection.enabled.get())
             return 1;
         if (damageSource.is(DamageTypeTags.IS_FIRE) && COMMON.fireProtection.enabled.get())
@@ -206,6 +216,8 @@ public class VoodooEvents {
         if (damageSource.is(DamageTypeTags.IS_EXPLOSION) && COMMON.explosionProtection.enabled.get())
             return 1;
         if (damageSource.is(DamageTypes.DROWN) && COMMON.waterProtection.enabled.get())
+            return 1;
+        if (damageSource.is(DamageTypes.STARVE) && COMMON.hungerProtection.enabled.get())
             return 1;
         if (damageSource.is(DamageTypes.FELL_OUT_OF_WORLD) && COMMON.voidProtection.enabled.get())
             return 1;
@@ -258,7 +270,7 @@ public class VoodooEvents {
 
         if (damageSource.is(VoodooDamageSource.VOODOO) && COMMON.voodooProtection.enabled.get())
             suitablePoppets.add(VOODOO_PROTECTION);
-        if (damageSource.getDirectEntity() instanceof ThrownPotion && COMMON.potionProtection.enabled.get())
+        if ((damageSource.getDirectEntity() instanceof ThrownPotion || damageSource.getDirectEntity() instanceof AreaEffectCloud) && COMMON.potionProtection.enabled.get())
             suitablePoppets.add(POTION_PROTECTION);
         if (damageSource.is(DamageTypes.FALL) && COMMON.fallProtection.enabled.get())
             suitablePoppets.add(FALL_PROTECTION);

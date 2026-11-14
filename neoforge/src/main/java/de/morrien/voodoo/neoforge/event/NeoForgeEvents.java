@@ -1,26 +1,33 @@
 package de.morrien.voodoo.neoforge.event;
 
 import de.morrien.voodoo.Voodoo;
+import de.morrien.voodoo.VoodooConfig;
 import de.morrien.voodoo.entity.PoppetEntityHandler;
 import de.morrien.voodoo.event.VoodooEvents;
 import de.morrien.voodoo.item.PoppetItem;
 import de.morrien.voodoo.util.PoppetShelfChunkLoader;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.event.AnvilUpdateEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 @EventBusSubscriber(modid = Voodoo.MOD_ID)
 public class NeoForgeEvents {
@@ -66,6 +73,31 @@ public class NeoForgeEvents {
     public static void onLevelLoad(LevelEvent.Load event) {
         if (event.getLevel() instanceof ServerLevel level)
             PoppetShelfChunkLoader.onLevelLoad(level);
+    }
+
+    @SubscribeEvent
+    public static void onChunkLoad(ChunkEvent.Load event) {
+        if (event.getLevel() instanceof ServerLevel level && event.getChunk() instanceof LevelChunk chunk)
+            PoppetShelfChunkLoader.onChunkLoad(level, chunk);
+    }
+
+    @SubscribeEvent
+    public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player)
+            PoppetShelfChunkLoader.onPlayerJoin(player);
+    }
+
+    @SubscribeEvent
+    public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player)
+            PoppetShelfChunkLoader.onPlayerLeave(player);
+    }
+
+    @SubscribeEvent
+    public static void onConfigReload(ModConfigEvent.Reloading event) {
+        final MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (event.getConfig().getSpec() == VoodooConfig.commonSpec && server != null)
+            server.execute(() -> PoppetShelfChunkLoader.onConfigReload(server));
     }
 
     @SubscribeEvent

@@ -22,12 +22,19 @@ public class VoodooGameTests {
                 ProtectionPoppetTests.tests(),
                 ReflectorPoppetTests.tests(),
                 PoppetShelfTests.tests(),
+                ChunkLoadingTests.tests(),
                 CommandTests.tests()
         ).flatMap(List::stream).toList();
     }
 
     @AfterBatch(batch = Voodoo.MOD_ID)
     public static void afterBatch(ServerLevel level) {
-        TestUtil.removePlayers(level);
+        TestUtil.removePlayers();
+    }
+
+    @AfterBatch(batch = TestUtil.CONFIG_BATCH)
+    public static void afterConfigBatch(ServerLevel level) {
+        TestUtil.restoreConfig();
+        TestUtil.removePlayers();
     }
 }
