@@ -1,6 +1,7 @@
 package de.morrien.voodoo.blockentity;
 
 import com.mojang.serialization.Dynamic;
+import de.morrien.voodoo.Voodoo;
 import de.morrien.voodoo.item.PoppetItem;
 import de.morrien.voodoo.util.BindingUtil;
 import de.morrien.voodoo.util.PoppetShelfChunkLoader;
@@ -9,6 +10,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
@@ -25,9 +27,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
-import javax.annotation.Nullable;
+import java.util.Optional;
 import java.util.UUID;
+import javax.annotation.Nullable;
 
 /**
  * Created by Phoebe Morrien
@@ -45,7 +50,7 @@ public class PoppetShelfBlockEntity extends BlockEntity implements Container {
     }
 
     public static void tick(Level level, BlockPos blockPos, BlockState blockState, PoppetShelfBlockEntity poppetShelf) {
-        if (!level.isClientSide && poppetShelf.inventoryTouched) {
+        if (!level.isClientSide() && poppetShelf.inventoryTouched) {
             poppetShelf.inventoryTouched = false;
             setChanged(level, blockPos, blockState);
             level.sendBlockUpdated(blockPos, blockState, blockState, Block.UPDATE_CLIENTS);
@@ -139,28 +144,26 @@ public class PoppetShelfBlockEntity extends BlockEntity implements Container {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag compound, HolderLookup.Provider registries) {
-        super.saveAdditional(compound, registries);
-        ContainerHelper.saveAllItems(compound, items, registries);
-        if (ownerUuid != null)
-            compound.putUUID("owner_uuid", ownerUuid);
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        ContainerHelper.saveAllItems(output, items);
+        output.storeNullable("owner_uuid", UUIDUtil.CODEC, ownerUuid);
         if (ownerName != null)
-            compound.putString("owner_name", ownerName);
+            output.putString("owner_name", ownerName);
     }
 
     @Override
-    protected void loadAdditional(CompoundTag compound, HolderLookup.Provider registries) {
-        super.loadAdditional(compound, registries);
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
         items.clear();
-        if (compound.contains("inv"))
-            this.loadLegacyItems(compound.getCompound("inv"), registries);
+        final Optional<CompoundTag> legacyInventory = input.read("inv", CompoundTag.CODEC);
+        if (legacyInventory.isPresent())
+            this.loadLegacyItems(legacyInventory.get(), input.lookup());
         else
-            ContainerHelper.loadAllItems(compound, items, registries);
+            ContainerHelper.loadAllItems(input, items);
         PoppetUtil.removePoppetShelf(this.ownerUuid, this);
-        if (compound.hasUUID("owner_uuid"))
-            this.ownerUuid = compound.getUUID("owner_uuid");
-        if (compound.contains("owner_name"))
-            this.ownerName = compound.getString("owner_name");
+        input.read("owner_uuid", UUIDUtil.CODEC).ifPresent(uuid -> this.ownerUuid = uuid);
+        input.getString("owner_name").ifPresent(name -> this.ownerName = name);
         PoppetUtil.addPoppetShelf(this.ownerUuid, this);
         PoppetUtil.invalidateShelfCache(this);
     }
@@ -173,22 +176,32 @@ public class PoppetShelfBlockEntity extends BlockEntity implements Container {
      * @param registries The registry lookup
      */
     private void loadLegacyItems(CompoundTag inventory, HolderLookup.Provider registries) {
-        final ListTag list = inventory.getList("Items", Tag.TAG_COMPOUND);
+        final ListTag list = inventory.getListOrEmpty("Items");
         for (int i = 0; i < list.size(); i++) {
-            final CompoundTag itemTag = list.getCompound(i);
-            final int slot = itemTag.getInt("Slot");
+            final CompoundTag itemTag = list.getCompoundOrEmpty(i);
+            final int slot = itemTag.getIntOr("Slot", 0);
             if (slot < 0 || slot >= items.size()) continue;
             final Tag updated = DataFixers.getDataFixer().update(
                     References.ITEM_STACK,
                     new Dynamic<>(NbtOps.INSTANCE, itemTag),
                     LEGACY_DATA_VERSION,
-                    SharedConstants.getCurrentVersion().getDataVersion().getVersion()
+                    SharedConstants.getCurrentVersion().dataVersion().version()
             ).getValue();
-            ItemStack.parse(registries, updated).ifPresent(stack -> {
+            ItemStack.CODEC.parse(registries.createSerializationContext(NbtOps.INSTANCE), updated).resultOrPartial(Voodoo.logger::error).ifPresent(stack -> {
                 BindingUtil.migrate(stack);
                 items.set(slot, stack);
             });
         }
+    }
+
+    /**
+     * Called before the shelf is broken. Drops the contents and removes chunk loading entry.
+     */
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        super.preRemoveSideEffects(pos, state);
+        if (this.level instanceof ServerLevel serverLevel)
+            PoppetShelfChunkLoader.setShelfOwner(serverLevel, pos, null);
     }
 
     @Override

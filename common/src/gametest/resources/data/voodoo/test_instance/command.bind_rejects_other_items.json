@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:function",
+  "function": "voodoo:command.bind_rejects_other_items",
+  "environment": "voodoo:default",
+  "structure": "voodoo:empty",
+  "max_ticks": 100
+}

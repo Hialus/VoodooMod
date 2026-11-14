@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:function",
+  "function": "voodoo:taglock_kit.binds_self",
+  "environment": "voodoo:default",
+  "structure": "voodoo:empty",
+  "max_ticks": 100
+}

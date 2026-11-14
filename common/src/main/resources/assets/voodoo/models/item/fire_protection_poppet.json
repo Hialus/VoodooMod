@@ -2,9 +2,9 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [64, 64],
 	"textures": {
-		"1": "voodoo:item/fire_protection_poppet",
+		"1": "voodoo:block/fire_protection_poppet",
 		"2": "minecraft:block/campfire_fire",
-		"particle": "voodoo:item/fire_protection_poppet"
+		"particle": "voodoo:block/fire_protection_poppet"
 	},
 	"elements": [
 		{

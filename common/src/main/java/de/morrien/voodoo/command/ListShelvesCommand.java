@@ -19,7 +19,7 @@ public class ListShelvesCommand {
     public static ArgumentBuilder<CommandSourceStack, ?> register(CommandDispatcher<CommandSourceStack> dispatcher) {
         return Commands
                 .literal("shelves")
-                .then(Commands.argument("player", EntityArgument.player()).requires(cs -> cs.hasPermission(3)).executes(context -> {
+                .then(Commands.argument("player", EntityArgument.player()).requires(Commands.hasPermission(Commands.LEVEL_ADMINS)).executes(context -> {
                     final ServerPlayer player = EntityArgument.getPlayer(context, "player");
                     return list(context, player);
                 }))
@@ -47,17 +47,13 @@ public class ListShelvesCommand {
                     blockEntity.getBlockPos().getX(),
                     blockEntity.getBlockPos().getY(),
                     blockEntity.getBlockPos().getZ(),
-                    world.dimension().location().getPath()
+                    world.dimension().identifier().getPath()
             );
             Style style = Style.EMPTY
-                    .withClickEvent(new ClickEvent(
-                            ClickEvent.Action.SUGGEST_COMMAND,
-                            "/execute in " + world.dimension().location().toString() + " run tp " + player.getName().getString() + " " + blockEntity.getBlockPos().getX() + " " + blockEntity.getBlockPos().getY() + " " + blockEntity.getBlockPos().getZ()
+                    .withClickEvent(new ClickEvent.SuggestCommand(
+                            "/execute in " + world.dimension().identifier().toString() + " run tp " + player.getName().getString() + " " + blockEntity.getBlockPos().getX() + " " + blockEntity.getBlockPos().getY() + " " + blockEntity.getBlockPos().getZ()
                     ))
-                    .withHoverEvent(new HoverEvent(
-                            HoverEvent.Action.SHOW_TEXT,
-                            Component.translatable("commands.voodoo.list.teleport")
-                    ));
+                    .withHoverEvent(new HoverEvent.ShowText(Component.translatable("commands.voodoo.list.teleport")));
             text.setStyle(style);
             message.append(text);
             counter++;

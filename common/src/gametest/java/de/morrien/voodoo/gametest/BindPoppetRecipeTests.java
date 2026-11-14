@@ -3,7 +3,6 @@ package de.morrien.voodoo.gametest;
 import de.morrien.voodoo.item.ItemRegistry;
 import de.morrien.voodoo.util.BindingUtil;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 
@@ -14,7 +13,7 @@ import static de.morrien.voodoo.Poppet.PoppetType.VOODOO;
 import static de.morrien.voodoo.gametest.TestUtil.*;
 
 public class BindPoppetRecipeTests {
-    public static List<TestFunction> tests() {
+    public static List<GameTestCase> tests() {
         return List.of(
                 test("bind_poppet_recipe.binds_poppet", BindPoppetRecipeTests::bindsPoppet),
                 test("bind_poppet_recipe.keeps_damage", BindPoppetRecipeTests::keepsDamage),

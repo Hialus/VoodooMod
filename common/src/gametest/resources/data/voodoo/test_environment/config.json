@@ -1,0 +1,4 @@
+{
+  "type": "voodoo:cleanup",
+  "restore_config": true
+}

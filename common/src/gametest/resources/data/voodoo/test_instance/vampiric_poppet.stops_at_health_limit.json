@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:function",
+  "function": "voodoo:vampiric_poppet.stops_at_health_limit",
+  "environment": "voodoo:default",
+  "structure": "voodoo:empty",
+  "max_ticks": 100
+}

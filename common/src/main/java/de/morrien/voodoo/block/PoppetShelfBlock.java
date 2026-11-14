@@ -48,7 +48,7 @@ public class PoppetShelfBlock extends BaseEntityBlock {
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof PoppetShelfBlockEntity) {
                 MenuProvider containerProvider = new MenuProvider() {
@@ -79,17 +79,8 @@ public class PoppetShelfBlock extends BaseEntityBlock {
     }
 
     @Override
-    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!state.is(newState.getBlock())) {
-            BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof PoppetShelfBlockEntity) {
-                Containers.dropContents(world, pos, (PoppetShelfBlockEntity) blockEntity);
-                world.updateNeighbourForOutputSignal(pos, this);
-            }
-            if (world instanceof ServerLevel serverLevel)
-                PoppetShelfChunkLoader.setShelfOwner(serverLevel, pos, null);
-            super.onRemove(state, world, pos, newState, isMoving);
-        }
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
+        Containers.updateNeighboursAfterDestroy(state, level, pos);
     }
 
     @Override

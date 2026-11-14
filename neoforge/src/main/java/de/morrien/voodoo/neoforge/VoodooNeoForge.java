@@ -9,7 +9,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
 
 @Mod(Voodoo.MOD_ID)
 public class VoodooNeoForge {
@@ -23,6 +23,6 @@ public class VoodooNeoForge {
     }
 
     private void registerCapabilities(RegisterCapabilitiesEvent event) {
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, BlockEntityTypeRegistry.poppetShelfBlockEntity.get(), (poppetShelf, side) -> new InvWrapper(poppetShelf));
+        event.registerBlockEntity(Capabilities.Item.BLOCK, BlockEntityTypeRegistry.poppetShelfBlockEntity.get(), (poppetShelf, side) -> VanillaContainerWrapper.of(poppetShelf));
     }
 }

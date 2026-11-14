@@ -23,7 +23,7 @@ public class ListPoppetsCommand {
     public static ArgumentBuilder<CommandSourceStack, ?> register(CommandDispatcher<CommandSourceStack> dispatcher) {
         return Commands
                 .literal("poppets")
-                .then(Commands.argument("player", EntityArgument.player()).requires(cs -> cs.hasPermission(3)).executes(context -> {
+                .then(Commands.argument("player", EntityArgument.player()).requires(Commands.hasPermission(Commands.LEVEL_ADMINS)).executes(context -> {
                     final ServerPlayer player = EntityArgument.getPlayer(context, "player");
                     return list(context, player);
                 }))
@@ -56,20 +56,16 @@ public class ListPoppetsCommand {
                         "commands.voodoo.list.poppets.line.shelf",
                         counter,
                         stack.getDisplayName(),
-                        world.dimension().location().getPath(),
+                        world.dimension().identifier().getPath(),
                         blockEntity.getBlockPos().getX(),
                         blockEntity.getBlockPos().getY(),
                         blockEntity.getBlockPos().getZ()
                 );
                 Style style = Style.EMPTY
-                        .withClickEvent(new ClickEvent(
-                                ClickEvent.Action.SUGGEST_COMMAND,
-                                "/execute in " + world.dimension().location().toString() + " run tp " + player.getName().getString() + " " + blockEntity.getBlockPos().getX() + " " + blockEntity.getBlockPos().getY() + " " + blockEntity.getBlockPos().getZ()
-                        ))
-                        .withHoverEvent(new HoverEvent(
-                                HoverEvent.Action.SHOW_TEXT,
-                                Component.translatable("commands.voodoo.list.teleport")
-                        ));
+                        .withClickEvent(new ClickEvent.SuggestCommand(
+                            "/execute in " + world.dimension().identifier().toString() + " run tp " + player.getName().getString() + " " + blockEntity.getBlockPos().getX() + " " + blockEntity.getBlockPos().getY() + " " + blockEntity.getBlockPos().getZ()
+                    ))
+                        .withHoverEvent(new HoverEvent.ShowText(Component.translatable("commands.voodoo.list.teleport")));
                 text.setStyle(style);
                 message.append(text);
             } else {

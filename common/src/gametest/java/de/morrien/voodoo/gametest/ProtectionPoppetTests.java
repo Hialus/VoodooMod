@@ -4,7 +4,6 @@ import de.morrien.voodoo.Poppet;
 import de.morrien.voodoo.util.BindingUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageSources;
@@ -12,8 +11,8 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.projectile.Arrow;
-import net.minecraft.world.entity.projectile.ThrownPotion;
+import net.minecraft.world.entity.projectile.arrow.Arrow;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.AbstractThrownPotion;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
@@ -24,7 +23,7 @@ import static de.morrien.voodoo.Poppet.PoppetType.*;
 import static de.morrien.voodoo.gametest.TestUtil.*;
 
 public class ProtectionPoppetTests {
-    public static List<TestFunction> tests() {
+    public static List<GameTestCase> tests() {
         return List.of(
                 test("protection_poppet.fall", ProtectionPoppetTests::fall),
                 test("protection_poppet.fire", ProtectionPoppetTests::fire),
@@ -83,7 +82,7 @@ public class ProtectionPoppetTests {
 
     private static void fellOutOfWorld(GameTestHelper helper) {
         final ServerPlayer player = assertProtects(helper, VOID_PROTECTION, DamageSources::fellOutOfWorld, 4, 1);
-        helper.assertValueEqual(player.blockPosition(), helper.getLevel().getSharedSpawnPos().above(), "player position");
+        helper.assertValueEqual(player.blockPosition(), helper.getLevel().getRespawnData().pos().above(), "player position");
         helper.succeed();
     }
 
@@ -110,7 +109,7 @@ public class ProtectionPoppetTests {
     }
 
     private static void splashPotion(GameTestHelper helper) {
-        final ThrownPotion potion = helper.spawn(EntityType.POTION, new BlockPos(3, 1, 3));
+        final AbstractThrownPotion potion = helper.spawn(EntityType.SPLASH_POTION, new BlockPos(3, 1, 3));
         assertProtects(helper, POTION_PROTECTION, sources -> sources.indirectMagic(potion, null), 6, 1);
         helper.succeed();
     }
@@ -122,7 +121,7 @@ public class ProtectionPoppetTests {
     }
 
     private static void smallSplashPotionIsFree(GameTestHelper helper) {
-        final ThrownPotion potion = helper.spawn(EntityType.POTION, new BlockPos(3, 1, 3));
+        final AbstractThrownPotion potion = helper.spawn(EntityType.SPLASH_POTION, new BlockPos(3, 1, 3));
         assertProtects(helper, POTION_PROTECTION, sources -> sources.indirectMagic(potion, null), 2, 0);
         helper.succeed();
     }

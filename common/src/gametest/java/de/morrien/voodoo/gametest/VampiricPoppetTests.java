@@ -1,7 +1,6 @@
 package de.morrien.voodoo.gametest;
 
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
@@ -13,7 +12,7 @@ import static de.morrien.voodoo.VoodooConfig.COMMON;
 import static de.morrien.voodoo.gametest.TestUtil.*;
 
 public class VampiricPoppetTests {
-    public static List<TestFunction> tests() {
+    public static List<GameTestCase> tests() {
         return List.of(
                 test("vampiric_poppet.drains_bound_player", VampiricPoppetTests::drainsBoundPlayer),
                 test("vampiric_poppet.stops_at_health_limit", VampiricPoppetTests::stopsAtHealthLimit)

@@ -6,14 +6,17 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.item.component.TooltipDisplay;
 
-import java.util.List;
+import java.util.function.Consumer;
+import javax.annotation.Nullable;
 
 import static de.morrien.voodoo.Poppet.PoppetType.*;
 import static de.morrien.voodoo.util.BindingUtil.*;
@@ -41,8 +44,8 @@ public class PoppetItem extends Item {
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
-        if (!world.isClientSide) {
+    public void inventoryTick(ItemStack stack, ServerLevel world, Entity entity, @Nullable EquipmentSlot slot) {
+        if (!world.isClientSide()) {
             migrate(stack);
             if (world.getGameTime() % 100 == 0)
                 checkForNameUpdate(stack, world);
@@ -50,30 +53,30 @@ public class PoppetItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
-        super.appendHoverText(stack, context, tooltip, flag);
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        super.appendHoverText(stack, context, display, tooltip, flag);
         if (isBound(stack)) {
             final var text = Component.translatable(
                     "text.voodoo.poppet.bound",
                     getBoundName(stack)
             );
             text.setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY));
-            tooltip.add(text);
+            tooltip.accept(text);
         } else if (stack.getItem() != ItemRegistry.poppetMap.get(BLANK).get()) {
             final var text = Component.translatable("text.voodoo.poppet.not_bound");
             text.setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY));
-            tooltip.add(text);
+            tooltip.accept(text);
         }
         this.appendDisabledHoverText(stack, context, tooltip, flag);
     }
 
-    protected void appendDisabledHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    protected void appendDisabledHoverText(ItemStack stack, TooltipContext context, Consumer<Component> tooltip, TooltipFlag flag) {
         final VoodooConfig.Common.PoppetBase config = poppetType.getConfig();
         if (config == null) return;
         if (!config.enabled.get()) {
             final var text = Component.translatable("text.voodoo.poppet.disabled");
             text.setStyle(Style.EMPTY.withColor(ChatFormatting.RED));
-            tooltip.add(text);
+            tooltip.accept(text);
         }
     }
 

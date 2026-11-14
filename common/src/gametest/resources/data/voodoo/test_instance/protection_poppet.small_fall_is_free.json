@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:function",
+  "function": "voodoo:protection_poppet.small_fall_is_free",
+  "environment": "voodoo:default",
+  "structure": "voodoo:empty",
+  "max_ticks": 100
+}

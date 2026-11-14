@@ -4,10 +4,11 @@ import de.morrien.voodoo.blockentity.PoppetShelfBlockEntity;
 import de.morrien.voodoo.item.ItemRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.TagValueInput;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ import static de.morrien.voodoo.gametest.TestUtil.*;
 public class PoppetShelfTests {
     private static final BlockPos SHELF_POS = new BlockPos(3, 1, 3);
 
-    public static List<TestFunction> tests() {
+    public static List<GameTestCase> tests() {
         return List.of(
                 test("poppet_shelf.protects_owner", PoppetShelfTests::protectsOwner),
                 test("poppet_shelf.drops_contents", PoppetShelfTests::dropsContents),
@@ -52,7 +53,7 @@ public class PoppetShelfTests {
         final CompoundTag tag = shelf.saveWithFullMetadata(helper.getLevel().registryAccess());
         final PoppetShelfBlockEntity loaded = new PoppetShelfBlockEntity(shelf.getBlockPos(), shelf.getBlockState());
         loaded.setLevel(helper.getLevel());
-        loaded.loadWithComponents(tag, helper.getLevel().registryAccess());
+        loaded.loadWithComponents(TagValueInput.create(ProblemReporter.DISCARDING, helper.getLevel().registryAccess(), tag));
         loaded.setRemoved();
         helper.assertValueEqual(loaded.getOwnerUuid(), player.getUUID(), "owner UUID");
         helper.assertValueEqual(loaded.getOwnerName(), player.getName().getString(), "owner name");

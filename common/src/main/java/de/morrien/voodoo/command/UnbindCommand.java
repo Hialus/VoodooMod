@@ -22,7 +22,7 @@ public class UnbindCommand {
     public static ArgumentBuilder<CommandSourceStack, ?> register(CommandDispatcher<CommandSourceStack> dispatcher) {
         return Commands
                 .literal("unbind")
-                .requires(cs -> cs.hasPermission(3))
+                .requires(Commands.hasPermission(Commands.LEVEL_ADMINS))
                 .executes(UnbindCommand::bind);
     }
 

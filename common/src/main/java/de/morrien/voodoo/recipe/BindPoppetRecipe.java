@@ -3,9 +3,7 @@ package de.morrien.voodoo.recipe;
 import de.morrien.voodoo.item.ItemRegistry;
 import de.morrien.voodoo.item.PoppetItem;
 import de.morrien.voodoo.util.BindingUtil;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -17,9 +15,7 @@ import java.util.List;
 import static de.morrien.voodoo.Poppet.PoppetType.BLANK;
 
 public class BindPoppetRecipe extends CustomRecipe {
-    public BindPoppetRecipe(CraftingBookCategory category) {
-        super(category);
-    }
+    public static final BindPoppetRecipe INSTANCE = new BindPoppetRecipe();
 
     private List<ItemStack> getItems(CraftingInput inv) {
         List<ItemStack> itemStacks = new ArrayList<>();
@@ -51,7 +47,7 @@ public class BindPoppetRecipe extends CustomRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingInput inv, HolderLookup.Provider registries) {
+    public ItemStack assemble(CraftingInput inv) {
         List<ItemStack> itemStacks = getItems(inv);
         ItemStack itemStack1 = itemStacks.get(0);
         ItemStack itemStack2 = itemStacks.get(1);

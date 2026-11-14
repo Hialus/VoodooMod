@@ -39,9 +39,9 @@ public class PoppetUtil {
     public static void useVoodooProtectionPuppet(ItemStack voodooPoppet, Entity source) {
         if (source instanceof Player) {
             final Player fromPlayer = (Player) source;
-            fromPlayer.displayClientMessage(Component.translatable("text.voodoo.voodoo_protection.had", BindingUtil.getBoundName(voodooPoppet)), true);
+            fromPlayer.sendOverlayMessage(Component.translatable("text.voodoo.voodoo_protection.had", BindingUtil.getBoundName(voodooPoppet)));
             voodooPoppet.hurtAndBreak(voodooPoppet.getMaxDamage() - voodooPoppet.getDamageValue(),(ServerLevel) fromPlayer.level(), (ServerPlayer) fromPlayer, item -> {
-                fromPlayer.onEquippedItemBroken(item, LivingEntity.getSlotForHand(fromPlayer.getUsedItemHand()));
+                fromPlayer.onEquippedItemBroken(item, fromPlayer.getUsedItemHand().asEquipmentSlot());
                 fromPlayer.level().playSound(null, fromPlayer, SoundRegistry.voodooProtectionPoppetUsed.get(), SoundSource.PLAYERS, 1, 1);
             });
         } else {
@@ -58,8 +58,8 @@ public class PoppetUtil {
      */
     public static List<Poppet> getPoppetsInInventory(Player player) {
         List<ItemStack> playerItems = new ArrayList<>();
-        playerItems.addAll(player.getInventory().offhand);
-        playerItems.addAll(player.getInventory().items);
+        playerItems.add(player.getOffhandItem());
+        playerItems.addAll(player.getInventory().getNonEquipmentItems());
         return playerItems.stream()
                 .filter(stack -> stack.getItem() instanceof PoppetItem)
                 .filter(stack -> player.getUUID().equals(BindingUtil.getBoundUUID(stack)))
@@ -123,7 +123,7 @@ public class PoppetUtil {
     }
 
     public static void removePoppetShelf(UUID ownerUUID, PoppetShelfBlockEntity poppetShelf) {
-        if (ownerUUID == null || poppetShelf.getLevel() == null || poppetShelf.getLevel().isClientSide) return;
+        if (ownerUUID == null || poppetShelf.getLevel() == null || poppetShelf.getLevel().isClientSide()) return;
         final List<WeakReference<PoppetShelfBlockEntity>> weakShelves = poppetShelvesCache.get(ownerUUID);
         if (weakShelves != null) {
             weakShelves.removeIf(weakShelf -> weakShelf.get() == null || weakShelf.get() == poppetShelf);
@@ -133,7 +133,7 @@ public class PoppetUtil {
     }
 
     public static void addPoppetShelf(UUID ownerUUID, PoppetShelfBlockEntity poppetShelf) {
-        if (ownerUUID == null || (poppetShelf.getLevel() != null && poppetShelf.getLevel().isClientSide)) return;
+        if (ownerUUID == null || (poppetShelf.getLevel() != null && poppetShelf.getLevel().isClientSide())) return;
         removePoppetShelf(ownerUUID, poppetShelf);
         poppetShelvesCache.putIfAbsent(ownerUUID, new ArrayList<>());
         final List<WeakReference<PoppetShelfBlockEntity>> weakShelves = poppetShelvesCache.get(ownerUUID);

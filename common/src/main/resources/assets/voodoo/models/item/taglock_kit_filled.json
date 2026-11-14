@@ -3,9 +3,9 @@
 	"textures": {
 		"particle": "minecraft:item/potion",
 		"texture": "minecraft:block/glass",
-		"inside": "voodoo:item/taglock_kit_fill",
+		"inside": "voodoo:block/taglock_kit_fill",
 		"brown": "minecraft:block/brown_terracotta",
 		"top": "minecraft:block/iron_block",
-		"needle": "voodoo:item/needle"
+		"needle": "voodoo:block/needle"
 	}
 }

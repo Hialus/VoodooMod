@@ -5,7 +5,7 @@ import de.morrien.voodoo.blockentity.BlockEntityTypeRegistry;
 import de.morrien.voodoo.client.PoppetShelfRenderer;
 import de.morrien.voodoo.client.PoppetShelfScreen;
 import de.morrien.voodoo.container.ContainerRegistry;
-import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.client.ConfigScreenFactoryRegistry;
+import fuzs.forgeconfigapiport.fabric.api.v5.client.ConfigScreenFactoryRegistry;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;

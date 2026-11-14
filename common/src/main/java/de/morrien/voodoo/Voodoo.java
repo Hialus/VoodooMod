@@ -7,7 +7,8 @@ import de.morrien.voodoo.container.ContainerRegistry;
 import de.morrien.voodoo.item.ItemRegistry;
 import de.morrien.voodoo.recipe.RecipeRegistry;
 import de.morrien.voodoo.sound.SoundRegistry;
-import net.minecraft.resources.ResourceLocation;
+import de.morrien.voodoo.util.PoppetShelfChunkLoader;
+import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,9 +26,10 @@ public class Voodoo {
         ContainerRegistry.CONTAINERS.register();
         RecipeRegistry.RECIPES.register();
         VoodooGroup.CREATIVE_MODE_TABS.register();
+        PoppetShelfChunkLoader.TICKET_TYPES.register();
     }
 
-    public static ResourceLocation id(String path) {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+    public static Identifier id(String path) {
+        return Identifier.fromNamespaceAndPath(MOD_ID, path);
     }
 }

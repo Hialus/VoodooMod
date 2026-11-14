@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:function",
+  "function": "voodoo:poppet_shelf.drops_contents",
+  "environment": "voodoo:default",
+  "structure": "voodoo:empty",
+  "max_ticks": 100
+}

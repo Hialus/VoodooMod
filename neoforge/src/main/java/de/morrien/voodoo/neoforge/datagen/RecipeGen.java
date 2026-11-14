@@ -2,8 +2,8 @@ package de.morrien.voodoo.neoforge.datagen;
 
 import de.morrien.voodoo.item.ItemRegistry;
 import de.morrien.voodoo.recipe.BindPoppetRecipe;
-import net.minecraft.advancements.critereon.BrewedPotionTrigger;
-import net.minecraft.advancements.critereon.ChangeDimensionTrigger;
+import net.minecraft.advancements.criterion.BrewedPotionTrigger;
+import net.minecraft.advancements.criterion.ChangeDimensionTrigger;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;

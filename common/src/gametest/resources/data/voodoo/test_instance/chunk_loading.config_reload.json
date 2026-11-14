@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:function",
+  "function": "voodoo:chunk_loading.config_reload",
+  "environment": "voodoo:config",
+  "structure": "voodoo:empty",
+  "max_ticks": 100
+}

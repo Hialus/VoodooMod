@@ -2,13 +2,13 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [64, 64],
 	"textures": {
-		"1": "voodoo:item/explosion_protection_poppet",
+		"1": "voodoo:block/explosion_protection_poppet",
 		"3": "minecraft:block/tnt_side",
 		"4": "minecraft:block/tnt_top",
 		"5": "minecraft:block/tnt_bottom",
-		"6": "voodoo:item/needle",
+		"6": "voodoo:block/needle",
 		"7": "minecraft:misc/underwater",
-		"particle": "voodoo:item/explosion_protection_poppet"
+		"particle": "voodoo:block/explosion_protection_poppet"
 	},
 	"elements": [
 		{

@@ -2,10 +2,9 @@ package de.morrien.voodoo.gametest;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
@@ -14,7 +13,7 @@ import static de.morrien.voodoo.Poppet.PoppetType.REFLECTOR;
 import static de.morrien.voodoo.gametest.TestUtil.*;
 
 public class ReflectorPoppetTests {
-    public static List<TestFunction> tests() {
+    public static List<GameTestCase> tests() {
         return List.of(
                 test("reflector_poppet.reflects_mob_attack", ReflectorPoppetTests::reflectsMobAttack)
         );

@@ -18,7 +18,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 import static de.morrien.voodoo.Poppet.PoppetType.VOODOO;
 import static de.morrien.voodoo.VoodooConfig.COMMON;
@@ -33,26 +33,26 @@ public class VoodooPoppetItem extends PoppetItem {
     }
 
     @Override
-    protected void appendDisabledHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    protected void appendDisabledHoverText(ItemStack stack, TooltipContext context, Consumer<Component> tooltip, TooltipFlag flag) {
         if (!COMMON.voodoo.enableNeedle.get()) {
             final var text = Component.translatable("text.voodoo.poppet.needle.disabled");
             text.setStyle(Style.EMPTY.withColor(ChatFormatting.RED));
-            tooltip.add(text);
+            tooltip.accept(text);
         }
         if (!COMMON.voodoo.enablePush.get()) {
             final var text = Component.translatable("text.voodoo.poppet.push.disabled");
             text.setStyle(Style.EMPTY.withColor(ChatFormatting.RED));
-            tooltip.add(text);
+            tooltip.accept(text);
         }
         if (!COMMON.voodoo.enableFire.get()) {
             final var text = Component.translatable("text.voodoo.poppet.fire.disabled");
             text.setStyle(Style.EMPTY.withColor(ChatFormatting.RED));
-            tooltip.add(text);
+            tooltip.accept(text);
         }
         if (!COMMON.voodoo.enableDrowning.get()) {
             final var text = Component.translatable("text.voodoo.poppet.drowning.disabled");
             text.setStyle(Style.EMPTY.withColor(ChatFormatting.RED));
-            tooltip.add(text);
+            tooltip.accept(text);
         }
     }
 
@@ -76,7 +76,7 @@ public class VoodooPoppetItem extends PoppetItem {
 
     @Override
     public boolean releaseUsing(ItemStack stack, Level world, LivingEntity livingEntity, int timeLeft) {
-        if (!world.isClientSide &&
+        if (!world.isClientSide() &&
                 timeLeft <= 72000 - COMMON.voodoo.pullDuration.get() &&
                 livingEntity instanceof Player) {
             Player player = (Player) livingEntity;
@@ -86,7 +86,7 @@ public class VoodooPoppetItem extends PoppetItem {
                 if (COMMON.voodoo.enableNeedle.get() && !offhand.isEmpty() && offhand.getItem() == ItemRegistry.needle.get()) {
                     offhand.shrink(1);
                     if (boundPlayer.hurtServer((ServerLevel) world, new VoodooDamageSource(world, VoodooDamageSource.VoodooDamageType.NEEDLE, stack, player), COMMON.voodoo.needleDamage.get()) && poppetType.hasDurability()) {
-                        stack.hurtAndBreak(COMMON.voodoo.needleDurabilityCost.get(), livingEntity, LivingEntity.getSlotForHand(player.getUsedItemHand()));
+                        stack.hurtAndBreak(COMMON.voodoo.needleDurabilityCost.get(), livingEntity, player.getUsedItemHand().asEquipmentSlot());
                     }
                     return true;
                 } else if (COMMON.voodoo.enablePush.get()) {
@@ -97,7 +97,7 @@ public class VoodooPoppetItem extends PoppetItem {
                         voodooProtectionPoppet.use();
                     } else {
                         if (poppetType.hasDurability())
-                            stack.hurtAndBreak(COMMON.voodoo.pushDurabilityCost.get(), livingEntity, LivingEntity.getSlotForHand(player.getUsedItemHand()));
+                            stack.hurtAndBreak(COMMON.voodoo.pushDurabilityCost.get(), livingEntity, player.getUsedItemHand().asEquipmentSlot());
                         Vec3 vec = player.getLookAngle();
                         boundPlayer.push(vec.x * 1.5, vec.y * 1.2, vec.z * 1.5);
                         boundPlayer.hurtMarked = true;

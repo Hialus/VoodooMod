@@ -6,7 +6,6 @@ import de.morrien.voodoo.util.PoppetShelfChunkLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.server.level.ChunkLevel;
 import net.minecraft.server.level.FullChunkStatus;
 import net.minecraft.server.level.ServerLevel;
@@ -30,14 +29,14 @@ import static de.morrien.voodoo.gametest.TestUtil.*;
  * Ensures that shelves are far enough away from each other to not interfere with other tests.
  */
 public class ChunkLoadingTests {
-    public static List<TestFunction> tests() {
+    public static List<GameTestCase> tests() {
         return List.of(
                 test("chunk_loading.loads_while_owner_online", ChunkLoadingTests::loadsWhileOwnerOnline),
                 test("chunk_loading.loads_when_owner_joins", ChunkLoadingTests::loadsWhenOwnerJoins),
                 test("chunk_loading.shared_chunk", ChunkLoadingTests::sharedChunk),
                 test("chunk_loading.placed_and_broken_shelf", ChunkLoadingTests::placedAndBrokenShelf),
-                test("chunk_loading.forgets_missing_shelf", 400, ChunkLoadingTests::forgetsMissingShelf),
-                configTest("chunk_loading.config_reload", ChunkLoadingTests::configReload)
+                test("chunk_loading.forgets_missing_shelf", ChunkLoadingTests::forgetsMissingShelf),
+                test("chunk_loading.config_reload", ChunkLoadingTests::configReload)
         );
     }
 
@@ -145,7 +144,8 @@ public class ChunkLoadingTests {
         final BlockPos pos = farPos(helper, 4000);
         PoppetShelfChunkLoader.setShelfOwner(level, pos, player.getUUID());
         helper.startSequence()
-                .thenWaitUntil(() -> assertLoaded(helper, pos, true))
+                // The chunk may be generated, loaded and forgotten within one tick, so check that it was saved instead
+                .thenWaitUntil(() -> helper.assertTrue(level.getChunkSource().chunkMap.read(ChunkPos.containing(pos)).join().isPresent(), "Chunk at " + pos.toShortString() + " should have been loaded"))
                 .thenWaitUntil(() -> assertLoaded(helper, pos, false))
                 .thenExecute(() -> {
                     disconnect(player);
@@ -166,12 +166,12 @@ public class ChunkLoadingTests {
     }
 
     private static BlockPos farPos(GameTestHelper helper, int distance) {
-        final ChunkPos chunkPos = new ChunkPos(helper.absolutePos(BlockPos.ZERO).east(distance));
+        final ChunkPos chunkPos = ChunkPos.containing(helper.absolutePos(BlockPos.ZERO).east(distance));
         return chunkPos.getMiddleBlockPosition(helper.absolutePos(BlockPos.ZERO).getY());
     }
 
     private static void assertLoaded(GameTestHelper helper, BlockPos pos, boolean loaded) {
-        final String debugData = helper.getLevel().getChunkSource().getChunkDebugData(new ChunkPos(pos));
+        final String debugData = helper.getLevel().getChunkSource().getChunkDebugData(ChunkPos.containing(pos));
         final boolean isLoaded = debugData.startsWith(ChunkLevel.byStatus(FullChunkStatus.FULL) + "\n");
         helper.assertTrue(isLoaded == loaded, "Chunk at " + pos.toShortString() + " should " + (loaded ? "" : "not ") + "be loaded, ticket level is " + debugData.lines().findFirst().orElse(""));
     }

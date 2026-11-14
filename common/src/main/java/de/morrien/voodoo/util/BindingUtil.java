@@ -2,6 +2,7 @@ package de.morrien.voodoo.util;
 
 import de.morrien.voodoo.component.Binding;
 import de.morrien.voodoo.component.VoodooComponents;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
@@ -9,6 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public class BindingUtil {
@@ -65,10 +67,12 @@ public class BindingUtil {
      */
     public static void migrate(ItemStack stack) {
         final CustomData data = stack.get(DataComponents.CUSTOM_DATA);
-        if (data == null || !data.contains(BOUND_UUID)) return;
+        if (data == null) return;
         final CompoundTag tag = data.copyTag();
-        if (!isBound(stack) && tag.hasUUID(BOUND_UUID)) {
-            bind(stack, tag.getUUID(BOUND_UUID), tag.getString(BOUND_NAME));
+        if (!tag.contains(BOUND_UUID)) return;
+        final Optional<UUID> uuid = tag.read(BOUND_UUID, UUIDUtil.CODEC);
+        if (!isBound(stack) && uuid.isPresent()) {
+            bind(stack, uuid.get(), tag.getStringOr(BOUND_NAME, ""));
         }
         CustomData.update(DataComponents.CUSTOM_DATA, stack, customTag -> {
             customTag.remove(BOUND_UUID);

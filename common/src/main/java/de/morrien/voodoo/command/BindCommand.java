@@ -24,13 +24,13 @@ public class BindCommand {
                 .literal("bind")
                 .then(Commands
                         .argument("player", EntityArgument.player())
-                        .requires(cs -> cs.hasPermission(3))
+                        .requires(Commands.hasPermission(Commands.LEVEL_ADMINS))
                         .executes(context -> {
                             final ServerPlayer player = EntityArgument.getPlayer(context, "player");
                             return bind(context, player);
                         })
                 )
-                .requires(cs -> cs.hasPermission(3))
+                .requires(Commands.hasPermission(Commands.LEVEL_ADMINS))
                 .executes(context -> {
                     final ServerPlayer player = context.getSource().getPlayerOrException();
                     return bind(context, player);

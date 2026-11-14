@@ -67,7 +67,7 @@ public class Poppet {
     private void shrink() {
         stack.shrink(1);
         var text = Component.translatable("text.voodoo.poppet.used_up", Component.translatable(item.getDescriptionId()));
-        player.displayClientMessage(text, false);
+        player.sendSystemMessage(text);
     }
 
     public enum PoppetType {

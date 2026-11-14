@@ -45,7 +45,7 @@ public class VampiricPoppetItem extends PoppetItem {
 
     @Override
     public void onUseTick(Level world, LivingEntity entity, ItemStack stack, int remainingTicks) {
-        if (world.isClientSide) return;
+        if (world.isClientSide()) return;
         if ((remainingTicks - 1) % COMMON.vampiric.drainageInterval.get() != 0) return;
         if (!(entity instanceof ServerPlayer)) return;
         final ServerPlayer player = (ServerPlayer) entity;
@@ -59,7 +59,7 @@ public class VampiricPoppetItem extends PoppetItem {
         if (boundPlayer.hurtServer((ServerLevel) world, new VoodooDamageSource(world, VoodooDamageSource.VoodooDamageType.VAMPIRIC, stack, player), healthToTake)) {
             player.heal(healthToTake);
             if (poppetType.hasDurability())
-                stack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(player.getUsedItemHand()));
+                stack.hurtAndBreak(1, player, player.getUsedItemHand().asEquipmentSlot());
         }
     }
 

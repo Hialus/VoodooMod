@@ -3,7 +3,6 @@ package de.morrien.voodoo.gametest;
 import de.morrien.voodoo.item.ItemRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -23,13 +22,13 @@ import static de.morrien.voodoo.VoodooConfig.COMMON;
 import static de.morrien.voodoo.gametest.TestUtil.*;
 
 public class VoodooPoppetTests {
-    public static List<TestFunction> tests() {
+    public static List<GameTestCase> tests() {
         return List.of(
                 test("voodoo_poppet.needle_hurts_bound_player", VoodooPoppetTests::needleHurtsBoundPlayer),
                 test("voodoo_poppet.push_moves_bound_player", VoodooPoppetTests::pushMovesBoundPlayer),
                 test("voodoo_poppet.fire_ignites_bound_player", VoodooPoppetTests::fireIgnitesBoundPlayer),
                 test("voodoo_poppet.fire_resistance_keeps_durability", VoodooPoppetTests::fireResistanceKeepsDurability),
-                test("voodoo_poppet.water_drowns_bound_player", 200, VoodooPoppetTests::waterDrownsBoundPlayer),
+                test("voodoo_poppet.water_drowns_bound_player", VoodooPoppetTests::waterDrownsBoundPlayer),
                 test("voodoo_poppet.never_despawns", VoodooPoppetTests::neverDespawns),
                 test("voodoo_poppet.protection_blocks_needle", VoodooPoppetTests::protectionBlocksNeedle),
                 test("voodoo_poppet.protection_blocks_push", VoodooPoppetTests::protectionBlocksPush)

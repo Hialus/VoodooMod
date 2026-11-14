@@ -2,11 +2,37 @@
   "sources": [
     {
       "type": "single",
-      "resource": "minecraft:entity/equipment/humanoid/iron"
+      "resource": "minecraft:misc/underwater"
     },
     {
       "type": "single",
-      "resource": "minecraft:misc/underwater"
+      "resource": "voodoo:item/explosion_protection_poppet",
+      "sprite": "voodoo:block/explosion_protection_poppet"
+    },
+    {
+      "type": "single",
+      "resource": "voodoo:item/fire_protection_poppet",
+      "sprite": "voodoo:block/fire_protection_poppet"
+    },
+    {
+      "type": "single",
+      "resource": "voodoo:item/potion_protection_poppet",
+      "sprite": "voodoo:block/potion_protection_poppet"
+    },
+    {
+      "type": "single",
+      "resource": "voodoo:item/needle",
+      "sprite": "voodoo:block/needle"
+    },
+    {
+      "type": "single",
+      "resource": "voodoo:item/empty",
+      "sprite": "voodoo:block/empty"
+    },
+    {
+      "type": "single",
+      "resource": "voodoo:item/taglock_kit_fill",
+      "sprite": "voodoo:block/taglock_kit_fill"
     }
   ]
 }

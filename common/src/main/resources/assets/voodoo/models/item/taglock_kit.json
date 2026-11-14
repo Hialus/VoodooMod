@@ -3,10 +3,10 @@
   "textures": {
     "particle": "minecraft:block/glass",
     "texture": "minecraft:block/glass",
-    "inside": "voodoo:item/empty",
+    "inside": "voodoo:block/empty",
     "brown": "minecraft:block/brown_terracotta",
     "top": "minecraft:block/iron_block",
-    "needle": "voodoo:item/needle"
+    "needle": "voodoo:block/needle"
   },
   "elements": [
     {

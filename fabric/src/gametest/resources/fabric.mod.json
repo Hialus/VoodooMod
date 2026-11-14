@@ -5,8 +5,8 @@
     "name": "Voodoo Game Tests",
     "environment": "*",
     "entrypoints": {
-        "fabric-gametest": [
-            "de.morrien.voodoo.gametest.VoodooGameTests"
+        "main": [
+            "de.morrien.voodoo.fabric.gametest.FabricGameTests"
         ]
     },
     "depends": {

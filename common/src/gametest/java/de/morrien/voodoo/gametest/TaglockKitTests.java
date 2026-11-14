@@ -5,7 +5,6 @@ import de.morrien.voodoo.util.BindingUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.network.protocol.game.ServerboundInteractPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,6 +15,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BedPart;
+import net.minecraft.world.level.storage.LevelData;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
@@ -24,7 +24,7 @@ import java.util.List;
 import static de.morrien.voodoo.gametest.TestUtil.*;
 
 public class TaglockKitTests {
-    public static List<TestFunction> tests() {
+    public static List<GameTestCase> tests() {
         return List.of(
                 test("taglock_kit.binds_self", TaglockKitTests::bindsSelf),
                 test("taglock_kit.binds_other_player", TaglockKitTests::bindsOtherPlayer),
@@ -48,7 +48,7 @@ public class TaglockKitTests {
         final ServerPlayer target = makePlayer(helper, new Vec3(3.5, 1, 1.5));
         final ItemStack taglock = new ItemStack(ItemRegistry.taglockKit.get());
         player.setItemInHand(InteractionHand.MAIN_HAND, taglock);
-        player.connection.handleInteract(ServerboundInteractPacket.createInteractionPacket(target, false, InteractionHand.MAIN_HAND));
+        player.connection.handleInteract(new ServerboundInteractPacket(target.getId(), InteractionHand.MAIN_HAND, Vec3.ZERO, false));
         assertBoundTo(helper, taglock, target);
         helper.succeed();
     }
@@ -74,7 +74,7 @@ public class TaglockKitTests {
         final BlockPos foot = head.relative(Direction.SOUTH);
         helper.setBlock(head, Blocks.RED_BED.defaultBlockState().setValue(BedBlock.FACING, Direction.NORTH).setValue(BedBlock.PART, BedPart.HEAD));
         helper.setBlock(foot, Blocks.RED_BED.defaultBlockState().setValue(BedBlock.FACING, Direction.NORTH).setValue(BedBlock.PART, BedPart.FOOT));
-        target.setRespawnPosition(dimension, helper.absolutePos(head), 0, false, false);
+        target.setRespawnPosition(new ServerPlayer.RespawnConfig(LevelData.RespawnData.of(dimension, helper.absolutePos(head), 0, 0), false), false);
         final ItemStack taglock = new ItemStack(ItemRegistry.taglockKit.get());
         player.setItemInHand(InteractionHand.MAIN_HAND, taglock);
         player.setShiftKeyDown(true);

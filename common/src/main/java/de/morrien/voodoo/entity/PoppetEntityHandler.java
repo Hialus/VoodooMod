@@ -15,6 +15,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
 
 import java.util.WeakHashMap;
 
@@ -65,7 +66,7 @@ public class PoppetEntityHandler {
         final ItemStack stack = entity.getItem();
         if (!(stack.getItem() instanceof VoodooPoppetItem)) return;
         entity.setUnlimitedLifetime();
-        if (!entity.isInWaterOrBubble()) return;
+        if (!entity.isInWater() && !entity.getInBlockState().is(Blocks.BUBBLE_COLUMN)) return;
         if (!VoodooConfig.COMMON.voodoo.enableDrowning.get()) return;
         if (!BindingUtil.isBound(stack)) return;
         final Player boundPlayer = BindingUtil.getBoundPlayer(stack, level);

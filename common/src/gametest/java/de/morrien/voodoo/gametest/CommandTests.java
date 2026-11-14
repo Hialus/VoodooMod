@@ -5,10 +5,10 @@ import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.permissions.LevelBasedPermissionSet;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -22,7 +22,7 @@ import static de.morrien.voodoo.Poppet.PoppetType.VOODOO;
 import static de.morrien.voodoo.gametest.TestUtil.*;
 
 public class CommandTests {
-    public static List<TestFunction> tests() {
+    public static List<GameTestCase> tests() {
         return List.of(
                 test("command.bind_self", CommandTests::bindSelf),
                 test("command.bind_other_player", CommandTests::bindOtherPlayer),
@@ -117,7 +117,7 @@ public class CommandTests {
                 return false;
             }
         };
-        final CommandSourceStack source = player.createCommandSourceStack().withSource(recorder).withPermission(4);
+        final CommandSourceStack source = player.createCommandSourceStack().withSource(recorder).withPermission(LevelBasedPermissionSet.OWNER);
         helper.getLevel().getServer().getCommands().performPrefixedCommand(source, command);
         return messages;
     }

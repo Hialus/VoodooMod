@@ -2,7 +2,6 @@ package de.morrien.voodoo.gametest;
 
 import com.mojang.authlib.GameProfile;
 import de.morrien.voodoo.Poppet;
-import de.morrien.voodoo.Voodoo;
 import de.morrien.voodoo.blockentity.PoppetShelfBlockEntity;
 import de.morrien.voodoo.item.ItemRegistry;
 import de.morrien.voodoo.util.BindingUtil;
@@ -10,10 +9,10 @@ import io.netty.channel.embedded.EmbeddedChannel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.PacketFlow;
+import net.minecraft.network.protocol.game.ServerboundPlayerLoadedPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
@@ -38,24 +37,19 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 public class TestUtil {
-    public static final String CONFIG_BATCH = Voodoo.MOD_ID + "_config";
-    private static final String EMPTY_STRUCTURE = Voodoo.MOD_ID + ":empty";
     private static final List<ServerPlayer> players = new ArrayList<>();
     private static final Map<ModConfigSpec.ConfigValue<?>, Object> changedConfigValues = new HashMap<>();
 
-    public static TestFunction test(String name, Consumer<GameTestHelper> function) {
-        return test(name, 100, function);
-    }
-
-    public static TestFunction test(String name, int timeoutTicks, Consumer<GameTestHelper> function) {
-        return new TestFunction(Voodoo.MOD_ID, Voodoo.MOD_ID + "." + name, EMPTY_STRUCTURE, timeoutTicks, 0, true, function);
-    }
-
     /**
-     * Creates a test that runs in its own batch, so it can change the config without affecting other tests.
+     * Creates a test function {@code voodoo:<name>}. The test is defined in
+     * {@code data/voodoo/test_instance/<name>.json}, which sets its timeout and environment.
+     * Tests that change the config have to use the environment {@code voodoo:config}.
      */
-    public static TestFunction configTest(String name, Consumer<GameTestHelper> function) {
-        return new TestFunction(CONFIG_BATCH, Voodoo.MOD_ID + "." + name, EMPTY_STRUCTURE, 100, 0, true, function);
+    public static GameTestCase test(String name, Consumer<GameTestHelper> function) {
+        return new GameTestCase(name, function);
+    }
+
+    public record GameTestCase(String name, Consumer<GameTestHelper> function) {
     }
 
     /**
@@ -92,8 +86,8 @@ public class TestUtil {
         new EmbeddedChannel(connection);
         level.getServer().getPlayerList().placeNewPlayer(connection, player, cookie);
         player.setGameMode(GameType.SURVIVAL);
-        player.setClientLoaded(true);
-        player.moveTo(helper.absoluteVec(pos));
+        player.connection.handleAcceptPlayerLoad(new ServerboundPlayerLoadedPacket());
+        player.snapTo(helper.absoluteVec(pos));
         players.add(player);
         return player;
     }
@@ -132,7 +126,7 @@ public class TestUtil {
     public static ItemStack craft(ServerLevel level, ItemStack... stacks) {
         final CraftingInput input = CraftingInput.of(stacks.length, 1, List.of(stacks));
         return level.recipeAccess().getRecipeFor(RecipeType.CRAFTING, input, level)
-                .map(recipe -> recipe.value().assemble(input, level.registryAccess()))
+                .map(recipe -> recipe.value().assemble(input))
                 .orElse(ItemStack.EMPTY);
     }
 
@@ -147,7 +141,7 @@ public class TestUtil {
         player.setItemInHand(InteractionHand.MAIN_HAND, stack);
         final BlockPos floor = helper.absolutePos(pos.below());
         stack.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, new BlockHitResult(Vec3.atCenterOf(floor), Direction.UP, floor, false)));
-        return helper.getBlockEntity(pos);
+        return helper.getBlockEntity(pos, PoppetShelfBlockEntity.class);
     }
 
     public static void assertBoundTo(GameTestHelper helper, ItemStack stack, Player player) {

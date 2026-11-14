@@ -21,9 +21,10 @@ import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.entity.projectile.ThrownPotion;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.AbstractThrownPotion;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.LevelData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,7 +96,7 @@ public class VoodooEvents {
     }
 
     public static void onPlayerInteract(Player player, ItemStack stack, Entity target) {
-        if (player.level().isClientSide) return;
+        if (player.level().isClientSide()) return;
         if (stack.getItem() != ItemRegistry.taglockKit.get()) return;
         if (target instanceof Player targetPlayer) {
             if (BindingUtil.isBound(stack)) return;
@@ -107,7 +108,7 @@ public class VoodooEvents {
      * @return true if the death should be canceled
      */
     public static boolean onLivingDeath(LivingEntity entity, DamageSource source) {
-        if (entity.level().isClientSide) return false;
+        if (entity.level().isClientSide()) return false;
         if (source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) return false;
         if (!COMMON.deathProtection.enabled.get()) return false;
         if (!(entity instanceof final ServerPlayer player)) return false;
@@ -132,7 +133,7 @@ public class VoodooEvents {
     public static float onLivingAttack(LivingEntity entity, DamageSource damageSource, float amount) {
         if (!(entity instanceof final ServerPlayer player)) return amount;
         if (amount == 0 ||
-                player.isInvulnerableTo(player.serverLevel(), damageSource) ||
+                player.isInvulnerableTo(player.level(), damageSource) ||
                 player.isCreative() ||
                 player.isDeadOrDying() ||
                 (damageSource.is(DamageTypeTags.IS_FIRE) && player.hasEffect(MobEffects.FIRE_RESISTANCE))
@@ -184,7 +185,7 @@ public class VoodooEvents {
         if (player == sourceEntity) return false;
         final Poppet reflectorPoppet = PoppetUtil.getPlayerPoppet(player, REFLECTOR);
         if (reflectorPoppet == null) return false;
-        sourceEntity.hurtServer(player.serverLevel(), damageSource, amount);
+        sourceEntity.hurtServer(player.level(), damageSource, amount);
         reflectorPoppet.use();
         return true;
     }
@@ -205,7 +206,7 @@ public class VoodooEvents {
     private static int getDurabilityCost(DamageSource damageSource, float amount) {
         if (damageSource.is(VoodooDamageSource.VOODOO) && COMMON.voodooProtection.enabled.get())
             return 1;
-        if ((damageSource.getDirectEntity() instanceof ThrownPotion || damageSource.getDirectEntity() instanceof AreaEffectCloud) && COMMON.potionProtection.enabled.get())
+        if ((damageSource.getDirectEntity() instanceof AbstractThrownPotion || damageSource.getDirectEntity() instanceof AreaEffectCloud) && COMMON.potionProtection.enabled.get())
             return Math.max(0, (int) (Math.log(amount / 6) / Math.log(2)) + 1);
         if (damageSource.is(DamageTypes.FALL) && COMMON.fallProtection.enabled.get())
             return (int) Math.max(0, Math.min(amount, Math.ceil(Math.log(amount) * 3)));
@@ -245,13 +246,12 @@ public class VoodooEvents {
 
         if (damageSource.is(DamageTypes.FELL_OUT_OF_WORLD) && player.getY() < 0 && COMMON.voidProtection.enabled.get()) {
             player.fallDistance = 0;
-            BlockPos spawnPos = player.getRespawnPosition();
-            ServerLevel serverWorld = player.server.getLevel(player.getRespawnDimension());
+            final ServerPlayer.RespawnConfig respawnConfig = player.getRespawnConfig();
+            final LevelData.RespawnData respawnData = respawnConfig != null ? respawnConfig.respawnData() : player.level().getServer().getRespawnData();
+            BlockPos spawnPos = respawnData.pos();
+            ServerLevel serverWorld = player.level().getServer().getLevel(respawnData.dimension());
             if (serverWorld == null)
-                serverWorld = player.server.overworld();
-            if (spawnPos == null) {
-                spawnPos = serverWorld.getSharedSpawnPos();
-            }
+                serverWorld = player.level().getServer().overworld();
             player.teleportTo(
                     serverWorld,
                     spawnPos.getX(),
@@ -270,7 +270,7 @@ public class VoodooEvents {
 
         if (damageSource.is(VoodooDamageSource.VOODOO) && COMMON.voodooProtection.enabled.get())
             suitablePoppets.add(VOODOO_PROTECTION);
-        if ((damageSource.getDirectEntity() instanceof ThrownPotion || damageSource.getDirectEntity() instanceof AreaEffectCloud) && COMMON.potionProtection.enabled.get())
+        if ((damageSource.getDirectEntity() instanceof AbstractThrownPotion || damageSource.getDirectEntity() instanceof AreaEffectCloud) && COMMON.potionProtection.enabled.get())
             suitablePoppets.add(POTION_PROTECTION);
         if (damageSource.is(DamageTypes.FALL) && COMMON.fallProtection.enabled.get())
             suitablePoppets.add(FALL_PROTECTION);

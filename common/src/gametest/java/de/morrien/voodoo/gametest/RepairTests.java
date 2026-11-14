@@ -2,7 +2,6 @@ package de.morrien.voodoo.gametest;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
@@ -17,7 +16,7 @@ import static de.morrien.voodoo.Poppet.PoppetType.VOODOO;
 import static de.morrien.voodoo.gametest.TestUtil.*;
 
 public class RepairTests {
-    public static List<TestFunction> tests() {
+    public static List<GameTestCase> tests() {
         return List.of(
                 test("repair.anvil_blocked", RepairTests::anvilBlocked),
                 test("repair.grindstone_blocked", RepairTests::grindstoneBlocked),

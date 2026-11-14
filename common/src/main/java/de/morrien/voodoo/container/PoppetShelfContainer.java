@@ -79,7 +79,7 @@ public class PoppetShelfContainer extends AbstractContainerMenu {
             ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
 
-            int containerSlots = slots.size() - player.getInventory().items.size();
+            int containerSlots = slots.size() - player.getInventory().getNonEquipmentItems().size();
 
             if (index < containerSlots) {
                 if (!this.moveItemStackTo(itemstack1, containerSlots, slots.size(), true)) {

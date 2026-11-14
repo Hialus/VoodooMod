@@ -1,19 +1,24 @@
 package de.morrien.voodoo.gametest;
 
-import de.morrien.voodoo.Voodoo;
-import net.minecraft.gametest.framework.AfterBatch;
-import net.minecraft.gametest.framework.GameTestGenerator;
-import net.minecraft.gametest.framework.TestFunction;
-import net.minecraft.server.level.ServerLevel;
+import com.mojang.serialization.MapCodec;
+import de.morrien.voodoo.platform.RegistrationProvider;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.gametest.framework.TestEnvironmentDefinition;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+/**
+ * Registers the test functions and the test environment type.
+ */
 public class VoodooGameTests {
-    @GameTestGenerator
-    public static Collection<TestFunction> generateTests() {
-        return Stream.of(
+    private static final RegistrationProvider<Consumer<GameTestHelper>> TEST_FUNCTIONS = RegistrationProvider.get(Registries.TEST_FUNCTION);
+    private static final RegistrationProvider<MapCodec<? extends TestEnvironmentDefinition<?>>> TEST_ENVIRONMENT_TYPES = RegistrationProvider.get(Registries.TEST_ENVIRONMENT_DEFINITION_TYPE);
+
+    public static void init() {
+        Stream.of(
                 TaglockKitTests.tests(),
                 BindPoppetRecipeTests.tests(),
                 RepairTests.tests(),
@@ -24,17 +29,9 @@ public class VoodooGameTests {
                 PoppetShelfTests.tests(),
                 ChunkLoadingTests.tests(),
                 CommandTests.tests()
-        ).flatMap(List::stream).toList();
-    }
-
-    @AfterBatch(batch = Voodoo.MOD_ID)
-    public static void afterBatch(ServerLevel level) {
-        TestUtil.removePlayers();
-    }
-
-    @AfterBatch(batch = TestUtil.CONFIG_BATCH)
-    public static void afterConfigBatch(ServerLevel level) {
-        TestUtil.restoreConfig();
-        TestUtil.removePlayers();
+        ).flatMap(List::stream).forEach(test -> TEST_FUNCTIONS.register(test.name(), key -> test.function()));
+        TEST_ENVIRONMENT_TYPES.register("cleanup", key -> CleanupEnvironment.CODEC);
+        TEST_FUNCTIONS.register();
+        TEST_ENVIRONMENT_TYPES.register();
     }
 }
