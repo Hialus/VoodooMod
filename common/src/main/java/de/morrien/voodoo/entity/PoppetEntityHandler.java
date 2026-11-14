@@ -10,6 +10,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectUtil;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -37,12 +38,15 @@ public class PoppetEntityHandler {
         if (!source.is(DamageTypeTags.IS_FIRE)) return false;
         if (entity.level() instanceof ServerLevel level &&
                 VoodooConfig.COMMON.voodoo.enableFire.get() &&
-                entity.tickCount - lastFireTicks.getOrDefault(entity, -20) >= 20) {
+                entity.tickCount - lastFireTicks.getOrDefault(entity, -40) >= 60) {
             lastFireTicks.put(entity, entity.tickCount);
             Player boundPlayer = BindingUtil.getBoundPlayer(stack, level);
             if (boundPlayer != null) {
-                boundPlayer.igniteForSeconds(2);
-                if (boundPlayer.hurtServer(level, new VoodooDamageSource(level, VoodooDamageSource.VoodooDamageType.FIRE, stack, entity), 1) && Poppet.PoppetType.VOODOO.hasDurability())
+                if (boundPlayer.isInvulnerable()) return true;
+                if (boundPlayer.hasEffect(MobEffects.FIRE_RESISTANCE)) return true;
+                if (boundPlayer.isDeadOrDying()) return true;
+                boundPlayer.igniteForSeconds(4);
+                if (Poppet.PoppetType.VOODOO.hasDurability())
                     stack.hurtAndBreak(VoodooConfig.COMMON.voodoo.fireDurabilityCost.get(), level, (ServerPlayer) boundPlayer, item -> entity.discard());
             }
         }
@@ -52,6 +56,7 @@ public class PoppetEntityHandler {
     /**
      * This method is used to detect if a voodoo poppet item entity is in water.
      * If the poppet is in water and is bound the bound player will start to drown, as if they were in water themselves.
+     * Voodoo poppet item entities never despawn, so they can be left in water or fire.
      *
      * @param entity The item entity
      */
@@ -59,6 +64,7 @@ public class PoppetEntityHandler {
         if (!(entity.level() instanceof ServerLevel level)) return;
         final ItemStack stack = entity.getItem();
         if (!(stack.getItem() instanceof VoodooPoppetItem)) return;
+        entity.setUnlimitedLifetime();
         if (!entity.isInWaterOrBubble()) return;
         if (!VoodooConfig.COMMON.voodoo.enableDrowning.get()) return;
         if (!BindingUtil.isBound(stack)) return;

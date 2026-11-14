@@ -10,6 +10,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
@@ -29,6 +30,7 @@ public class VoodooPoppetTests {
                 test("voodoo_poppet.fire_ignites_bound_player", VoodooPoppetTests::fireIgnitesBoundPlayer),
                 test("voodoo_poppet.fire_resistance_keeps_durability", VoodooPoppetTests::fireResistanceKeepsDurability),
                 test("voodoo_poppet.water_drowns_bound_player", 200, VoodooPoppetTests::waterDrownsBoundPlayer),
+                test("voodoo_poppet.never_despawns", VoodooPoppetTests::neverDespawns),
                 test("voodoo_poppet.protection_blocks_needle", VoodooPoppetTests::protectionBlocksNeedle),
                 test("voodoo_poppet.protection_blocks_push", VoodooPoppetTests::protectionBlocksPush)
         );
@@ -60,9 +62,10 @@ public class VoodooPoppetTests {
     private static void fireIgnitesBoundPlayer(GameTestHelper helper) {
         final ServerPlayer target = makePlayer(helper);
         final ItemEntity entity = dropInto(helper, boundPoppet(VOODOO, target), Blocks.LAVA);
+        helper.onEachTick(target::doTick);
         helper.succeedWhen(() -> {
             helper.assertTrue(target.isOnFire(), "Bound player should be on fire");
-            helper.assertValueEqual(target.getHealth(), target.getMaxHealth() - 1, "bound player health");
+            helper.assertTrue(target.getHealth() < target.getMaxHealth(), "Bound player should be hurt by burning");
             assertPoppetUsed(helper, entity.getItem(), VOODOO, COMMON.voodoo.fireDurabilityCost.get());
         });
     }
@@ -71,11 +74,15 @@ public class VoodooPoppetTests {
         final ServerPlayer target = makePlayer(helper);
         target.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 200));
         final ItemEntity entity = dropInto(helper, boundPoppet(VOODOO, target), Blocks.LAVA);
-        helper.succeedWhen(() -> {
-            helper.assertTrue(target.isOnFire(), "Bound player should be on fire");
-            assertFullHealth(helper, target);
-            helper.assertValueEqual(entity.getItem().getDamageValue(), 0, "poppet damage");
-        });
+        helper.startSequence()
+                .thenWaitUntil(() -> helper.assertTrue(entity.isInLava(), "Poppet should be in lava"))
+                .thenIdle(10)
+                .thenExecute(() -> {
+                    helper.assertFalse(target.isOnFire(), "Bound player should not be on fire");
+                    assertFullHealth(helper, target);
+                    helper.assertValueEqual(entity.getItem().getDamageValue(), 0, "poppet damage");
+                })
+                .thenSucceed();
     }
 
     private static void waterDrownsBoundPlayer(GameTestHelper helper) {
@@ -84,6 +91,18 @@ public class VoodooPoppetTests {
         helper.succeedWhen(() -> {
             helper.assertValueEqual(target.getHealth(), target.getMaxHealth() - 2, "bound player health");
             assertPoppetUsed(helper, entity.getItem(), VOODOO, COMMON.voodoo.drownDurabilityCost.get());
+        });
+    }
+
+    private static void neverDespawns(GameTestHelper helper) {
+        final ItemEntity poppet = dropItem(helper, poppet(VOODOO), new Vec3(1.5, 1, 1.5));
+        final ItemEntity stick = dropItem(helper, new ItemStack(Items.STICK), new Vec3(3.5, 1, 1.5));
+        poppet.makeFakeItem();
+        stick.makeFakeItem();
+        helper.runAfterDelay(5, () -> {
+            helper.assertTrue(stick.isRemoved(), "Stick should despawn");
+            helper.assertFalse(poppet.isRemoved(), "Voodoo poppet should not despawn");
+            helper.succeed();
         });
     }
 

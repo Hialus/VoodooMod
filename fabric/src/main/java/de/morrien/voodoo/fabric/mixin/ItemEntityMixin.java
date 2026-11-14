@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ItemEntity.class)
 public class ItemEntityMixin {
-    @Inject(method = "tick", at = @At("TAIL"))
+    @Inject(method = "tick", at = @At("HEAD"))
     private void voodoo$tick(CallbackInfo ci) {
         PoppetEntityHandler.onTick((ItemEntity) (Object) this);
     }
