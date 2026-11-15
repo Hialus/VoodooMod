@@ -26,7 +26,7 @@ public class VampiricPoppetItem extends PoppetItem {
 
     @Override
     public int getUseDuration(ItemStack stack, LivingEntity entity) {
-        return 72000;
+        return COMMON.vampiric.drainageInterval.get();
     }
 
     @Override

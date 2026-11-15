@@ -19,5 +19,10 @@ public class VoodooItemProperties {
                 Voodoo.id("percentage_used"),
                 (itemStack, level, livingEntity, seed) -> Math.min(1, Math.max(0, itemStack.getDamageValue() / (float) itemStack.getMaxDamage()))
         );
+        ItemProperties.register(
+                ItemRegistry.poppetMap.get(Poppet.PoppetType.VAMPIRIC).get(),
+                Voodoo.id("drinking"),
+                (itemStack, level, livingEntity, seed) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getUseItem() == itemStack ? 1 : 0
+        );
     }
 }

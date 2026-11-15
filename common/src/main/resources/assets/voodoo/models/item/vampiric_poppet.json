@@ -5,6 +5,14 @@
 		"1": "voodoo:item/vampiric_poppet",
 		"particle": "voodoo:item/vampiric_poppet"
 	},
+	"overrides": [
+		{
+			"predicate": {
+				"voodoo:drinking": 1
+			},
+			"model": "voodoo:item/vampiric_poppet_drinking"
+		}
+	],
 	"elements": [
 		{
 			"name": "Head",
