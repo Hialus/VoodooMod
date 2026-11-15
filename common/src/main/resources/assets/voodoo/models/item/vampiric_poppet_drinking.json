@@ -1,0 +1,15 @@
+{
+  "parent": "voodoo:item/vampiric_poppet",
+  "display": {
+    "firstperson_righthand": {
+      "rotation": [0, 115, -5],
+      "translation": [1.17, 2.2, 1.21],
+      "scale": [0.25, 0.25, 0.25]
+    },
+    "firstperson_lefthand": {
+      "rotation": [0, 115, -5],
+      "translation": [1.17, 2.2, 1.21],
+      "scale": [0.25, 0.25, 0.25]
+    }
+  }
+}
