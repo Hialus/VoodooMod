@@ -27,7 +27,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - branch: 1.21.1
+            game_versions: ''
           - branch: 1.21.4
+            game_versions: ''
+          - branch: 26.1
             game_versions: ''
 
     steps:
