@@ -59,6 +59,8 @@ configurations {
 }
 
 dependencies {
+    runtimeOnly "vazkii.patchouli:patchouli-neoforge:${patchouli_version}"
+    gametestRuntimeOnly "vazkii.patchouli:patchouli-neoforge:${patchouli_version}"
     commonGametestJava project(path: ':common', configuration: 'commonGametestJava')
     commonGametestResources project(path: ':common', configuration: 'commonGametestResources')
 }
